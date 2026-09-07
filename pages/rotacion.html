@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Simulador interactivo de Dinámica rotacional: torque, momento de inercia y momento angular. Guiado por la metodología de George Polya.">
+  <title>Laboratorio virtual de física — Dinámica rotacional</title>
+
+  <!-- SEO & Meta Tags -->
+  <meta name="description"
+    content="Laboratorio virtual de física. Simuladores interactivos con metodología de Polya. Conservación de la energía, cinemática, fuerzas, rotación, gravitación y oscilaciones.">
+  <meta name="keywords"
+    content="física, simulador, virtual, polya, cinemática, dinámica, energía, gravitación, péndulo, masa-resorte, educación, UNIR">
+  <meta name="author" content="Zwartmit">
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Laboratorio virtual de física">
+  <meta property="og:description"
+    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta property="og:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+  <meta property="og:url" content="https://steam-unir.netlify.app/">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Laboratorio virtual de física">
+  <meta name="twitter:description"
+    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta name="twitter:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+
+  <!-- Favicons -->
+  <link rel="icon" href="../assets/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="../assets/favicon.png">
+
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    :root {
+      --torque-color: #f59e0b;
+      --omega-color: #10b981;
+      --alpha-color: #ef4444;
+      --L-color: #a855f7;
+    }
+
+    /* Selector de cuerpo rígido */
+    .body-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .body-btn {
+      flex: 1;
+      padding: 9px 6px;
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-secondary);
+      border-radius: var(--border-radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      text-align: center;
+    }
+
+    .body-btn:hover {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: rgba(59, 130, 246, 0.3);
+      color: var(--text-primary);
+    }
+
+    .body-btn.selected {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: var(--accent);
+      color: #60a5fa;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+    }
+
+    /* Barra de progreso de tiempo */
+    .time-progress-wrapper {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      height: 10px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    #time-progress {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), #a855f7);
+      border-radius: 6px;
+      transition: width 0.1s linear;
+    }
+
+    #time-label {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-align: right;
+      margin-bottom: 14px;
+    }
+
+    /* Indicadores de color para vectores */
+    .torque-tag {
+      color: var(--torque-color);
+      font-weight: 700;
+    }
+
+    .omega-tag {
+      color: var(--omega-color);
+      font-weight: 700;
+    }
+
+    .alpha-tag {
+      color: var(--alpha-color);
+      font-weight: 700;
+    }
+
+    .L-tag {
+      color: var(--L-color);
+      font-weight: 700;
+    }
+
+    /* Leyenda de vectores en el canvas */
+    .vector-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.83rem;
+    }
+
+    .vector-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .vector-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <a href="../index.html" class="tutor-badge"
+        style="background:rgba(59,130,246,0.15);border-color:rgba(59,130,246,0.3);color:#60a5fa;text-decoration:none;cursor:pointer;font-weight:bold;">🏠
+        Menú Principal</a>
+    </div>
+    <h1>Laboratorio de física: <span>Dinámica rotacional</span></h1>
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <a href="guide_rotacion.html" class="tutor-badge"
+        style="background:rgba(168,85,247,0.15);border-color:rgba(168,85,247,0.3);color:#c084fc;text-decoration:none;cursor:pointer;">Ver
+        Guía Didáctica 📖</a>
+      <div class="tutor-badge">Tutor Activo: Polya</div>
+    </div>
+  </header>
+
+  <div id="app-layout">
+
+    <!-- Canvas -->
+    <div id="simulation-area">
+      <div id="vector-telemetry">
+        <div class="telemetry-title">Magnitudes Rotacionales</div>
+        <div class="telemetry-grid">
+          <div class="vector-indicator omega-tag" style="display:flex;align-items:center;gap:6px;">ω (angular)</div>
+          <div id="telemetry-omega" class="value-display">0.000 rad/s</div>
+
+          <div class="vector-indicator alpha-tag" style="display:flex;align-items:center;gap:6px;">α (aceler.)</div>
+          <div id="telemetry-alpha" class="value-display">0.000 rad/s²</div>
+
+          <div class="vector-indicator L-tag" style="display:flex;align-items:center;gap:6px;">L (moment.)</div>
+          <div id="telemetry-l" class="value-display">0.000 kg·m²/s</div>
+
+          <div>I (inercia)</div>
+          <div id="telemetry-i" class="value-display">0.0000 kg·m²</div>
+
+          <div>Tiempo (t)</div>
+          <div id="telemetry-t" class="value-display">0.00 s</div>
+        </div>
+      </div>
+      <canvas id="physics-canvas"></canvas>
+    </div>
+
+    <!-- Panel Tutor -->
+    <div id="tutor-panel">
+      <div id="polya-steps-bar">
+        <div id="tab-phase1" class="step-tab active">1. Comprender</div>
+        <div id="tab-phase2" class="step-tab">2. Planear</div>
+        <div id="tab-phase3" class="step-tab">3. Ejecutar</div>
+        <div id="tab-phase4" class="step-tab">4. Revisar</div>
+      </div>
+
+      <div class="panel-content-wrapper">
+
+        <!-- ══════════════════════════════════════
+             FASE 1: COMPRENDER
+        ═══════════════════════════════════════════ -->
+        <div id="phase1-container" class="polya-phase-container active">
+          <h2><span class="phase-number">1</span> Comprender el problema</h2>
+          <p class="phase-intro">
+            Un torque <span class="torque-tag">τ</span> aplicado a un cuerpo rígido produce una aceleración angular
+            <span class="alpha-tag">α</span>. La resistencia al giro depende del <strong>Momento de Inercia I</strong>,
+            que cambia según la forma y distribución de masa del cuerpo. Segunda Ley de Newton para rotación: <strong>τ
+              = I·α</strong>.
+          </p>
+
+          <div class="card">
+            <div class="telemetry-title" style="margin-bottom: 10px;">Selecciona el Cuerpo Rígido</div>
+            <div class="body-selector">
+              <button class="body-btn selected" data-body="disk">💿 Disco<br><small
+                  style="font-weight:400;color:var(--text-muted);">I = ½mr²</small></button>
+              <button class="body-btn" data-body="ring">⭕ Aro<br><small
+                  style="font-weight:400;color:var(--text-muted);">I = mr²</small></button>
+              <button class="body-btn" data-body="rod">📏 Barra<br><small
+                  style="font-weight:400;color:var(--text-muted);">I = mL²/12</small></button>
+            </div>
+
+            <div class="control-group">
+              <label for="input-mass">Masa (m)</label>
+              <div class="slider-container">
+                <input type="range" id="input-mass" min="0.5" max="20" step="0.5" value="5">
+                <div id="val-mass" class="value-display">5 kg</div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label for="input-radius">Radio / Semilongitud (r)</label>
+              <div class="slider-container">
+                <input type="range" id="input-radius" min="0.1" max="2" step="0.1" value="1">
+                <div id="val-radius" class="value-display">1 m</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quiz -->
+          <div class="card">
+            <div class="quiz-question">
+              Si duplicas el radio de un disco sólido (I = ½mr²) sin cambiar su masa, ¿cómo cambia el momento de
+              inercia?
+            </div>
+            <div class="quiz-options">
+              <button class="option-btn" data-correct="false">Se duplica (×2)</button>
+              <button class="option-btn" data-correct="true">Se cuadruplica (×4)</button>
+              <button class="option-btn" data-correct="false">Se mantiene igual</button>
+            </div>
+            <div id="phase1-feedback" style="margin-top:12px;font-size:0.82rem;min-height:20px;"></div>
+          </div>
+
+          <button id="btn-next-to-phase2" class="btn-action" disabled>
+            Proceder a Fase 2: Planear →
+          </button>
+        </div>
+
+        <!-- ══════════════════════════════════════
+             FASE 2: PLANEAR
+        ═══════════════════════════════════════════ -->
+        <div id="phase2-container" class="polya-phase-container">
+          <h2><span class="phase-number">2</span> Concebir un plan</h2>
+          <p class="phase-intro">
+            Configura el torque y el tiempo de simulación. Luego predice cuál será la velocidad angular <span
+              class="omega-tag">ω</span> al final. Recuerda: <strong>α = τ/I</strong> y <strong>ω(t) = α·t</strong> (sin
+            fricción).
+          </p>
+
+          <div class="card">
+            <div class="control-group">
+              <label for="input-torque">Torque Aplicado (τ)</label>
+              <div class="slider-container">
+                <input type="range" id="input-torque" min="1" max="50" step="1" value="10">
+                <div id="val-torque" class="value-display">10 N·m</div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label for="input-friction">Fricción Angular (b)</label>
+              <div class="slider-container">
+                <input type="range" id="input-friction" min="0" max="5" step="0.1" value="0">
+                <div id="val-friction" class="value-display">μ = 0.00</div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label for="input-sim-time">Duración de la simulación</label>
+              <div class="slider-container">
+                <input type="range" id="input-sim-time" min="1" max="10" step="1" value="3">
+                <div id="val-sim-time" class="value-display">3 s</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card prediction-instructions">
+            <strong>Tu hipótesis:</strong><br>
+            Calcula manualmente la velocidad angular al final de la simulación usando α = τ/I y ω = α·t. Introduce tu
+            predicción:
+          </div>
+
+          <div class="card">
+            <label for="input-predicted-omega">Predicción de ω al final (rad/s)</label>
+            <div class="slider-container" style="margin-top:8px;">
+              <input type="range" id="input-predicted-omega" min="0" max="500" step="0.5" value="20">
+              <div id="val-predicted-omega" class="value-display">20 rad/s</div>
+            </div>
+          </div>
+
+          <button id="btn-next-to-phase3" class="btn-action">
+            Proceder a Fase 3: Ejecutar →
+          </button>
+          <button id="btn-back-to-phase1" class="btn-secondary">← Regresar a Fase 1</button>
+        </div>
+
+        <!-- ══════════════════════════════════════
+             FASE 3: EJECUTAR
+        ═══════════════════════════════════════════ -->
+        <div id="phase3-container" class="polya-phase-container">
+          <h2><span class="phase-number">3</span> Ejecutar el plan</h2>
+          <p class="phase-intro">
+            Observa el cuerpo rígido girar bajo el torque aplicado. La gráfica superior muestra <span
+              class="omega-tag">ω(t)</span> creciendo linealmente (sin fricción) o asintóticamente (con fricción).
+          </p>
+
+          <div class="sim-controls-wrapper">
+            <button id="btn-sim-play" class="btn-action success btn-sim-play">▶ Iniciar simulación</button>
+            <button id="btn-sim-reset" class="btn-secondary btn-sim-reset">↺ Reiniciar</button>
+          </div>
+
+          <!-- Barra de progreso de tiempo -->
+          <div class="time-progress-wrapper">
+            <div id="time-progress"></div>
+          </div>
+          <div id="time-label">0.00 / 3 s</div>
+
+          <!-- Leyenda de vectores -->
+          <div class="card" style="background:rgba(15,23,42,0.6);">
+            <div class="telemetry-title" style="margin-bottom:10px;">Leyenda de Vectores</div>
+            <div class="vector-legend">
+              <div class="vector-legend-item">
+                <div class="vector-dot" style="background:#f59e0b;box-shadow:0 0 6px #f59e0b;"></div>
+                <span style="color:#f59e0b;font-weight:600;">Torque τ</span> — arco curvo que indica la dirección del
+                giro
+              </div>
+              <div class="vector-legend-item">
+                <div class="vector-dot" style="background:#10b981;box-shadow:0 0 6px #10b981;"></div>
+                <span style="color:#10b981;font-weight:600;">Vel. angular ω</span> — crece con el tiempo
+              </div>
+              <div class="vector-legend-item">
+                <div class="vector-dot" style="background:#ef4444;box-shadow:0 0 6px #ef4444;"></div>
+                <span style="color:#ef4444;font-weight:600;">Aceler. angular α</span> — α = τ/I (constante sin fricción)
+              </div>
+              <div class="vector-legend-item">
+                <div class="vector-dot" style="background:#a855f7;box-shadow:0 0 6px #a855f7;"></div>
+                <span style="color:#a855f7;font-weight:600;">Momento angular L</span> — L = I·ω
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="background:rgba(16,185,129,0.05);border-color:rgba(16,185,129,0.15);">
+            <div class="telemetry-title" style="color:var(--speed-color);">Observación del Tutor:</div>
+            <p style="font-size:0.85rem;line-height:1.5;color:var(--text-secondary);">
+              Sin fricción, <span class="alpha-tag">α</span> es constante y <span class="omega-tag">ω</span> crece
+              linealmente con el tiempo. Con fricción viscosa, el sistema alcanza un estado estacionario donde τ_ext =
+              τ_fricción y α → 0.
+            </p>
+          </div>
+
+          <button id="btn-next-to-phase4" class="btn-action" disabled>
+            Ver Resultados: Fase 4 →
+          </button>
+          <button id="btn-back-to-phase2" class="btn-secondary">← Regresar a Fase 2</button>
+        </div>
+
+        <!-- ══════════════════════════════════════
+             FASE 4: REVISAR
+        ═══════════════════════════════════════════ -->
+        <div id="phase4-container" class="polya-phase-container">
+          <h2><span class="phase-number">4</span> Examinar la solución</h2>
+          <p class="phase-intro">
+            Contrasta tu predicción con los resultados del simulador y verifica que se cumple la Segunda Ley de Newton
+            para rotación: <strong>τ = I·α</strong>.
+          </p>
+
+          <table class="contrast-table">
+            <thead>
+              <tr>
+                <th>Magnitud</th>
+                <th>Predicción</th>
+                <th>Simulación</th>
+                <th>Error</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="parameter-name">ω final (rad/s)</td>
+                <td id="table-pred-omega">—</td>
+                <td id="table-real-omega">—</td>
+                <td><span id="badge-omega-error" class="error-badge low">—</span></td>
+              </tr>
+              <tr>
+                <td class="parameter-name">ω teórica (rad/s)</td>
+                <td style="color:var(--text-muted);">N/A</td>
+                <td id="table-teo-omega">—</td>
+                <td style="color:var(--text-muted);">ref.</td>
+              </tr>
+              <tr>
+                <td class="parameter-name">I (kg·m²)</td>
+                <td style="color:var(--text-muted);">—</td>
+                <td id="table-i">—</td>
+                <td style="color:var(--text-muted);">—</td>
+              </tr>
+              <tr>
+                <td class="parameter-name">L = I·ω (kg·m²/s)</td>
+                <td style="color:var(--text-muted);">—</td>
+                <td id="table-l">—</td>
+                <td style="color:var(--text-muted);">—</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Verificación τ = I·α -->
+          <div id="newton-check" style="font-size:0.88rem;font-weight:600;margin:14px 0;min-height:20px;"></div>
+
+          <div class="tutor-feedback-box">
+            <strong>Retroalimentación didáctica:</strong>
+            <span id="tutor-feedback-text">Ejecuta la simulación para ver los resultados.</span>
+          </div>
+
+          <button id="btn-restart-lab" class="btn-action" style="margin-top:16px;">
+            Reiniciar laboratorio ↺
+          </button>
+        </div>
+
+      </div><!-- /panel-content-wrapper -->
+    </div><!-- /tutor-panel -->
+  </div><!-- /app-layout -->
+
+  <script type="module" src="../js/rotacion/main.js"></script>
+</body>
+
+</html>

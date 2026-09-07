@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Simulador interactivo de Gravitación universal y Leyes de Kepler. Órbitas planetarias con metodología de George Polya.">
+  <title>Laboratorio virtual de física — Gravitación universal</title>
+
+  <!-- SEO & Meta Tags -->
+  <meta name="description"
+    content="Laboratorio virtual de física. Simuladores interactivos con metodología de Polya. Conservación de la energía, cinemática, fuerzas, rotación, gravitación y oscilaciones.">
+  <meta name="keywords"
+    content="física, simulador, virtual, polya, cinemática, dinámica, energía, gravitación, péndulo, masa-resorte, educación, UNIR">
+  <meta name="author" content="Zwartmit">
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Laboratorio virtual de física">
+  <meta property="og:description"
+    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta property="og:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+  <meta property="og:url" content="https://steam-unir.netlify.app/">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Laboratorio virtual de física">
+  <meta name="twitter:description"
+    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta name="twitter:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+
+  <!-- Favicons -->
+  <link rel="icon" href="../assets/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="../assets/favicon.png">
+
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    :root {
+      --star-color: #fbbf24;
+      --planet-color: #3b82f6;
+      --force-color: #ef4444;
+      --vel-color: #10b981;
+      --kepler-color: #a855f7;
+    }
+
+    .star-tag {
+      color: var(--star-color);
+      font-weight: 700;
+    }
+
+    .planet-tag {
+      color: var(--planet-color);
+      font-weight: 700;
+    }
+
+    .force-tag {
+      color: var(--force-color);
+      font-weight: 700;
+    }
+
+    .vel-tag {
+      color: var(--vel-color);
+      font-weight: 700;
+    }
+
+    .kepler-tag {
+      color: var(--kepler-color);
+      font-weight: 700;
+    }
+
+    .orbits-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(168, 85, 247, 0.1);
+      border: 1px solid rgba(168, 85, 247, 0.25);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.88rem;
+      color: #c084fc;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+    .orbits-badge span {
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      color: #e9d5ff;
+    }
+
+    #kepler-check {
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin: 14px 0;
+      min-height: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div style="display:flex;align-items:center;gap:15px;">
+      <a href="../index.html" class="tutor-badge"
+        style="background:rgba(59,130,246,0.15);border-color:rgba(59,130,246,0.3);color:#60a5fa;text-decoration:none;cursor:pointer;font-weight:bold;">🏠
+        Menú Principal</a>
+    </div>
+    <h1>Laboratorio de física: <span>Gravitación universal</span></h1>
+    <div style="display:flex;align-items:center;gap:15px;">
+      <a href="guide_gravitacion.html" class="tutor-badge"
+        style="background:rgba(168,85,247,0.15);border-color:rgba(168,85,247,0.3);color:#c084fc;text-decoration:none;cursor:pointer;">Ver
+        Guía Didáctica 📖</a>
+      <div class="tutor-badge">Tutor Activo: Polya</div>
+    </div>
+  </header>
+
+  <div id="app-layout">
+
+    <!-- Canvas -->
+    <div id="simulation-area">
+      <div id="vector-telemetry">
+        <div class="telemetry-title">Estado Orbital</div>
+        <div class="telemetry-grid">
+          <div>Distancia (r)</div>
+          <div id="telemetry-r" class="value-display">0.0 u</div>
+
+          <div class="vector-indicator velocity vel-tag" style="display:flex;align-items:center;gap:4px;">Velocidad (v)
+          </div>
+          <div id="telemetry-v" class="value-display">0.00 u/s</div>
+
+          <div class="vector-indicator force-tag" style="display:flex;align-items:center;gap:4px;">Fuerza F_g</div>
+          <div id="telemetry-f" class="value-display">0.00 u</div>
+
+          <div>Energía total</div>
+          <div id="telemetry-e" class="value-display">0.0 J</div>
+
+          <div>Tiempo (t)</div>
+          <div id="telemetry-t" class="value-display">0.0 s</div>
+        </div>
+      </div>
+      <canvas id="physics-canvas"></canvas>
+    </div>
+
+    <!-- Panel Tutor -->
+    <div id="tutor-panel">
+      <div id="polya-steps-bar">
+        <div id="tab-phase1" class="step-tab active">1. Comprender</div>
+        <div id="tab-phase2" class="step-tab">2. Planear</div>
+        <div id="tab-phase3" class="step-tab">3. Ejecutar</div>
+        <div id="tab-phase4" class="step-tab">4. Revisar</div>
+      </div>
+
+      <div class="panel-content-wrapper">
+
+        <!-- ══════════════════════════════════════
+             FASE 1: COMPRENDER
+        ═══════════════════════════════════════════ -->
+        <div id="phase1-container" class="polya-phase-container active">
+          <h2><span class="phase-number">1</span> Comprender el problema</h2>
+          <p class="phase-intro">
+            Un <span class="planet-tag">planeta</span> orbita alrededor de una <span class="star-tag">estrella</span>
+            central bajo la Ley de Gravitación universal de Newton: <strong>F = G·M·m/r²</strong>. La fuerza <span
+              class="force-tag">gravitacional (roja)</span> actúa como fuerza centrípeta que mantiene la órbita.
+            Configura el sistema y comprende las variables.
+          </p>
+
+          <div class="card">
+            <div class="telemetry-title" style="margin-bottom:12px;">Parámetros del Sistema</div>
+
+            <div class="control-group">
+              <label for="input-g">Constante Gravitacional (G)</label>
+              <div class="slider-container">
+                <input type="range" id="input-g" min="100" max="5000" step="100" value="1000">
+                <div id="val-g" class="value-display">1000</div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label for="input-m">Masa de la Estrella (M)</label>
+              <div class="slider-container">
+                <input type="range" id="input-m" min="100" max="5000" step="100" value="1000">
+                <div id="val-m" class="value-display">1000 M☉</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quiz -->
+          <div class="card">
+            <div class="quiz-question">
+              Según la Tercera Ley de Kepler (T² ∝ a³), si un planeta orbita el doble de lejos de la estrella, ¿cuánto
+              tarda más en completar una vuelta?
+            </div>
+            <div class="quiz-options">
+              <button class="option-btn" data-correct="false">El doble (×2)</button>
+              <button class="option-btn" data-correct="false">El cuádruple (×4)</button>
+              <button class="option-btn" data-correct="true">Aproximadamente 2.83× más (×2√2)</button>
+            </div>
+            <div id="phase1-feedback" style="margin-top:12px;font-size:0.82rem;min-height:20px;"></div>
+          </div>
+
+          <button id="btn-next-to-phase2" class="btn-action" disabled>
+            Proceder a Fase 2: Planear →
+          </button>
+        </div>
+
+        <!-- ══════════════════════════════════════
+             FASE 2: PLANEAR
+        ═══════════════════════════════════════════ -->
+        <div id="phase2-container" class="polya-phase-container">
+          <h2><span class="phase-number">2</span> Concebir un plan</h2>
+          <p class="phase-intro">
+            Configura la órbita del planeta. La velocidad orbital circular es <strong>v = √(G·M/r)</strong> y el período
+            según Kepler III: <strong>T = 2π·√(a³/G·M)</strong>.
+          </p>
+
+          <div class="card">
+            <div class="control-group">
+              <label for="input-r0">Radio Inicial de Órbita (r₀)</label>
+              <div class="slider-container">
+                <input type="range" id="input-r0" min="60" max="220" step="10" value="150">
+                <div id="val-r0" class="value-display">150 u</div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label for="input-ecc">Excentricidad (e)</label>
+              <div class="slider-container">
+                <input type="range" id="input-ecc" min="0" max="0.85" step="0.05" value="0">
+                <div id="val-ecc" class="value-display">e = 0.00</div>
+              </div>
+              <p style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">e = 0 → circular &nbsp;|&nbsp; 0 &lt;
+                e &lt; 1 → elíptica</p>
+            </div>
+
+            <div id="teo-kepler-label" style="font-size:0.82rem;color:#a855f7;font-weight:600;margin-top:8px;"></div>
+          </div>
+
+          <div class="card prediction-instructions">
+            <strong>Tu hipótesis:</strong><br>
+            Usando T = 2π·√(r₀³/G·M), calcula el período orbital y escríbelo abajo.
+          </div>
+
+          <div class="card">
+            <label for="input-pred-period">Predicción del período orbital T (s)</label>
+            <div class="slider-container" style="margin-top:8px;">
+              <input type="range" id="input-pred-period" min="1" max="2000" step="1" value="200">
+              <div id="val-pred-period" class="value-display">200 s</div>
+            </div>
+          </div>
+
+          <button id="btn-next-to-phase3" class="btn-action">
+            Proceder a Fase 3: Ejecutar →
+          </button>
+          <button id="btn-back-to-phase1" class="btn-secondary">← Regresar a Fase 1</button>
+        </div>
+
+        <!-- ══════════════════════════════════════
+             FASE 3: EJECUTAR
+        ═══════════════════════════════════════════ -->
+        <div id="phase3-container" class="polya-phase-container">
+          <h2><span class="phase-number">3</span> Ejecutar el plan</h2>
+          <p class="phase-intro">
+            Observa el planeta orbitar. La trayectoria se dibuja en tiempo real. Espera al menos <strong>1 órbita
+              completa</strong> para desbloquear la Fase 4.
+          </p>
+
+          <div class="sim-controls-wrapper">
+            <button id="btn-sim-play" class="btn-action success btn-sim-play">▶ Iniciar órbita</button>
+            <button id="btn-sim-reset" class="btn-secondary btn-sim-reset">↺ Reiniciar</button>
+          </div>
+
+          <div class="orbits-badge">
+            🪐 Órbitas completadas: <span id="orbits-count">0</span>
+          </div>
+
+          <div class="card" style="background:rgba(15,23,42,0.6);">
+            <div class="telemetry-title" style="margin-bottom:10px;">Leyenda</div>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:0.83rem;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div
+                  style="width:10px;height:10px;border-radius:50%;background:#10b981;box-shadow:0 0 6px #10b981;flex-shrink:0;">
+                </div>
+                <span style="color:#10b981;font-weight:600;">Velocidad (v)</span> — tangente a la órbita
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div
+                  style="width:10px;height:10px;border-radius:50%;background:#ef4444;box-shadow:0 0 6px #ef4444;flex-shrink:0;">
+                </div>
+                <span style="color:#ef4444;font-weight:600;">Fuerza gravitacional (F_g)</span> — apunta al centro
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div
+                  style="width:10px;height:10px;border-radius:50%;background:#3b82f6;box-shadow:0 0 6px #3b82f6;flex-shrink:0;">
+                </div>
+                <span style="color:#3b82f6;font-weight:600;">Planeta</span> — velocímetro instantáneo
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="background:rgba(16,185,129,0.05);border-color:rgba(16,185,129,0.15);">
+            <div class="telemetry-title" style="color:var(--speed-color);">Observación del Tutor:</div>
+            <p style="font-size:0.85rem;line-height:1.5;color:var(--text-secondary);">
+              Observa cómo la <span style="color:#10b981;font-weight:600;">velocidad</span> aumenta al acercarse al foco
+              (periapsis) y disminuye en el apoapsis. Esto ilustra la Segunda Ley de Kepler: <em>el planeta barre áreas
+                iguales en tiempos iguales</em>.
+            </p>
+          </div>
+
+          <button id="btn-next-to-phase4" class="btn-action" disabled>
+            Ver Resultados: Fase 4 →
+          </button>
+          <button id="btn-back-to-phase2" class="btn-secondary">← Regresar a Fase 2</button>
+        </div>
+
+        <!-- ══════════════════════════════════════
+             FASE 4: REVISAR
+        ═══════════════════════════════════════════ -->
+        <div id="phase4-container" class="polya-phase-container">
+          <h2><span class="phase-number">4</span> Examinar la solución</h2>
+          <p class="phase-intro">
+            Verifica la Tercera Ley de Kepler: <strong>a³/T² = G·M / (4π²) = constante</strong>, independientemente de
+            la excentricidad o la masa del planeta.
+          </p>
+
+          <table class="contrast-table">
+            <thead>
+              <tr>
+                <th>Magnitud</th>
+                <th>Predicción</th>
+                <th>Simulación</th>
+                <th>Error</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="parameter-name">Período T (s)</td>
+                <td id="table-pred-period">—</td>
+                <td id="table-real-period">—</td>
+                <td><span id="badge-period-error" class="error-badge low">—</span></td>
+              </tr>
+              <tr>
+                <td class="parameter-name">a³/T² (sim)</td>
+                <td style="color:var(--text-muted);">—</td>
+                <td id="kepler-ratio-cell">—</td>
+                <td style="color:var(--text-muted);">Kepler III</td>
+              </tr>
+              <tr>
+                <td class="parameter-name">a³/T² (teórico)</td>
+                <td style="color:var(--text-muted);">—</td>
+                <td id="table-teo-k3">—</td>
+                <td style="color:var(--text-muted);">G·M/4π²</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div id="kepler-check"></div>
+
+          <div class="tutor-feedback-box">
+            <strong>Retroalimentación didáctica:</strong>
+            <span id="tutor-feedback-text">Completa al menos una órbita para ver los resultados.</span>
+          </div>
+
+          <button id="btn-restart-lab" class="btn-action" style="margin-top:16px;">
+            Reiniciar laboratorio ↺
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="../js/gravitacion/main.js"></script>
+</body>
+
+</html>

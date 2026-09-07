@@ -1,0 +1,11 @@
+# Dependencias y compilación
+node_modules/
+dist/
+.cache/
+
+# Archivos temporales y de sistema
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
+

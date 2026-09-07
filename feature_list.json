@@ -1,0 +1,103 @@
+{
+  "project": "fisica1-unir-lab",
+  "description": "Secuencias didácticas de Física usando Antigraviti bajo el método de Polya.",
+  "rules": {
+    "one_feature_at_a_time": true,
+    "require_tests_to_close": true,
+    "apply_polya_method": [
+      "comprender",
+      "planear",
+      "ejecutar",
+      "revisar"
+    ],
+    "valid_status": [
+      "pending",
+      "in_progress",
+      "done",
+      "blocked"
+    ]
+  },
+  "features": [
+    {
+      "id": 1,
+      "name": "cinematica_2d",
+      "title": "Cinemática y Trayectorias",
+      "description": "Visualización de vectores de velocidad y aceleración en caída libre.",
+      "acceptance": [
+        "Escenario Antigraviti configurado con gravedad estándar",
+        "El estudiante identifica variables (Fase: Comprender)",
+        "El estudiante predice la trayectoria antes de ejecutar (Fase: Planear)",
+        "El sistema grafica los vectores en tiempo real (Fase: Ejecutar)",
+        "Comparación de resultados con ecuaciones cinemáticas teóricas (Fase: Revisar)",
+        "Validación interactiva en el navegador y creación de la guía didáctica del estudiante (con explicaciones físicas y capturas de pantalla de la interfaz)"
+      ],
+      "status": "done"
+    },
+    {
+      "id": 2,
+      "name": "leyes_newton",
+      "title": "Leyes de Newton y Fuerzas",
+      "description": "Análisis de equilibrio de fuerzas en un plano inclinado.",
+      "acceptance": [
+        "Simulación de fuerza normal, peso y fricción activa",
+        "El estudiante dibuja el DCL (Diagrama de cuerpo libre) en el sistema",
+        "Validación de equilibrio (sumatoria de fuerzas = 0)",
+        "Reporte de errores si la predicción de fuerzas no coincide con la física",
+        "Validación interactiva en el navegador y creación de la guía didáctica del estudiante (con explicaciones físicas y capturas de pantalla de la interfaz)"
+      ],
+      "status": "done"
+    },
+    {
+      "id": 3,
+      "name": "trabajo_energia",
+      "title": "Conservación de la Energía",
+      "description": "Intercambio entre energía cinética y potencial.",
+      "acceptance": [
+        "Gráfica de barras de energía en tiempo real en Antigraviti",
+        "Verificación de la suma de energías en sistemas conservativos",
+        "Demostración de pérdida de energía por fricción (fase revisar)",
+        "Validación interactiva en el navegador y creación de la guía didáctica del estudiante (con explicaciones físicas y capturas de pantalla de la interfaz)"
+      ],
+      "status": "done"
+    },
+    {
+      "id": 4,
+      "name": "dinamica_rotacional",
+      "title": "Dinámica de Rotación",
+      "description": "Análisis de torque y momento angular.",
+      "acceptance": [
+        "Simulación de un cuerpo rígido rotando con torque aplicado",
+        "Cálculo del momento angular en el sistema",
+        "Comprobación de la segunda ley de Newton para rotación",
+        "Validación interactiva en el navegador y creación de la guía didáctica del estudiante (con explicaciones físicas y capturas de pantalla de la interfaz)"
+      ],
+      "status": "done"
+    },
+    {
+      "id": 5,
+      "name": "gravitacion_universal",
+      "title": "Leyes de Kepler y Gravitación",
+      "description": "Modificación de la constante gravitatoria para órbitas.",
+      "acceptance": [
+        "Simulación de órbita planetaria modificando la masa central",
+        "Verificación de la tercera ley de Kepler",
+        "Visualización de la elipse orbital",
+        "Validación interactiva en el navegador y creación de la guía didáctica del estudiante (con explicaciones físicas y capturas de pantalla de la interfaz)"
+      ],
+      "status": "done"
+    },
+    {
+      "id": 6,
+      "name": "oscilaciones_mecanicas",
+      "title": "Oscilaciones y Péndulos",
+      "description": "Comportamiento del movimiento armónico simple.",
+      "acceptance": [
+        "Simulación masa-resorte y péndulo simple",
+        "Medición de periodo y frecuencia en el simulador",
+        "Verificación de la relación entre longitud del péndulo y periodo",
+        "Validación interactiva en el navegador y creación de la guía didáctica del estudiante (con explicaciones físicas y capturas de pantalla de la interfaz)"
+      ],
+      "status": "done"
+    }
+  ]
+}

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Simulador físico interactivo sobre plano inclinado y fuerzas (Leyes de Newton) guiado bajo la metodología didáctica de George Polya.">
+  <title>Laboratorio virtual de física — Leyes de Newton</title>
+
+  <!-- SEO & Meta Tags -->
+  <meta name="description"
+    content="Laboratorio virtual de física. Simuladores interactivos con metodología de Polya. Conservación de la energía, cinemática, fuerzas, rotación, gravitación y oscilaciones.">
+  <meta name="keywords"
+    content="física, simulador, virtual, polya, cinemática, dinámica, energía, gravitación, péndulo, masa-resorte, educación, UNIR">
+  <meta name="author" content="Zwartmit">
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Laboratorio virtual de física">
+  <meta property="og:description"
+    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta property="og:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+  <meta property="og:url" content="https://steam-unir.netlify.app/">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Laboratorio virtual de física">
+  <meta name="twitter:description"
+    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta name="twitter:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+
+  <!-- Favicons -->
+  <link rel="icon" href="../assets/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="../assets/favicon.png">
+
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+  <!-- Cabecera Principal -->
+  <header>
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <a href="../index.html" class="tutor-badge"
+        style="background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.3); color: #60a5fa; text-decoration: none; cursor: pointer; font-weight: bold;">🏠
+        Menú Principal</a>
+    </div>
+    <h1>Laboratorio de física: <span>Plano inclinado y Leyes de Newton</span></h1>
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <a href="guide_newton.html" class="tutor-badge"
+        style="background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.3); color: #c084fc; text-decoration: none; cursor: pointer;">Ver
+        Guía Didáctica 📖</a>
+      <div class="tutor-badge">Tutor Activo: Polya</div>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal -->
+  <div id="app-layout">
+
+    <!-- Área del Canvas (Visualizador e interactivo) -->
+    <div id="simulation-area">
+      <!-- Telemetría superpuesta de fuerzas en tiempo real -->
+      <div id="vector-telemetry">
+        <div class="telemetry-title">Telemetría de Fuerzas</div>
+        <div class="telemetry-grid">
+          <div>Gravedad (g)</div>
+          <div id="telemetry-g" class="value-display">9.81 m/s²</div>
+
+          <div>Peso (W)</div>
+          <div id="telemetry-w" class="value-display" style="color: #ef4444;">0.00 N</div>
+
+          <div>Normal (N)</div>
+          <div id="telemetry-n" class="value-display" style="color: #3b82f6;">0.00 N</div>
+
+          <div>Fricción (Ff)</div>
+          <div id="telemetry-ff" class="value-display" style="color: #f59e0b;">0.00 N</div>
+
+          <div>Aceleración (a)</div>
+          <div id="telemetry-a" class="value-display">0.00 m/s²</div>
+
+          <div>Estado</div>
+          <div id="telemetry-status" class="value-display"
+            style="font-family: var(--font-sans); font-size: 0.78rem; font-weight: 600;">Estático</div>
+        </div>
+      </div>
+
+      <!-- Lienzo de simulación -->
+      <canvas id="physics-canvas"></canvas>
+    </div>
+
+    <!-- Panel Lateral del Tutor (Polya) -->
+    <div id="tutor-panel">
+      <!-- Barra de navegación de fases de Polya -->
+      <div id="polya-steps-bar">
+        <div id="tab-phase1" class="step-tab active">1. Comprender</div>
+        <div id="tab-phase2" class="step-tab">2. Planear</div>
+        <div id="tab-phase3" class="step-tab">3. Ejecutar</div>
+        <div id="tab-phase4" class="step-tab">4. Revisar</div>
+      </div>
+
+      <!-- Contenido de las Fases del Tutor -->
+      <div class="panel-content-wrapper">
+
+        <!-- FASE 1: COMPRENDER EL PROBLEMA -->
+        <div id="phase1-container" class="polya-phase-container active">
+          <h2><span class="phase-number">1</span> Comprender el problema</h2>
+          <p class="phase-intro">
+            Ajusta los parámetros físicos de la rampa y el bloque para comprender las fuerzas gravitatorias e
+            inclinaciones en juego antes de dibujar el diagrama.
+          </p>
+
+          <!-- Ajuste de Parámetros de Escenario -->
+          <div class="card">
+            <div class="telemetry-title" style="margin-bottom: 12px;">Parámetros del Plano Inclinado</div>
+
+            <div class="control-group">
+              <label for="input-angle">Inclinación de la Rampa (θ)</label>
+              <div class="slider-container">
+                <input type="range" id="input-angle" min="5" max="75" step="1" value="30">
+                <div id="val-angle" class="value-display">30°</div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label for="input-mass">Masa del Bloque (m)</label>
+              <div class="slider-container">
+                <input type="range" id="input-mass" min="1" max="20" step="0.5" value="5.0">
+                <div id="val-mass" class="value-display">5.0 kg</div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label for="input-mus">Coef. Fricción Estática (μₛ)</label>
+              <div class="slider-container">
+                <input type="range" id="input-mus" min="0" max="1.0" step="0.05" value="0.50">
+                <div id="val-mus" class="value-display">0.50</div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label for="input-muk">Coef. Fricción Cinética (μₖ)</label>
+              <div class="slider-container">
+                <input type="range" id="input-muk" min="0" max="1.0" step="0.05" value="0.35">
+                <div id="val-muk" class="value-display">0.35</div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label for="input-gravity">Gravedad (g)</label>
+              <div class="slider-container">
+                <input type="range" id="input-gravity" min="1" max="25" step="0.1" value="9.81">
+                <div id="val-gravity" class="value-display">9.81 m/s²</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cuestionario de Asimilación -->
+          <div class="card">
+            <div class="quiz-question">
+              Pregunta de análisis: En una rampa inclinada con rozamiento, ¿hacia cuál dirección apunta siempre la
+              Fuerza Normal (N)?
+            </div>
+            <div class="quiz-options">
+              <button class="option-btn" data-correct="false">Verticalmente hacia arriba</button>
+              <button class="option-btn" data-correct="true">Perpendicular a la rampa hacia arriba</button>
+              <button class="option-btn" data-correct="false">Paralela a la rampa hacia arriba</button>
+            </div>
+            <div id="phase1-feedback" style="margin-top: 12px; font-size: 0.82rem; min-height: 20px;"></div>
+          </div>
+
+          <button id="btn-next-to-phase2" class="btn-action" disabled>
+            Proceder a Fase 2: Planear
+          </button>
+        </div>
+
+        <!-- FASE 2: PLANEAR LA SOLUCIÓN (DCL INTERACTIVO) -->
+        <div id="phase2-container" class="polya-phase-container">
+          <h2><span class="phase-number">2</span> Diagrama de cuerpo libre</h2>
+          <p class="phase-intro">
+            Dibuja tu hipótesis de fuerzas. Regula el ángulo y estima la magnitud (en Newtons) de cada vector sobre el
+            bloque para representar el DCL.
+          </p>
+
+          <!-- Vector Peso (W) -->
+          <div class="card" style="border-left: 3px solid #ef4444;">
+            <div class="telemetry-title" style="color: #ef4444; margin-bottom: 8px;">Fuerza 1: Peso (W)</div>
+
+            <div class="control-group">
+              <label for="dcl-w-ang">Dirección angular (Polares)</label>
+              <div class="slider-container">
+                <input type="range" id="dcl-w-ang" min="0" max="360" step="5" value="180">
+                <div id="val-dcl-w-ang" class="value-display">180°</div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label for="dcl-w-mag">Magnitud estimada (Newtons)</label>
+              <div class="slider-container">
+                <input type="range" id="dcl-w-mag" min="0" max="200" step="5" value="25">
+                <div id="val-dcl-w-mag" class="value-display">25 N</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vector Normal (N) -->
+          <div class="card" style="border-left: 3px solid #3b82f6;">
+            <div class="telemetry-title" style="color: #3b82f6; margin-bottom: 8px;">Fuerza 2: Normal (N)</div>
+
+            <div class="control-group">
+              <label for="dcl-n-ang">Dirección angular (Polares)</label>
+              <div class="slider-container">
+                <input type="range" id="dcl-n-ang" min="0" max="360" step="5" value="45">
+                <div id="val-dcl-n-ang" class="value-display">45°</div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label for="dcl-n-mag">Magnitud estimada (Newtons)</label>
+              <div class="slider-container">
+                <input type="range" id="dcl-n-mag" min="0" max="200" step="5" value="25">
+                <div id="val-dcl-n-mag" class="value-display">25 N</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vector Fricción (Ff) -->
+          <div class="card" style="border-left: 3px solid #f59e0b;">
+            <div class="telemetry-title" style="color: #f59e0b; margin-bottom: 8px;">Fuerza 3: Fricción (Ff)</div>
+
+            <div class="control-group">
+              <label for="dcl-ff-ang">Dirección angular (Polares)</label>
+              <div class="slider-container">
+                <input type="range" id="dcl-ff-ang" min="0" max="360" step="5" value="0">
+                <div id="val-dcl-ff-ang" class="value-display">0°</div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label for="dcl-ff-mag">Magnitud estimada (Newtons)</label>
+              <div class="slider-container">
+                <input type="range" id="dcl-ff-mag" min="0" max="200" step="5" value="25">
+                <div id="val-dcl-ff-mag" class="value-display">25 N</div>
+              </div>
+            </div>
+          </div>
+
+          <button id="btn-next-to-phase3" class="btn-action">
+            Proceder a Fase 3: Ejecutar
+          </button>
+          <button id="btn-back-to-phase1" class="btn-secondary">
+            Regresar a Fase 1
+          </button>
+        </div>
+
+        <!-- FASE 3: EJECUTAR EL PLAN (SIMULACIÓN Y DINÁMICA) -->
+        <div id="phase3-container" class="polya-phase-container">
+          <h2><span class="phase-number">3</span> Ejecutar y experimentar</h2>
+          <p class="phase-intro">
+            Inicia la simulación en tiempo real. Observa cómo el motor calcula el balance de fuerzas en el plano
+            inclinado para determinar si se desliza.
+          </p>
+
+          <!-- Controles de Animación -->
+          <div class="sim-controls-wrapper">
+            <button id="btn-sim-play" class="btn-action success">Iniciar simulación</button>
+            <button id="btn-sim-reset" class="btn-secondary btn-sim-reset">Reiniciar</button>
+          </div>
+
+          <!-- Información didáctica en vivo -->
+          <div class="card" style="background: rgba(59, 130, 246, 0.05); border-color: rgba(59, 130, 246, 0.15);">
+            <div class="telemetry-title" style="color: #60a5fa;">Ecuaciones en Ejecución:</div>
+            <p style="font-size: 0.84rem; line-height: 1.4; color: var(--text-secondary);">
+              El bloque se moverá solo si la fuerza gravitatoria paralela a la rampa ($W_x = W \sin\theta$) supera a la
+              fricción estática límite ($F_{fs\_max} = \mu_s N$). En caso contrario, se cumple la primera ley de Newton
+              ($\Sigma F = 0$).
+            </p>
+          </div>
+
+          <button id="btn-next-to-phase4" class="btn-action" disabled>
+            Ver Resultados y Fase 4: Revisar
+          </button>
+          <button id="btn-back-to-phase2" class="btn-secondary">
+            Regresar a Fase 2
+          </button>
+        </div>
+
+        <!-- FASE 4: EXAMINAR LA SOLUCIÓN (REVISIÓN DE DCL) -->
+        <div id="phase4-container" class="polya-phase-container">
+          <h2><span class="phase-number">4</span> Examinar la solución</h2>
+          <p class="phase-intro">
+            Comprobemos la exactitud de tu Diagrama de cuerpo libre (DCL) en contraste con la física del plano inclinado
+            calculada analíticamente.
+          </p>
+
+          <!-- Tabla de Resultados Comparativos del DCL -->
+          <table class="contrast-table">
+            <thead>
+              <tr>
+                <th>Fuerza</th>
+                <th>Tu Ángulo</th>
+                <th>Ángulo Real</th>
+                <th>Error Mag %</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="parameter-name" style="color: #ef4444;">Peso (W)</td>
+                <td id="res-w-ang">0°</td>
+                <td id="res-w-ang-teo">270°</td>
+                <td id="res-w-mag-err">0%</td>
+              </tr>
+              <tr>
+                <td class="parameter-name" style="color: #3b82f6;">Normal (N)</td>
+                <td id="res-n-ang">0°</td>
+                <td id="res-n-ang-teo">0°</td>
+                <td id="res-n-mag-err">0%</td>
+              </tr>
+              <tr>
+                <td class="parameter-name" style="color: #f59e0b;">Fricción (Ff)</td>
+                <td id="res-ff-ang">0°</td>
+                <td id="res-ff-ang-teo">0°</td>
+                <td id="res-ff-mag-err">0%</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Puntuación General -->
+          <div class="card" style="text-align: center; padding: 14px 20px;">
+            <div class="telemetry-title">Precisión del DCL</div>
+            <div id="val-dcl-score"
+              style="font-size: 2.2rem; font-weight: 800; color: var(--accent); text-shadow: var(--glow-accent);">100 /
+              100</div>
+          </div>
+
+          <!-- Retroalimentación Pedagógica del Tutor -->
+          <div class="tutor-feedback-box">
+            <strong>Retroalimentación didáctica:</strong>
+            <span id="tutor-feedback-text">Has dibujado los vectores del Diagrama de cuerpo libre de forma
+              impecable.</span>
+          </div>
+
+          <button id="btn-restart-lab" class="btn-action">
+            Reiniciar laboratorio ↺
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Controlador Específico -->
+  <script type="module" src="../js/newton/main.js"></script>
+</body>
+
+</html>

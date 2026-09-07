@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Laboratorio virtual de física - Secuencias didácticas basadas en el método de resolución de problemas de George Polya.">
+  <title>Laboratorios virtuales de física</title>
+
+  <!-- SEO & Meta Tags -->
+  <meta name="description"
+    content="Laboratorio virtual de física. Simuladores interactivos con metodología de Polya. Conservación de la energía, cinemática, fuerzas, rotación, gravitación y oscilaciones.">
+  <meta name="keywords"
+    content="física, simulador, virtual, polya, cinemática, dinámica, energía, gravitación, péndulo, masa-resorte, educación, UNIR">
+  <meta name="author" content="Zwartmit">
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Laboratorio virtual de física">
+  <meta property="og:description"
+    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta property="og:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+  <meta property="og:url" content="https://steam-unir.netlify.app/">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Laboratorio virtual de física">
+  <meta name="twitter:description"
+    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta name="twitter:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+
+  <!-- Favicons -->
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="assets/favicon.png">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --bg-primary: #060a13;
+      --bg-secondary: #0b0f19;
+      --bg-card: rgba(15, 23, 42, 0.55);
+      --bg-card-hover: rgba(30, 41, 59, 0.8);
+      --panel-border: rgba(255, 255, 255, 0.06);
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #64748b;
+      --accent-blue: #3b82f6;
+      --accent-purple: #a855f7;
+      --accent-emerald: #10b981;
+      --glow-blue: 0 0 25px rgba(59, 130, 246, 0.25);
+      --glow-purple: 0 0 25px rgba(168, 85, 247, 0.25);
+      --font-sans: 'Outfit', sans-serif;
+      --border-radius-lg: 20px;
+      --border-radius-md: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-primary);
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 40%),
+        linear-gradient(rgba(255, 255, 255, 0.007) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.007) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 50px 20px;
+    }
+
+    .container {
+      max-width: 1100px;
+      width: 100%;
+    }
+
+    /* Cabecera Principal */
+    header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    header h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #ffffff 30%, #93c5fd 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    header h1 span {
+      background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    header p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.5;
+      font-weight: 300;
+    }
+
+    /* Grid de Temas del Laboratorio */
+    .topics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 30px;
+      margin-bottom: 60px;
+    }
+
+    /* Tarjetas del Simulador */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--border-radius-lg);
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    /* Estilos para cartas activas */
+    .card.active {
+      cursor: pointer;
+    }
+
+    .card.active:hover {
+      transform: translateY(-6px);
+      background: var(--bg-card-hover);
+      border-color: rgba(96, 165, 250, 0.35);
+      box-shadow: var(--glow-blue);
+    }
+
+    .card.active.purple:hover {
+      border-color: rgba(192, 132, 252, 0.35);
+      box-shadow: var(--glow-purple);
+    }
+
+    /* Estilos para cartas bloqueadas */
+    .card.locked {
+      opacity: 0.55;
+      filter: grayscale(0.55);
+    }
+
+    /* Cabecera de la Tarjeta */
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .topic-icon {
+      font-size: 2.2rem;
+    }
+
+    .badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .badge.available {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34d399;
+    }
+
+    .badge.coming-soon {
+      background: rgba(100, 116, 139, 0.12);
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      color: #94a3b8;
+    }
+
+    /* Detalles de la Tarjeta */
+    .card-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 10px;
+      letter-spacing: -0.3px;
+    }
+
+    .card-description {
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      line-height: 1.5;
+      margin-bottom: 24px;
+      flex-grow: 1;
+    }
+
+    /* Botón de Entrada */
+    .btn-enter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      color: #93c5fd;
+      padding: 12px;
+      border-radius: var(--border-radius-md);
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .card.active:hover .btn-enter {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .card.active.purple:hover .btn-enter {
+      background: var(--accent-purple);
+      border-color: var(--accent-purple);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+    }
+
+    .btn-enter.disabled {
+      background: rgba(255, 255, 255, 0.02);
+      border-color: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+
+    /* Panel Pedagógico / Metodología de Polya */
+    .pedagogy-section {
+      background: rgba(11, 15, 25, 0.5);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--border-radius-lg);
+      padding: 40px;
+      backdrop-filter: blur(12px);
+    }
+
+    .pedagogy-section h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .pedagogy-section p {
+      color: var(--text-secondary);
+      font-size: 0.98rem;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+
+    .polya-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .step-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 24px;
+      border-radius: var(--border-radius-md);
+      position: relative;
+      text-align: center;
+    }
+
+    .step-num {
+      background: rgba(59, 130, 246, 0.12);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 800;
+      margin: 0 auto 14px auto;
+    }
+
+    .step-card.step-purple .step-num {
+      background: rgba(168, 85, 247, 0.12);
+      border: 1px solid rgba(168, 85, 247, 0.2);
+      color: #c084fc;
+    }
+
+    .step-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .step-desc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <!-- Cabecera Principal -->
+    <header>
+      <h1>Laboratorios Virtuales de <span>Física</span></h1>
+      <p>
+        Secuencias didácticas e interactivas guiadas bajo el método heurístico de George Pólya para potenciar el
+        razonamiento científico autónomo.
+      </p>
+    </header>
+
+    <!-- Grid de Temas -->
+    <div class="topics-grid">
+
+      <!-- Tema 1: Cinemática 2D -->
+      <div class="card active" onclick="location.href='pages/cinematica.html'">
+        <div class="card-header">
+          <span class="topic-icon">🎯</span>
+          <span class="badge available">Disponible</span>
+        </div>
+        <h3 class="card-title">Cinemática y Trayectorias</h3>
+        <p class="card-description">
+          Estudia el tiro parabólico y la caída libre en 2D. Formula hipótesis trazando la trayectoria estimada y
+          contrástala con vectores de velocidad y gravedad.
+        </p>
+        <a href="pages/cinematica.html" class="btn-enter">Ingresar al laboratorio ➔</a>
+      </div>
+
+      <!-- Tema 2: Leyes de Newton -->
+      <div class="card active purple" onclick="location.href='pages/newton.html'">
+        <div class="card-header">
+          <span class="topic-icon">⚖️</span>
+          <span class="badge available">Disponible</span>
+        </div>
+        <h3 class="card-title">Leyes de Newton y Fuerzas</h3>
+        <p class="card-description">
+          Analiza el equilibrio de fuerzas sobre un bloque en un plano inclinado con fricción. Diseña el Diagrama de
+          Cuerpo Libre (DCL) y evalúa tus resultados en tiempo real.
+        </p>
+        <a href="pages/newton.html" class="btn-enter">Ingresar al laboratorio ➔</a>
+      </div>
+
+      <!-- Tema 3: Trabajo y Energía -->
+      <div class="card active" onclick="location.href='pages/energia.html'">
+        <div class="card-header">
+          <span class="topic-icon">⚡</span>
+          <span class="badge available">Disponible</span>
+        </div>
+        <h3 class="card-title">Conservación de la energía</h3>
+        <p class="card-description">
+          Observa el intercambio en tiempo real entre energía cinética y potencial en una rampa tipo skatepark.
+          Experimenta con fricción y comprueba la 1ª Ley de la Termodinámica.
+        </p>
+        <a href="pages/energia.html" class="btn-enter">Ingresar al laboratorio ➔</a>
+      </div>
+
+
+      <!-- Tema 4: Dinámica rotacional -->
+      <div class="card active purple" onclick="location.href='pages/rotacion.html'">
+        <div class="card-header">
+          <span class="topic-icon">🌀</span>
+          <span class="badge available">Disponible</span>
+        </div>
+        <h3 class="card-title">Dinámica rotacional</h3>
+        <p class="card-description">
+          Aplica torque sobre un disco, aro o barra rígida y observa cómo varía la velocidad angular. Verifica τ = I·α y
+          calcula el momento angular L = I·ω en tiempo real.
+        </p>
+        <a href="pages/rotacion.html" class="btn-enter">Ingresar al laboratorio ➔</a>
+      </div>
+
+
+      <!-- Tema 5: Gravitación universal -->
+      <div class="card active" onclick="location.href='pages/gravitacion.html'">
+        <div class="card-header">
+          <span class="topic-icon">🪐</span>
+          <span class="badge available">Disponible</span>
+        </div>
+        <h3 class="card-title">Leyes de Kepler y Gravitación</h3>
+        <p class="card-description">
+          Simula órbitas planetarias elípticas y circulares. Modifica G y la masa central para verificar la Tercera Ley
+          de Kepler: T² ∝ a³.
+        </p>
+        <a href="pages/gravitacion.html" class="btn-enter">Ingresar al laboratorio ➔</a>
+      </div>
+
+
+      <!-- Tema 6: Oscilaciones mecánicas -->
+      <div class="card active" onclick="location.href='pages/oscilaciones.html'" style="border-top-color: #10b981;">
+        <div class="card-header">
+          <span class="topic-icon">📈</span>
+          <span class="badge available">Disponible</span>
+        </div>
+        <h3 class="card-title">Movimiento armónico simple</h3>
+        <p class="card-description">
+          Estudia el comportamiento del péndulo simple y osciladores masa-resorte controlando amortiguamientos y
+          visualizando gráficas de energía.
+        </p>
+        <a href="pages/oscilaciones.html" class="btn-enter"
+          style="background: rgba(16, 185, 129, 0.1); color: #10b981;">Ingresar al laboratorio ➔</a>
+      </div>
+
+
+    </div>
+
+    <!-- Sección Pedagógica / Metodológica -->
+    <div class="pedagogy-section">
+      <h2>La metodología de George Pólya</h2>
+      <p>
+        Este laboratorio no se limita a ser una simple visualización estática de ecuaciones. Está diseñado en
+        concordancia con la tesis de investigación pedagógica del <strong>Profesor Marcos Chacón Castro</strong>, la
+        cual adapta el célebre método de resolución de problemas en cuatro fases cognitivas para asentar un aprendizaje
+        significativo:
+      </p>
+
+      <div class="polya-steps-grid">
+
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <h4 class="step-title">Comprender</h4>
+          <p class="step-desc">
+            El estudiante explora libremente las variables del escenario y responde un test de asimilación conceptual
+            básico antes de simular.
+          </p>
+        </div>
+
+        <div class="step-card step-purple">
+          <div class="step-num">2</div>
+          <h4 class="step-title">Planear</h4>
+          <p class="step-desc">
+            Se formula una hipótesis. El estudiante dibuja a mano alzada o parametriza en Canvas su predicción
+            (trayectoria u orientación de vectores).
+          </p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <h4 class="step-title">Ejecutar</h4>
+          <p class="step-desc">
+            Se corre la simulación a 60 FPS estables. El motor calcula y visualiza la física en tiempo real mediante
+            telemetrías y vectores neón.
+          </p>
+        </div>
+
+        <div class="step-card step-purple">
+          <div class="step-num">4</div>
+          <h4 class="step-title">Revisar</h4>
+          <p class="step-desc">
+            Se confronta analíticamente la hipótesis del estudiante contra la realidad de la física computada,
+            recibiendo retroalimentación metacognitiva del tutor.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</body>
+
+</html>

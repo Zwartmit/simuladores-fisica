@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Guía Didáctica — Oscilaciones mecánicas. Laboratorio virtual de física, metodología de Polya.">
+  <title>Guía Didáctica — Oscilaciones mecánicas</title>
+
+  <!-- SEO & Meta Tags -->
+  <meta name="description"
+    content="Laboratorio virtual de física. Simuladores interactivos con metodología de Polya. Conservación de la energía, cinemática, fuerzas, rotación, gravitación y oscilaciones.">
+  <meta name="keywords"
+    content="física, simulador, virtual, polya, cinemática, dinámica, energía, gravitación, péndulo, masa-resorte, educación, UNIR">
+  <meta name="author" content="Zwartmit">
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Laboratorio virtual de física">
+  <meta property="og:description"
+    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta property="og:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+  <meta property="og:url" content="https://steam-unir.netlify.app/">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Laboratorio virtual de física">
+  <meta name="twitter:description"
+    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta name="twitter:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+
+  <!-- Favicons -->
+  <link rel="icon" href="../assets/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="../assets/favicon.png">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --bg-primary: #090f1a;
+      --bg-secondary: #0f172a;
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #64748b;
+      --accent: #3b82f6;
+      --font-sans: 'Outfit', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --br-lg: 16px;
+      --br-md: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .guide-container {
+      max-width: 900px;
+      width: 100%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--br-lg);
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    header {
+      border-bottom: 1px solid var(--panel-border);
+      padding-bottom: 24px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .guide-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    .guide-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .back-btn {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #60a5fa;
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+      background: rgba(59, 130, 246, 0.25);
+    }
+
+    .polya-section {
+      margin-bottom: 36px;
+    }
+
+    .polya-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .phase-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .phase-badge.teoria {
+      background: rgba(59, 130, 246, 0.1);
+      color: #93c5fd;
+    }
+
+    .phase-badge.comprende {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+    }
+
+    .phase-badge.planear {
+      background: rgba(168, 85, 247, 0.2);
+      color: #c084fc;
+    }
+
+    .phase-badge.ejecutar {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .phase-badge.revisar {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+    }
+
+    .polya-header h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .guide-text {
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+    }
+
+    .equation-box {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: var(--br-md);
+      padding: 18px 24px;
+      margin: 16px 0;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      line-height: 2.4;
+      color: #93c5fd;
+      text-align: center;
+    }
+
+    .equation-box .eq-label {
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: block;
+      margin-bottom: 4px;
+      text-align: left;
+    }
+
+    .obs-card {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--br-md);
+      padding: 16px 20px;
+      margin: 14px 0;
+    }
+
+    .obs-card h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .obs-card p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 0.88rem;
+    }
+
+    .data-table th {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1.5px solid var(--panel-border);
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .data-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--panel-border);
+      color: var(--text-secondary);
+    }
+
+    .fill-in {
+      font-family: var(--font-mono);
+      background: rgba(15, 23, 42, 0.6);
+      border-bottom: 2px dashed rgba(59, 130, 246, 0.4);
+      color: #60a5fa;
+      min-width: 80px;
+      display: inline-block;
+      padding: 0 4px;
+    }
+
+    .interactive-box {
+      background: rgba(168, 85, 247, 0.06);
+      border: 1px dashed rgba(168, 85, 247, 0.3);
+      border-radius: var(--br-md);
+      padding: 16px 20px;
+      margin: 14px 0;
+      color: #e9d5ff;
+      font-size: 0.88rem;
+    }
+
+    .interactive-box strong {
+      color: #c084fc;
+    }
+
+    .conclusion-box {
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: var(--br-md);
+      padding: 20px 24px;
+      margin: 16px 0;
+      color: var(--text-secondary);
+    }
+
+    .conclusion-box h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #34d399;
+      margin-bottom: 10px;
+    }
+
+    .conclusion-box ul {
+      padding-left: 20px;
+    }
+
+    .conclusion-box li {
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+
+    .phase-divider {
+      border: none;
+      border-top: 1px solid var(--panel-border);
+      margin: 36px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="guide-container">
+    <header>
+      <div>
+        <div class="guide-title">📈 Oscilaciones mecánicas</div>
+        <div class="guide-subtitle">Guía Didáctica del Estudiante · Metodología de Polya · Física — UNIR</div>
+      </div>
+      <a href="oscilaciones.html" class="back-btn">← Volver al simulador</a>
+    </header>
+
+    <!-- MARCO TEÓRICO -->
+    <div class="polya-section">
+      <div class="polya-header">
+        <div class="phase-badge teoria">★</div>
+        <h2>Marco Teórico: Movimiento Armónico Simple (MAS)</h2>
+      </div>
+      <p class="guide-text">
+        El Movimiento Armónico Simple ocurre cuando la fuerza restauradora es directamente proporcional al
+        desplazamiento desde el punto de equilibrio.
+      </p>
+      <div class="equation-box" style="display:flex; justify-content:space-around;">
+        <div>
+          <span class="eq-label">Péndulo simple</span>
+          T = 2π · √(L / g)<br>
+          <small style="color:var(--text-muted);font-family:sans-serif;">L = longitud de la cuerda · g =
+            gravedad</small>
+        </div>
+        <div>
+          <span class="eq-label">Sistema Masa-Resorte</span>
+          T = 2π · √(m / k)<br>
+          <small style="color:var(--text-muted);font-family:sans-serif;">m = masa · k = constante elástica</small>
+        </div>
+      </div>
+      <div class="obs-card">
+        <h4>💡 Conservación de la Energía</h4>
+        <p>En el MAS sin fricción, la energía total (E = KE + PE) es constante.
+          <br><strong>Extremos:</strong> La velocidad es cero, la energía potencial (PE) es máxima.
+          <br><strong>Punto de equilibrio:</strong> La velocidad es máxima, la energía cinética (KE) es máxima.
+        </p>
+      </div>
+    </div>
+
+    <hr class="phase-divider">
+
+    <!-- FASE 1 -->
+    <div class="polya-section">
+      <div class="polya-header">
+        <div class="phase-badge comprende">1</div>
+        <h2>Fase 1 — Comprender el problema</h2>
+      </div>
+      <p class="guide-text">Identifica las variables de los dos sistemas.</p>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Variable</th>
+            <th>Símbolo (Péndulo)</th>
+            <th>Símbolo (Resorte)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Restaurador</td>
+            <td>Gravedad (g)</td>
+            <td>Constante del resorte (k)</td>
+          </tr>
+          <tr>
+            <td>Inercia</td>
+            <td>Longitud (L)</td>
+            <td>Masa (m)</td>
+          </tr>
+          <tr>
+            <td>Fricción</td>
+            <td>Coef. viscoso (b)</td>
+            <td>Coef. viscoso (b)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr class="phase-divider">
+
+    <!-- FASE 2 -->
+    <div class="polya-section">
+      <div class="polya-header">
+        <div class="phase-badge planear">2</div>
+        <h2>Fase 2 — Concebir un plan</h2>
+      </div>
+      <p class="guide-text">Calcula el período teórico esperado.</p>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Sistema</th>
+            <th>Valores de entrada</th>
+            <th>Cálculo de T = 2π√(L/g) o 2π√(m/k)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Péndulo</td>
+            <td>L = <span class="fill-in">____ m</span></td>
+            <td>T = <span class="fill-in">____ s</span></td>
+          </tr>
+          <tr>
+            <td>Resorte</td>
+            <td>k = <span class="fill-in">____ N/m</span>, m = <span class="fill-in">____ kg</span></td>
+            <td>T = <span class="fill-in">____ s</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr class="phase-divider">
+
+    <!-- FASE 3 -->
+    <div class="polya-section">
+      <div class="polya-header">
+        <div class="phase-badge ejecutar">3</div>
+        <h2>Fase 3 — Ejecutar y Observar</h2>
+      </div>
+      <p class="guide-text">Ejecuta la simulación y observa la gráfica de posición y energía.</p>
+      <div class="interactive-box">
+        <strong>✎ Observación sobre el Amortiguamiento:</strong><br>
+        Aumenta el coeficiente de fricción "b" a 0.5. ¿Qué le sucede a la amplitud de la gráfica de posición a lo largo
+        del tiempo? ¿Qué pasa con la línea de energía total (roja)?
+      </div>
+    </div>
+
+    <hr class="phase-divider">
+
+    <!-- FASE 4 -->
+    <div class="polya-section">
+      <div class="polya-header">
+        <div class="phase-badge revisar">4</div>
+        <h2>Fase 4 — Examinar la solución</h2>
+      </div>
+      <div class="conclusion-box">
+        <h3>✅ Conclusiones Esperadas</h3>
+        <ul>
+          <li>El período de un péndulo simple es independiente de su masa. Solo depende de su longitud $L$ y la gravedad
+            $g$.</li>
+          <li>El período de un resorte depende tanto de su masa $m$ como de la constante elástica $k$. Un resorte más
+            duro (k mayor) oscila más rápido.</li>
+          <li>La energía mecánica total se conserva y alterna entre cinética y potencial si no hay amortiguamiento
+            ($b=0$).</li>
+          <li>Con amortiguamiento ($b > 0$), la amplitud decae exponencialmente y la energía mecánica se disipa con el
+            tiempo.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div
+      style="border-top:1px solid var(--panel-border);padding-top:20px;margin-top:10px;text-align:center;font-size:0.8rem;color:var(--text-muted);">
+      Laboratorio virtual de física — UNIR · Metodología de Resolución de Problemas de G. Polya
+    </div>
+  </div>
+</body>
+
+</html>

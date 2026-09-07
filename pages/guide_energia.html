@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Guía didáctica interactiva del estudiante — Conservación de la Energía. Laboratorio virtual de física, metodología de Polya.">
+  <title>Guía Didáctica — Conservación de la Energía</title>
+
+  <!-- SEO & Meta Tags -->
+  <meta name="description"
+    content="Laboratorio virtual de física. Simuladores interactivos con metodología de Polya. Conservación de la energía, cinemática, fuerzas, rotación, gravitación y oscilaciones.">
+  <meta name="keywords"
+    content="física, simulador, virtual, polya, cinemática, dinámica, energía, gravitación, péndulo, masa-resorte, educación, UNIR">
+  <meta name="author" content="Zwartmit">
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Laboratorio virtual de física">
+  <meta property="og:description"
+    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta property="og:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+  <meta property="og:url" content="https://steam-unir.netlify.app/">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Laboratorio virtual de física">
+  <meta name="twitter:description"
+    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta name="twitter:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+
+  <!-- Favicons -->
+  <link rel="icon" href="../assets/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="../assets/favicon.png">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --bg-primary: #090f1a;
+      --bg-secondary: #0f172a;
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #64748b;
+      --accent: #3b82f6;
+      --ke-color: #10b981;
+      --pe-color: #3b82f6;
+      --thermal-color: #ef4444;
+      --glow-accent: 0 0 15px rgba(59, 130, 246, 0.4);
+      --font-sans: 'Outfit', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --border-radius-lg: 16px;
+      --border-radius-md: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .guide-container {
+      max-width: 900px;
+      width: 100%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--border-radius-lg);
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    header {
+      border-bottom: 1px solid var(--panel-border);
+      padding-bottom: 24px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .guide-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    .guide-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .back-btn {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #60a5fa;
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+      background: rgba(59, 130, 246, 0.25);
+    }
+
+    /* Secciones de Polya */
+    .polya-section {
+      margin-bottom: 36px;
+    }
+
+    .polya-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .phase-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .phase-badge.comprende {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+    }
+
+    .phase-badge.planear {
+      background: rgba(168, 85, 247, 0.2);
+      color: #c084fc;
+    }
+
+    .phase-badge.ejecutar {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .phase-badge.revisar {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+    }
+
+    .polya-header h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .guide-text {
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+    }
+
+    /* Cajas de ecuaciones */
+    .equation-box {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: var(--border-radius-md);
+      padding: 18px 24px;
+      margin: 16px 0;
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      line-height: 2;
+      color: #93c5fd;
+      text-align: center;
+    }
+
+    .equation-box .eq-label {
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: block;
+      margin-bottom: 6px;
+      text-align: left;
+    }
+
+    /* Tarjetas de observación */
+    .obs-card {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--border-radius-md);
+      padding: 16px 20px;
+      margin: 14px 0;
+    }
+
+    .obs-card h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .obs-card p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    /* Tabla de datos del estudiante */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 0.88rem;
+    }
+
+    .data-table th {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1.5px solid var(--panel-border);
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .data-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--panel-border);
+      color: var(--text-secondary);
+    }
+
+    .data-table .fill-in {
+      font-family: var(--font-mono);
+      background: rgba(15, 23, 42, 0.6);
+      border-bottom: 2px dashed rgba(59, 130, 246, 0.4);
+      color: #60a5fa;
+      min-width: 80px;
+      display: inline-block;
+      padding: 0 4px;
+    }
+
+    /* Diagrama de barras estático */
+    .energy-diagram {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--border-radius-md);
+      margin: 16px 0;
+      height: 160px;
+    }
+
+    .energy-bar-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      height: 100%;
+      justify-content: flex-end;
+    }
+
+    .energy-bar {
+      width: 50px;
+      border-radius: 6px 6px 0 0;
+      position: relative;
+      transition: height 0.3s ease;
+    }
+
+    .energy-bar.ke {
+      background: linear-gradient(to top, #10b981, #34d399);
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+    }
+
+    .energy-bar.pe {
+      background: linear-gradient(to top, #3b82f6, #60a5fa);
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+    }
+
+    .energy-bar.q {
+      background: linear-gradient(to top, #ef4444, #f87171);
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+    }
+
+    .energy-bar.tot {
+      background: linear-gradient(to top, #a855f7, #c084fc);
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+    }
+
+    .energy-bar-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* Caja de instrucción interactiva */
+    .interactive-box {
+      background: rgba(168, 85, 247, 0.06);
+      border: 1px dashed rgba(168, 85, 247, 0.3);
+      border-radius: var(--border-radius-md);
+      padding: 16px 20px;
+      margin: 14px 0;
+      color: #e9d5ff;
+      font-size: 0.88rem;
+    }
+
+    .interactive-box strong {
+      color: #c084fc;
+    }
+
+    /* Conclusiones finales */
+    .conclusion-box {
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: var(--border-radius-md);
+      padding: 20px 24px;
+      margin: 16px 0;
+      color: var(--text-secondary);
+    }
+
+    .conclusion-box h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #34d399;
+      margin-bottom: 10px;
+    }
+
+    .conclusion-box ul {
+      padding-left: 20px;
+    }
+
+    .conclusion-box li {
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+
+    /* Separador de fase */
+    .phase-divider {
+      border: none;
+      border-top: 1px solid var(--panel-border);
+      margin: 36px 0;
+    }
+
+    /* Indicadores de energía inline */
+    .ke-tag {
+      color: #10b981;
+      font-weight: 700;
+    }
+
+    .pe-tag {
+      color: #3b82f6;
+      font-weight: 700;
+    }
+
+    .q-tag {
+      color: #ef4444;
+      font-weight: 700;
+    }
+
+    .total-tag {
+      color: #a855f7;
+      font-weight: 700;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="guide-container">
+
+    <!-- Encabezado -->
+    <header>
+      <div>
+        <div class="guide-title">⚡ Conservación de la Energía</div>
+        <div class="guide-subtitle">Guía Didáctica del Estudiante · Metodología de Polya · Física — UNIR</div>
+      </div>
+      <a href="energia.html" class="back-btn">← Volver al simulador</a>
+    </header>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+       SECCIÓN TEÓRICA
+  ════════════════════════════════════════════════════════════════════ -->
+    <div class="polya-section">
+      <div class="polya-header">
+        <div class="phase-badge comprende">★</div>
+        <h2>Marco Teórico: ¿Qué es la Conservación de la Energía?</h2>
+      </div>
+
+      <p class="guide-text">
+        El <strong>Principio de Conservación de la Energía Mecánica</strong> establece que, en un sistema sin fuerzas
+        disipativas (como la fricción), la energía mecánica total se mantiene constante en todo momento:
+      </p>
+
+      <div class="equation-box">
+        <span class="eq-label">Ley de Conservación de la Energía Mecánica</span>
+        E<sub>total</sub> = K + U = constante<br>
+        ½·m·v² + m·g·h = constante
+      </div>
+
+      <p class="guide-text">
+        Donde <span class="ke-tag">K = ½mv²</span> es la energía cinética (asociada al movimiento) y <span
+          class="pe-tag">U = mgh</span> es la energía potencial gravitatoria (asociada a la altura). Cuando existe
+        <strong>fricción</strong>, parte de la energía se convierte en calor (energía térmica Q):
+      </p>
+
+      <div class="equation-box">
+        <span class="eq-label">Con disipación por fricción</span>
+        E₀ = K + U + Q = constante<br>
+        E<sub>inicial</sub> = E<sub>final</sub> + Q<sub>disipada</sub>
+      </div>
+    </div>
+
+    <hr class="phase-divider">
+
+    <!-- ═══════════════════════════════════════════════════════════════
+       FASE 1: COMPRENDER
+  ════════════════════════════════════════════════════════════════════ -->
+    <div class="polya-section">
+      <div class="polya-header">
+        <div class="phase-badge comprende">1</div>
+        <h2>Fase 1 — Comprender el problema</h2>
+      </div>
+
+      <p class="guide-text">
+        En esta simulación, un bloque de masa <em>m</em> se desliza sobre una rampa curvada tipo <em>skatepark</em>.
+        Desde una altura inicial <em>h₀</em>, la gravedad lo acelera hacia abajo. El objetivo es identificar y registrar
+        las variables del sistema.
+      </p>
+
+      <div class="obs-card">
+        <h4>📌 Identifica las Variables</h4>
+        <p>Completa esta tabla antes de iniciar el simulador. Ajusta los sliders de la Fase 1 y anota los valores:</p>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Variable</th>
+            <th>Símbolo</th>
+            <th>Unidad</th>
+            <th>Tu Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Masa del bloque</td>
+            <td style="font-family: var(--font-mono);">m</td>
+            <td>kg</td>
+            <td><span class="fill-in">_______</span></td>
+          </tr>
+          <tr>
+            <td>Aceleración gravitacional</td>
+            <td style="font-family: var(--font-mono);">g</td>
+            <td>m/s²</td>
+            <td><span class="fill-in">_______</span></td>
+          </tr>
+          <tr>
+            <td>Altura inicial</td>
+            <td style="font-family: var(--font-mono);">h₀</td>
+            <td>m</td>
+            <td><span class="fill-in">_______</span></td>
+          </tr>
+          <tr>
+            <td>Energía total inicial</td>
+            <td style="font-family: var(--font-mono);">E₀ = m·g·h₀</td>
+            <td>J</td>
+            <td><span class="fill-in">_______</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="interactive-box">
+        <strong>✎ Pregunta de comprensión:</strong><br>
+        Si duplicas la masa del bloque, ¿cómo cambia la energía potencial inicial? ¿Y la velocidad máxima en el fondo?
+        Razona tu respuesta antes de cambiar el slider.
+      </div>
+    </div>
+
+    <hr class="phase-divider">
+
+    <!-- ═══════════════════════════════════════════════════════════════
+       FASE 2: PLANEAR
+  ════════════════════════════════════════════════════════════════════ -->
+    <div class="polya-section">
+      <div class="polya-header">
+        <div class="phase-badge planear">2</div>
+        <h2>Fase 2 — Concebir un plan (Hipótesis)</h2>
+      </div>
+
+      <p class="guide-text">
+        Antes de iniciar la simulación, calcula manualmente cuánta energía cinética deberá tener el bloque al llegar al
+        punto más bajo de la rampa (h = 0). Usa la ley de conservación sin fricción:
+      </p>
+
+      <div class="equation-box">
+        <span class="eq-label">Predicción teórica (sin fricción)</span>
+        K<sub>max</sub> = E₀ = m · g · h₀<br>
+        v<sub>max</sub> = √(2 · g · h₀)
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Cálculo</th>
+            <th>Fórmula</th>
+            <th>Tu Resultado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Energía cinética máx. predicha</td>
+            <td style="font-family: var(--font-mono);">K = m·g·h₀</td>
+            <td><span class="fill-in">_______ J</span></td>
+          </tr>
+          <tr>
+            <td>Velocidad máxima predicha</td>
+            <td style="font-family: var(--font-mono);">v = √(2gh₀)</td>
+            <td><span class="fill-in">_______ m/s</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="interactive-box">
+        <strong>✎ Hipótesis de fricción:</strong><br>
+        Si introduces un coeficiente de fricción μ = 0.2, ¿esperas que la energía cinética en el fondo sea mayor, menor
+        o igual que tu predicción sin fricción? ¿Por qué?
+      </div>
+
+      <p class="guide-text">
+        Introduce tu predicción de K<sub>max</sub> en el slider de la Fase 2 del simulador. Luego elige el coeficiente
+        de fricción que deseas probar.
+      </p>
+    </div>
+
+    <hr class="phase-divider">
+
+    <!-- ═══════════════════════════════════════════════════════════════
+       FASE 3: EJECUTAR
+  ════════════════════════════════════════════════════════════════════ -->
+    <div class="polya-section">
+      <div class="polya-header">
+        <div class="phase-badge ejecutar">3</div>
+        <h2>Fase 3 — Ejecutar el plan (Observar)</h2>
+      </div>
+
+      <p class="guide-text">
+        Inicia la simulación. Observa el intercambio de energías en las <strong>barras de colores</strong> del Canvas.
+        Debes registrar los valores de K, U y Q a medida que el bloque desciende.
+      </p>
+
+      <!-- Diagrama de barras explicativo -->
+      <div class="energy-diagram">
+        <!-- Inicio: U máxima, K = 0 -->
+        <div class="energy-bar-wrapper">
+          <div class="energy-bar ke" style="height: 5px;"></div>
+          <div class="energy-bar-label">K (inicio)</div>
+        </div>
+        <div class="energy-bar-wrapper">
+          <div class="energy-bar pe" style="height: 100px;"></div>
+          <div class="energy-bar-label">U (inicio)</div>
+        </div>
+        <div style="font-size: 1.5rem; color: var(--text-muted); align-self: center;">→</div>
+        <!-- Mitad: K y U equilibradas -->
+        <div class="energy-bar-wrapper">
+          <div class="energy-bar ke" style="height: 50px;"></div>
+          <div class="energy-bar-label">K (mitad)</div>
+        </div>
+        <div class="energy-bar-wrapper">
+          <div class="energy-bar pe" style="height: 50px;"></div>
+          <div class="energy-bar-label">U (mitad)</div>
+        </div>
+        <div style="font-size: 1.5rem; color: var(--text-muted); align-self: center;">→</div>
+        <!-- Fondo: K máxima, U = 0 -->
+        <div class="energy-bar-wrapper">
+          <div class="energy-bar ke" style="height: 100px;"></div>
+          <div class="energy-bar-label">K (fondo)</div>
+        </div>
+        <div class="energy-bar-wrapper">
+          <div class="energy-bar pe" style="height: 5px;"></div>
+          <div class="energy-bar-label">U (fondo)</div>
+        </div>
+      </div>
+
+      <div class="obs-card">
+        <h4>📊 Registro de Observaciones (Llena durante la simulación)</h4>
+        <p>Pausa la simulación en distintos puntos y anota los valores de la telemetría:</p>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Posición del bloque</th>
+            <th>h (m)</th>
+            <th>v (m/s)</th>
+            <th>K (J)</th>
+            <th>U (J)</th>
+            <th>K + U (J)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Punto de inicio</td>
+            <td><span class="fill-in">___</span></td>
+            <td>0.0</td>
+            <td>0.0</td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+          </tr>
+          <tr>
+            <td>Punto medio (bajada)</td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+          </tr>
+          <tr>
+            <td>Fondo de la rampa</td>
+            <td>≈ 0</td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+            <td>≈ 0</td>
+            <td><span class="fill-in">___</span></td>
+          </tr>
+          <tr>
+            <td>Cima del lado opuesto</td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="interactive-box">
+        <strong>✎ Pregunta de análisis:</strong><br>
+        ¿La columna "K + U" se mantiene constante en todos los puntos? Si hay fricción activada, ¿qué columna adicional
+        deberías registrar? ¿Cuál es la suma K + U + Q?
+      </div>
+    </div>
+
+    <hr class="phase-divider">
+
+    <!-- ═══════════════════════════════════════════════════════════════
+       FASE 4: REVISAR
+  ════════════════════════════════════════════════════════════════════ -->
+    <div class="polya-section">
+      <div class="polya-header">
+        <div class="phase-badge revisar">4</div>
+        <h2>Fase 4 — Examinar la solución (Revisar)</h2>
+      </div>
+
+      <p class="guide-text">
+        Una vez finalizada la simulación, el simulador mostrará la comparativa entre tu predicción y los valores reales.
+        Analiza los resultados y completa la siguiente tabla de conclusiones:
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Magnitud</th>
+            <th>Predicción (J)</th>
+            <th>Simulación (J)</th>
+            <th>Error (%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>K en el fondo (sin fricción)</td>
+            <td><span class="fill-in">_______</span></td>
+            <td><span class="fill-in">_______</span></td>
+            <td><span class="fill-in">_______</span></td>
+          </tr>
+          <tr>
+            <td>K en el fondo (con fricción)</td>
+            <td><span class="fill-in">_______</span></td>
+            <td><span class="fill-in">_______</span></td>
+            <td><span class="fill-in">_______</span></td>
+          </tr>
+          <tr>
+            <td>Energía disipada como calor (Q)</td>
+            <td>—</td>
+            <td><span class="fill-in">_______</span></td>
+            <td>—</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="conclusion-box">
+        <h3>✅ Conclusiones Esperadas</h3>
+        <ul>
+          <li>Sin fricción: <span class="ke-tag">K</span> en el fondo = <span class="pe-tag">U</span> inicial. La
+            energía mecánica total se conserva al 100%.</li>
+          <li>Con fricción: <span class="ke-tag">K</span> en el fondo &lt; <span class="pe-tag">U</span> inicial. La
+            diferencia es la energía <span class="q-tag">Q</span> disipada como calor.</li>
+          <li>En ambos casos, <span class="total-tag">E₀ = K + U + Q</span> siempre se cumple (1ª Ley de la
+            Termodinámica).</li>
+          <li>La masa <strong>no afecta</strong> la velocidad máxima en sistemas conservativos (v<sub>max</sub> =
+            √(2gh₀)).</li>
+        </ul>
+      </div>
+
+      <div class="interactive-box">
+        <strong>✎ Reflexión Final (Polya: "Mirar hacia atrás"):</strong><br>
+        ¿Cómo verificarías experimentalmente en el mundo real que la energía se conserva? ¿Qué instrumentos usarías?
+        ¿Qué fuentes de error esperarías en un laboratorio físico vs. este simulador?
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div
+      style="border-top: 1px solid var(--panel-border); padding-top: 20px; margin-top: 10px; text-align: center; font-size: 0.8rem; color: var(--text-muted);">
+      Laboratorio virtual de física — UNIR · Metodología de Resolución de Problemas de G. Polya · Basado en la
+      investigación de Marcos Chacón Castro
+    </div>
+
+  </div>
+</body>
+
+</html>

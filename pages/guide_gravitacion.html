@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Guía Didáctica — Gravitación universal y Leyes de Kepler. Laboratorio virtual de física, metodología de Polya.">
+  <title>Guía Didáctica — Gravitación universal</title>
+
+  <!-- SEO & Meta Tags -->
+  <meta name="description"
+    content="Laboratorio virtual de física. Simuladores interactivos con metodología de Polya. Conservación de la energía, cinemática, fuerzas, rotación, gravitación y oscilaciones.">
+  <meta name="keywords"
+    content="física, simulador, virtual, polya, cinemática, dinámica, energía, gravitación, péndulo, masa-resorte, educación, UNIR">
+  <meta name="author" content="Zwartmit">
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Laboratorio virtual de física">
+  <meta property="og:description"
+    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta property="og:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+  <meta property="og:url" content="https://steam-unir.netlify.app/">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Laboratorio virtual de física">
+  <meta name="twitter:description"
+    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta name="twitter:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+
+  <!-- Favicons -->
+  <link rel="icon" href="../assets/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="../assets/favicon.png">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --bg-primary: #090f1a;
+      --bg-secondary: #0f172a;
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #64748b;
+      --accent: #3b82f6;
+      --star-color: #fbbf24;
+      --planet-color: #3b82f6;
+      --force-color: #ef4444;
+      --vel-color: #10b981;
+      --kepler-color: #a855f7;
+      --font-sans: 'Outfit', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --br-lg: 16px;
+      --br-md: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .guide-container {
+      max-width: 900px;
+      width: 100%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--br-lg);
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    header {
+      border-bottom: 1px solid var(--panel-border);
+      padding-bottom: 24px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .guide-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    .guide-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .back-btn {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #60a5fa;
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+      background: rgba(59, 130, 246, 0.25);
+    }
+
+    .polya-section {
+      margin-bottom: 36px;
+    }
+
+    .polya-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .phase-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .phase-badge.teoria {
+      background: rgba(59, 130, 246, 0.1);
+      color: #93c5fd;
+    }
+
+    .phase-badge.comprende {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+    }
+
+    .phase-badge.planear {
+      background: rgba(168, 85, 247, 0.2);
+      color: #c084fc;
+    }
+
+    .phase-badge.ejecutar {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .phase-badge.revisar {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+    }
+
+    .polya-header h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .guide-text {
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+    }
+
+    .equation-box {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: var(--br-md);
+      padding: 18px 24px;
+      margin: 16px 0;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      line-height: 2.4;
+      color: #93c5fd;
+      text-align: center;
+    }
+
+    .equation-box .eq-label {
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: block;
+      margin-bottom: 4px;
+      text-align: left;
+    }
+
+    .obs-card {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--br-md);
+      padding: 16px 20px;
+      margin: 14px 0;
+    }
+
+    .obs-card h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .obs-card p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 0.88rem;
+    }
+
+    .data-table th {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1.5px solid var(--panel-border);
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .data-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--panel-border);
+      color: var(--text-secondary);
+    }
+
+    .fill-in {
+      font-family: var(--font-mono);
+      background: rgba(15, 23, 42, 0.6);
+      border-bottom: 2px dashed rgba(59, 130, 246, 0.4);
+      color: #60a5fa;
+      min-width: 80px;
+      display: inline-block;
+      padding: 0 4px;
+    }
+
+    .interactive-box {
+      background: rgba(168, 85, 247, 0.06);
+      border: 1px dashed rgba(168, 85, 247, 0.3);
+      border-radius: var(--br-md);
+      padding: 16px 20px;
+      margin: 14px 0;
+      color: #e9d5ff;
+      font-size: 0.88rem;
+    }
+
+    .interactive-box strong {
+      color: #c084fc;
+    }
+
+    .conclusion-box {
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: var(--br-md);
+      padding: 20px 24px;
+      margin: 16px 0;
+      color: var(--text-secondary);
+    }
+
+    .conclusion-box h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #34d399;
+      margin-bottom: 10px;
+    }
+
+    .conclusion-box ul {
+      padding-left: 20px;
+    }
+
+    .conclusion-box li {
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+
+    .phase-divider {
+      border: none;
+      border-top: 1px solid var(--panel-border);
+      margin: 36px 0;
+    }
+
+    .kepler-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 0.88rem;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: var(--br-md);
+      overflow: hidden;
+    }
+
+    .kepler-table th {
+      background: rgba(168, 85, 247, 0.12);
+      padding: 10px 14px;
+      text-align: left;
+      color: #c084fc;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+    }
+
+    .kepler-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--panel-border);
+      color: var(--text-secondary);
+    }
+
+    .kepler-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .star-tag {
+      color: var(--star-color);
+      font-weight: 700;
+    }
+
+    .planet-tag {
+      color: var(--planet-color);
+      font-weight: 700;
+    }
+
+    .force-tag {
+      color: var(--force-color);
+      font-weight: 700;
+    }
+
+    .vel-tag {
+      color: var(--vel-color);
+      font-weight: 700;
+    }
+
+    .kepler-tag {
+      color: var(--kepler-color);
+      font-weight: 700;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="guide-container">
+    <header>
+      <div>
+        <div class="guide-title">🪐 Gravitación universal y Leyes de Kepler</div>
+        <div class="guide-subtitle">Guía Didáctica del Estudiante · Metodología de Polya · Física — UNIR</div>
+      </div>
+      <a href="gravitacion.html" class="back-btn">← Volver al simulador</a>
+    </header>
+
+    <!-- MARCO TEÓRICO -->
+    <div class="polya-section">
+      <div class="polya-header">
+        <div class="phase-badge teoria">★</div>
+        <h2>Marco Teórico: Gravitación universal y Leyes de Kepler</h2>
+      </div>
+      <p class="guide-text">
+        La <strong>Ley de Gravitación universal</strong> de Newton establece que dos masas se atraen con una fuerza
+        proporcional al producto de sus masas e inversamente proporcional al cuadrado de la distancia:
+      </p>
+      <div class="equation-box">
+        <span class="eq-label">Ley de Gravitación universal</span>
+        F = G · M · m / r²<br>
+        <small style="color:var(--text-muted);font-family:sans-serif;">Fuerza (N) = Constante · Masa central · Masa
+          planeta / distancia²</small>
+      </div>
+      <p class="guide-text">Las <strong>Leyes de Kepler</strong> describen el movimiento orbital:</p>
+      <div class="obs-card">
+        <h4>🌕 Las Tres Leyes de Kepler</h4>
+        <p><strong>1ª Ley (Elipses):</strong> Los planetas orbitan en elipses con la estrella en uno de los focos.<br>
+          <strong>2ª Ley (Áreas):</strong> El radio vector barre áreas iguales en tiempos iguales (conservación del
+          momento angular).<br>
+          <strong>3ª Ley (Períodos):</strong> T² ∝ a³. La constante es universal para todos los planetas del mismo
+          sistema.
+        </p>
+      </div>
+      <div class="equation-box">
+        <span class="eq-label">Tercera Ley de Kepler + Newton</span>
+        T² / a³ = 4π² / (G·M)<br>
+        T = 2π · √(a³ / G·M)<br>
+        <small style="color:var(--text-muted);font-family:sans-serif;">a = semileje mayor · G = constante gravitacional
+          · M = masa central</small>
+      </div>
+    </div>
+
+    <hr class="phase-divider">
+
+    <!-- FASE 1 -->
+    <div class="polya-section">
+      <div class="polya-header">
+        <div class="phase-badge comprende">1</div>
+        <h2>Fase 1 — Comprender el problema</h2>
+      </div>
+      <p class="guide-text">Identifica las variables del sistema antes de simular.</p>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Variable</th>
+            <th>Símbolo</th>
+            <th>Unidad</th>
+            <th>Tu Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Constante gravitacional</td>
+            <td style="font-family:var(--font-mono);">G</td>
+            <td>u·m³/kg·s²</td>
+            <td><span class="fill-in">_______</span></td>
+          </tr>
+          <tr>
+            <td>Masa de la estrella</td>
+            <td style="font-family:var(--font-mono);">M</td>
+            <td>u·kg</td>
+            <td><span class="fill-in">_______</span></td>
+          </tr>
+          <tr>
+            <td>G × M (producto)</td>
+            <td style="font-family:var(--font-mono);">G·M</td>
+            <td>u³/s²</td>
+            <td><span class="fill-in">_______</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="interactive-box">
+        <strong>✎ Pregunta de comprensión:</strong><br>
+        Si duplicas M (masa de la estrella) sin cambiar r₀, ¿qué le pasa a la velocidad orbital circular? ¿Y al período
+        orbital? Razónalo antes de probarlo con los sliders.
+      </div>
+    </div>
+
+    <hr class="phase-divider">
+
+    <!-- FASE 2 -->
+    <div class="polya-section">
+      <div class="polya-header">
+        <div class="phase-badge planear">2</div>
+        <h2>Fase 2 — Concebir un plan</h2>
+      </div>
+      <p class="guide-text">Calcula manualmente el período orbital usando Kepler III.</p>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Paso</th>
+            <th>Fórmula</th>
+            <th>Tu Cálculo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Radio inicial r₀</td>
+            <td style="font-family:var(--font-mono);">r₀</td>
+            <td><span class="fill-in">___ u</span></td>
+          </tr>
+          <tr>
+            <td>Velocidad circular</td>
+            <td style="font-family:var(--font-mono);">v = √(G·M/r₀)</td>
+            <td><span class="fill-in">___ u/s</span></td>
+          </tr>
+          <tr>
+            <td>Período orbital</td>
+            <td style="font-family:var(--font-mono);">T = 2π·√(r₀³/G·M)</td>
+            <td><span class="fill-in">___ s</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="interactive-box">
+        <strong>✎ Hipótesis con excentricidad:</strong><br>
+        Si introduces excentricidad e = 0.5, ¿cambia el período orbital? Recuerda que en la 3ª Ley de Kepler, <em>a</em>
+        es el semileje mayor, no el radio inicial. Para e = 0.5, el apoapsis = r₀ · (1+e)/(1-e) y a = (periapsis +
+        apoapsis)/2.
+      </div>
+    </div>
+
+    <hr class="phase-divider">
+
+    <!-- FASE 3 -->
+    <div class="polya-section">
+      <div class="polya-header">
+        <div class="phase-badge ejecutar">3</div>
+        <h2>Fase 3 — Ejecutar y Observar</h2>
+      </div>
+      <p class="guide-text">Registra valores de la telemetría en distintos puntos de la órbita para verificar la 2ª Ley
+        de Kepler (áreas iguales = velocidades distintas).</p>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Posición</th>
+            <th>r (dist.)</th>
+            <th>v (vel.)</th>
+            <th>F_g</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Periapsis (más cercano)</td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+          </tr>
+          <tr>
+            <td>Apoapsis (más lejano)</td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+          </tr>
+          <tr>
+            <td>¿Relación r·v = cte?</td>
+            <td colspan="3"><span class="fill-in">________________________________</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="interactive-box">
+        <strong>✎ Observación:</strong><br>
+        ¿Aumenta o disminuye la velocidad cuando el planeta se acerca a la estrella? Verifica si el producto r·v se
+        mantiene constante en periapsis y apoapsis (esto confirma la conservación del momento angular L = m·r·v).
+      </div>
+    </div>
+
+    <hr class="phase-divider">
+
+    <!-- FASE 4 -->
+    <div class="polya-section">
+      <div class="polya-header">
+        <div class="phase-badge revisar">4</div>
+        <h2>Fase 4 — Examinar la solución</h2>
+      </div>
+      <table class="kepler-table">
+        <thead>
+          <tr>
+            <th>Órbita #</th>
+            <th>Semileje a</th>
+            <th>Período T</th>
+            <th>T² (s²)</th>
+            <th>a³/T² (cte.)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+            <td><span class="fill-in">___</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="conclusion-box">
+        <h3>✅ Conclusiones Esperadas</h3>
+        <ul>
+          <li>La constante a³/T² es igual para todas las órbitas del sistema (varía con G·M, no con e ni con m del
+            planeta).</li>
+          <li>Al doble de distancia, el período es ×2√2 ≈ 2.83 veces mayor (raíz cúbica de 8 = 2 → T ∝ a^(3/2)).</li>
+          <li>La velocidad en el periapsis es máxima y en el apoapsis es mínima (2ª Ley de Kepler).</li>
+          <li>La energía total E = KE + PE se mantiene constante durante toda la órbita (sistema conservativo).</li>
+        </ul>
+      </div>
+      <div class="interactive-box">
+        <strong>✎ Reflexión Final:</strong><br>
+        Si la constante G·M del sistema es 10⁶ u³/s², calcula el período de un planeta que orbita a a = 100 u. ¿Cómo
+        cambia el período si duplicas solo G? ¿Y si duplicas solo M? ¿Importa la masa del planeta?
+      </div>
+    </div>
+
+    <div
+      style="border-top:1px solid var(--panel-border);padding-top:20px;margin-top:10px;text-align:center;font-size:0.8rem;color:var(--text-muted);">
+      Laboratorio virtual de física — UNIR · Metodología de Resolución de Problemas de G. Polya · Basado en la
+      investigación de Marcos Chacón Castro
+    </div>
+  </div>
+</body>
+
+</html>

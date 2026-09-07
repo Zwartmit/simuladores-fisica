@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Simulador físico interactivo de cinemática en 2D (tiro parabólico y caída libre) guiado bajo el método de resolución de problemas de George Polya.">
+  <title>Laboratorio virtual de física — Cinemática y Trayectorias</title>
+
+  <!-- SEO & Meta Tags -->
+  <meta name="description"
+    content="Laboratorio virtual de física. Simuladores interactivos con metodología de Polya. Conservación de la energía, cinemática, fuerzas, rotación, gravitación y oscilaciones.">
+  <meta name="keywords"
+    content="física, simulador, virtual, polya, cinemática, dinámica, energía, gravitación, péndulo, masa-resorte, educación, UNIR">
+  <meta name="author" content="Zwartmit">
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Laboratorio virtual de física">
+  <meta property="og:description"
+    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta property="og:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+  <meta property="og:url" content="https://steam-unir.netlify.app/">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Laboratorio virtual de física">
+  <meta name="twitter:description"
+    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta name="twitter:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+
+  <!-- Favicons -->
+  <link rel="icon" href="../assets/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="../assets/favicon.png">
+
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+  <!-- Cabecera Principal -->
+  <header>
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <a href="../index.html" class="tutor-badge"
+        style="background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.3); color: #60a5fa; text-decoration: none; cursor: pointer; font-weight: bold;">🏠
+        Menú Principal</a>
+    </div>
+    <h1>Laboratorio de física: <span>Cinemática y Trayectorias</span></h1>
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <a href="guide_cinematica.html" class="tutor-badge"
+        style="background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.3); color: #c084fc; text-decoration: none; cursor: pointer;">Ver
+        Guía Didáctica 📖</a>
+      <div class="tutor-badge">Tutor Activo: Polya</div>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal del Simulador -->
+  <div id="app-layout">
+
+    <!-- Área del Canvas (Visualizador e interactivo) -->
+    <div id="simulation-area">
+      <!-- Telemetría superpuesta de vectores en tiempo real -->
+      <div id="vector-telemetry">
+        <div class="telemetry-title">Vectores de Movimiento</div>
+        <div class="telemetry-grid">
+          <div class="vector-indicator velocity">Velocidad (v)</div>
+          <div id="telemetry-v" class="value-display">0.00 m/s</div>
+
+          <div class="vector-indicator acceleration">Gravedad (g)</div>
+          <div id="telemetry-a" class="value-display">9.81 m/s²</div>
+
+          <div>Alcance (x)</div>
+          <div id="telemetry-x" class="value-display">0.00 m</div>
+
+          <div>Altura (y)</div>
+          <div id="telemetry-y" class="value-display">0.00 m</div>
+
+          <div>Tiempo (t)</div>
+          <div id="telemetry-t" class="value-display">0.00 s</div>
+        </div>
+      </div>
+
+      <!-- Lienzo de renderizado -->
+      <canvas id="physics-canvas"></canvas>
+    </div>
+
+    <!-- Panel Lateral del Tutor de Polya -->
+    <div id="tutor-panel">
+      <!-- Barra de navegación de fases de Polya -->
+      <div id="polya-steps-bar">
+        <div id="tab-phase1" class="step-tab active">1. Comprender</div>
+        <div id="tab-phase2" class="step-tab">2. Planear</div>
+        <div id="tab-phase3" class="step-tab">3. Ejecutar</div>
+        <div id="tab-phase4" class="step-tab">4. Revisar</div>
+      </div>
+
+      <!-- Contenido de las Fases del Tutor -->
+      <div class="panel-content-wrapper">
+
+        <!-- FASE 1: COMPRENDER EL PROBLEMA -->
+        <div id="phase1-container" class="polya-phase-container active">
+          <h2><span class="phase-number">1</span> Comprender el problema</h2>
+          <p class="phase-intro">
+            Bienvenido al laboratorio virtual. Antes de simular, debemos analizar el escenario físico. Ajusta los
+            parámetros del proyectil e identifica las variables clave de este fenómeno de movimiento.
+          </p>
+
+          <!-- Ajuste de Parámetros del Mundo -->
+          <div class="card">
+            <div class="telemetry-title" style="margin-bottom: 12px;">Condiciones del Escenario</div>
+
+            <div class="control-group">
+              <label for="input-y0">Altura Inicial (y₀)</label>
+              <div class="slider-container">
+                <input type="range" id="input-y0" min="0" max="30" step="1" value="15">
+                <div id="val-y0" class="value-display">15 m</div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label for="input-v0">Velocidad Inicial (v₀)</label>
+              <div class="slider-container">
+                <input type="range" id="input-v0" min="0" max="40" step="1" value="20">
+                <div id="val-v0" class="value-display">20 m/s</div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label for="input-angle">Ángulo de Lanzamiento (θ)</label>
+              <div class="slider-container">
+                <input type="range" id="input-angle" min="0" max="90" step="5" value="35">
+                <div id="val-angle" class="value-display">35°</div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label for="input-gravity">Gravedad (g)</label>
+              <div class="slider-container">
+                <input type="range" id="input-gravity" min="1" max="25" step="0.1" value="9.81">
+                <div id="val-gravity" class="value-display">9.81 m/s²</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cuestionario Interactivo de Identificación de Variables -->
+          <div class="card">
+            <div class="quiz-question">
+              Pregunta de análisis: En caída libre o tiro parabólico (despreciando el aire), ¿cuál de las siguientes
+              variables vectoriales permanece constante durante todo el vuelo?
+            </div>
+            <div class="quiz-options">
+              <button class="option-btn" data-correct="false">La velocidad del proyectil (v)</button>
+              <button class="option-btn" data-correct="true">La aceleración del proyectil (g)</button>
+              <button class="option-btn" data-correct="false">La posición vertical de la partícula (y)</button>
+            </div>
+            <div id="phase1-feedback" style="margin-top: 12px; font-size: 0.82rem; min-height: 20px;"></div>
+          </div>
+
+          <button id="btn-next-to-phase2" class="btn-action" disabled>
+            Proceder a Fase 2: Planear
+          </button>
+        </div>
+
+        <!-- FASE 2: CONCEBIR UN PLAN (HIPÓTESIS Y PREDICCIÓN) -->
+        <div id="phase2-container" class="polya-phase-container">
+          <h2><span class="phase-number">2</span> Concebir un plan</h2>
+          <p class="phase-intro">
+            A continuación, debes establecer una hipótesis de trayectoria. Plantea tus predicciones matemáticas y
+            visuales antes de iniciar la animación física.
+          </p>
+
+          <div class="card prediction-instructions">
+            <strong>Instrucciones de trazado:</strong><br>
+            Haz clic izquierdo dentro del Canvas de simulación y, manteniendo pulsado, <strong>dibuja la curva estimada
+              de trayectoria</strong> que crees que recorrerá el proyectil desde el punto de lanzamiento hasta el suelo.
+          </div>
+
+          <!-- Entrada interactiva de alcance predicho -->
+          <div class="card">
+            <label for="input-predicted-range">¿En qué distancia horizontal (m) predices que impactará el cuerpo contra
+              el suelo?</label>
+            <div class="slider-container" style="margin-top: 8px;">
+              <input type="range" id="input-predicted-range" min="0" max="150" step="1" value="50">
+              <div id="val-predicted-range" class="value-display">50 m</div>
+            </div>
+          </div>
+
+          <button id="btn-next-to-phase3" class="btn-action">
+            Proceder a Fase 3: Ejecutar
+          </button>
+
+          <button id="btn-back-to-phase1" class="btn-secondary">
+            Regresar a Fase 1
+          </button>
+        </div>
+
+        <!-- FASE 3: EJECUTAR EL PLAN (SIMULACIÓN Y VECTORES) -->
+        <div id="phase3-container" class="polya-phase-container">
+          <h2><span class="phase-number">3</span> Ejecutar el plan</h2>
+          <p class="phase-intro">
+            Inicia la simulación para calcular el movimiento del proyectil. Observa con atención la trayectoria
+            recorrida y la variación de las fuerzas (vectores) en tiempo real.
+          </p>
+
+          <!-- Controles de Reproducción de la Simulación -->
+          <div class="sim-controls-wrapper">
+            <button id="btn-sim-play" class="btn-action success">Iniciar lanzamiento</button>
+            <button id="btn-sim-reset" class="btn-secondary btn-sim-reset">Reiniciar</button>
+          </div>
+
+          <div class="card" style="background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.15);">
+            <div class="telemetry-title" style="color: var(--speed-color);">Observaciones del Tutor:</div>
+            <p style="font-size: 0.85rem; line-height: 1.4; color: var(--text-secondary);">
+              El vector de <strong>Velocidad (verde)</strong> varía su dirección y magnitud debido a la acción constante
+              del campo gravitatorio. El vector de <strong>Gravedad (rojo)</strong> permanece siempre constante
+              apuntando hacia el centro de masa de la tierra.
+            </p>
+          </div>
+
+          <button id="btn-next-to-phase4" class="btn-action" disabled>
+            Ver Resultados y Fase 4: Revisar
+          </button>
+
+          <button id="btn-back-to-phase2" class="btn-secondary">
+            Regresar a Fase 2
+          </button>
+        </div>
+
+        <!-- FASE 4: EXAMINAR LA SOLUCIÓN (CONTRASTE TEÓRICO) -->
+        <div id="phase4-container" class="polya-phase-container">
+          <h2><span class="phase-number">4</span> Examinar la solución</h2>
+          <p class="phase-intro">
+            Momento de evaluar ("Mirar hacia atrás"). Comparemos la trayectoria real de la física computada contra tus
+            predicciones y las ecuaciones analíticas exactas de la mecánica clásica.
+          </p>
+
+          <!-- Tabla de Datos Comparativos -->
+          <table class="contrast-table">
+            <thead>
+              <tr>
+                <th>Magnitud</th>
+                <th>Tu Predicción</th>
+                <th>Física Real</th>
+                <th>Error</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="parameter-name">Alcance Máx.</td>
+                <td id="table-pred-range">0.00 m</td>
+                <td id="table-real-range">0.00 m</td>
+                <td><span id="badge-range-error" class="error-badge low">0%</span></td>
+              </tr>
+              <tr>
+                <td class="parameter-name">Tiempo Vuelo</td>
+                <td style="color: var(--text-muted);">N/A</td>
+                <td id="table-real-time">0.00 s</td>
+                <td style="color: var(--text-muted);">N/A</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Retroalimentación Pedagógica del Tutor -->
+          <div class="tutor-feedback-box">
+            <strong>Retroalimentación didáctica:</strong>
+            <span id="tutor-feedback-text">La simulación física coincide perfectamente con las ecuaciones teóricas de
+              tiro parabólico clásica.</span>
+          </div>
+
+          <button id="btn-restart-lab" class="btn-action">
+            Reiniciar laboratorio ↺
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Controlador del Sistema -->
+  <script type="module" src="../js/cinematica/main.js"></script>
+</body>
+
+</html>

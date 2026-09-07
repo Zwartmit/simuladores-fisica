@@ -1,0 +1,10 @@
+{
+  "name": "fisica1-simuladores",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Simuladores didácticos de Física estructurados bajo Polya.",
+  "scripts": {
+    "test": "node tests/run-all.js",
+    "dev": "npx live-server"
+  }
+}

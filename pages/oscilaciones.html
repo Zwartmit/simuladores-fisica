@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Simulador interactivo de Oscilaciones mecánicas. Movimiento Armónico Simple y Amortiguado para Péndulo y Masa-Resorte con metodología de George Polya.">
+  <title>Laboratorio virtual de física — Oscilaciones mecánicas</title>
+
+  <!-- SEO & Meta Tags -->
+  <meta name="description"
+    content="Laboratorio virtual de física. Simuladores interactivos con metodología de Polya. Conservación de la energía, cinemática, fuerzas, rotación, gravitación y oscilaciones.">
+  <meta name="keywords"
+    content="física, simulador, virtual, polya, cinemática, dinámica, energía, gravitación, péndulo, masa-resorte, educación, UNIR">
+  <meta name="author" content="Zwartmit">
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Laboratorio virtual de física">
+  <meta property="og:description"
+    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta property="og:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+  <meta property="og:url" content="https://steam-unir.netlify.app/">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Laboratorio virtual de física">
+  <meta name="twitter:description"
+    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta name="twitter:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+
+  <!-- Favicons -->
+  <link rel="icon" href="../assets/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="../assets/favicon.png">
+
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .system-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .btn-sys {
+      flex: 1;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(15, 23, 42, 0.5);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      transition: all 0.2s;
+    }
+
+    .btn-sys:hover {
+      background: rgba(30, 41, 59, 0.8);
+    }
+
+    .btn-sys.active {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: #3b82f6;
+      color: #60a5fa;
+    }
+
+    .cycles-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.88rem;
+      color: #93c5fd;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+    .cycles-badge span {
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      color: #bfdbfe;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div style="display:flex;align-items:center;gap:15px;">
+      <a href="../index.html" class="tutor-badge"
+        style="background:rgba(59,130,246,0.15);border-color:rgba(59,130,246,0.3);color:#60a5fa;text-decoration:none;cursor:pointer;font-weight:bold;">🏠
+        Menú Principal</a>
+    </div>
+    <h1>Laboratorio de física: <span>Oscilaciones mecánicas</span></h1>
+    <div style="display:flex;align-items:center;gap:15px;">
+      <a href="guide_oscilaciones.html" class="tutor-badge"
+        style="background:rgba(168,85,247,0.15);border-color:rgba(168,85,247,0.3);color:#c084fc;text-decoration:none;cursor:pointer;">Ver
+        Guía Didáctica 📖</a>
+      <div class="tutor-badge">Tutor Activo: Polya</div>
+    </div>
+  </header>
+
+  <div id="app-layout">
+
+    <!-- Canvas -->
+    <div id="simulation-area">
+      <div id="vector-telemetry">
+        <div class="telemetry-title">Telemetría MAS</div>
+        <div class="telemetry-grid">
+          <div id="q-label">Posición (x/θ)</div>
+          <div id="telemetry-q" class="value-display">0.0</div>
+
+          <div id="v-label">Velocidad (v/ω)</div>
+          <div id="telemetry-v" class="value-display" style="color:#ef4444;">0.00</div>
+
+          <div>Energía Total</div>
+          <div id="telemetry-e" class="value-display" style="color:#fbbf24;">0.0 J</div>
+
+          <div>Tiempo (t)</div>
+          <div id="telemetry-t" class="value-display">0.0 s</div>
+        </div>
+      </div>
+      <canvas id="physics-canvas"></canvas>
+    </div>
+
+    <!-- Panel Tutor -->
+    <div id="tutor-panel">
+      <div id="polya-steps-bar">
+        <div id="tab-phase1" class="step-tab active">1. Comprender</div>
+        <div id="tab-phase2" class="step-tab">2. Planear</div>
+        <div id="tab-phase3" class="step-tab">3. Ejecutar</div>
+        <div id="tab-phase4" class="step-tab">4. Revisar</div>
+      </div>
+
+      <div class="panel-content-wrapper">
+
+        <!-- FASE 1: COMPRENDER -->
+        <div id="phase1-container" class="polya-phase-container active">
+          <h2><span class="phase-number">1</span> Comprender el problema</h2>
+          <p class="phase-intro">
+            Explora el Movimiento Armónico Simple (MAS) y Amortiguado. Selecciona un sistema físico para estudiar.
+          </p>
+
+          <div class="system-selector">
+            <button id="btn-sys-pendulum" class="btn-sys active">Péndulo simple</button>
+            <button id="btn-sys-spring" class="btn-sys">Masa-Resorte</button>
+          </div>
+
+          <div class="card">
+            <div class="telemetry-title" style="margin-bottom:12px;">Parámetros del Sistema</div>
+
+            <!-- Panel Péndulo (Fase 1) -->
+            <div id="panel-pendulum-phase1">
+              <div class="control-group">
+                <label for="input-p-L">Longitud de la cuerda (L)</label>
+                <div class="slider-container">
+                  <input type="range" id="input-p-L" min="0.5" max="5.0" step="0.1" value="2.0">
+                  <div id="val-p-L" class="value-display">2.0 m</div>
+                </div>
+              </div>
+              <div class="control-group">
+                <label for="input-p-m">Masa de la pesa (m)</label>
+                <div class="slider-container">
+                  <input type="range" id="input-p-m" min="0.1" max="5.0" step="0.1" value="1.0">
+                  <div id="val-p-m" class="value-display">1.0 kg</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel Resorte (Fase 1) -->
+            <div id="panel-spring-phase1" style="display:none;">
+              <div class="control-group">
+                <label for="input-s-k">Constante del Resorte (k)</label>
+                <div class="slider-container">
+                  <input type="range" id="input-s-k" min="10" max="200" step="5" value="50">
+                  <div id="val-s-k" class="value-display">50 N/m</div>
+                </div>
+              </div>
+              <div class="control-group">
+                <label for="input-s-m">Masa del Bloque (m)</label>
+                <div class="slider-container">
+                  <input type="range" id="input-s-m" min="0.5" max="10.0" step="0.5" value="2.0">
+                  <div id="val-s-m" class="value-display">2.0 kg</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quiz -->
+          <div class="card">
+            <div id="dynamic-quiz-question" class="quiz-question">
+              En un péndulo simple, si aumentas la masa de la pesa al doble, ¿qué sucede con su período de oscilación?
+            </div>
+            <div class="quiz-options">
+              <button class="option-btn" data-correct="false">Se reduce a la mitad</button>
+              <button class="option-btn" data-correct="false">Aumenta al doble</button>
+              <button class="option-btn" data-correct="true">Se mantiene igual</button>
+            </div>
+            <div id="phase1-feedback" style="margin-top:12px;font-size:0.82rem;min-height:20px;"></div>
+          </div>
+
+          <button id="btn-next-to-phase2" class="btn-action" disabled>Proceder a Fase 2: Planear →</button>
+        </div>
+
+        <!-- FASE 2: PLANEAR -->
+        <div id="phase2-container" class="polya-phase-container">
+          <h2><span class="phase-number">2</span> Concebir un plan</h2>
+          <p class="phase-intro">Configura las condiciones iniciales y amortiguamiento, luego predice el período $T$.
+          </p>
+
+          <div class="card">
+            <!-- Panel Péndulo (Fase 2) -->
+            <div id="panel-pendulum-phase2">
+              <div class="control-group">
+                <label for="input-p-th">Ángulo inicial (θ₀)</label>
+                <div class="slider-container">
+                  <input type="range" id="input-p-th" min="5" max="80" step="1" value="30">
+                  <div id="val-p-th" class="value-display">30°</div>
+                </div>
+              </div>
+              <div class="control-group">
+                <label for="input-p-b">Coef. Amortiguamiento (b)</label>
+                <div class="slider-container">
+                  <input type="range" id="input-p-b" min="0" max="2" step="0.05" value="0">
+                  <div id="val-p-b" class="value-display">0</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel Resorte (Fase 2) -->
+            <div id="panel-spring-phase2" style="display:none;">
+              <div class="control-group">
+                <label for="input-s-x">Desplazamiento Inicial (x₀)</label>
+                <div class="slider-container">
+                  <input type="range" id="input-s-x" min="0.1" max="2.0" step="0.1" value="1.0">
+                  <div id="val-s-x" class="value-display">1.0 m</div>
+                </div>
+              </div>
+              <div class="control-group">
+                <label for="input-s-b">Coef. Amortiguamiento (b)</label>
+                <div class="slider-container">
+                  <input type="range" id="input-s-b" min="0" max="10" step="0.5" value="0">
+                  <div id="val-s-b" class="value-display">0</div>
+                </div>
+              </div>
+            </div>
+
+            <div id="teo-period-label" style="font-size:0.82rem;color:#3b82f6;font-weight:600;margin-top:8px;"></div>
+          </div>
+
+          <div class="card">
+            <label for="input-pred-period">Predicción del período T (s)</label>
+            <div class="slider-container" style="margin-top:8px;">
+              <input type="range" id="input-pred-period" min="0.1" max="10.0" step="0.1" value="2.5">
+              <div id="val-pred-period" class="value-display">2.5 s</div>
+            </div>
+          </div>
+
+          <button id="btn-next-to-phase3" class="btn-action">Proceder a Fase 3: Ejecutar →</button>
+          <button id="btn-back-to-phase1" class="btn-secondary">← Regresar a Fase 1</button>
+        </div>
+
+        <!-- FASE 3: EJECUTAR -->
+        <div id="phase3-container" class="polya-phase-container">
+          <h2><span class="phase-number">3</span> Ejecutar el plan</h2>
+          <p class="phase-intro">Observa el movimiento y la gráfica de energía/posición. Completa al menos 1 ciclo para
+            verificar el período.</p>
+
+          <div class="sim-controls-wrapper">
+            <button id="btn-sim-play" class="btn-action success btn-sim-play">▶ Iniciar oscilación</button>
+            <button id="btn-sim-reset" class="btn-secondary btn-sim-reset">↺ Reiniciar</button>
+          </div>
+
+          <div class="cycles-badge">
+            ⏱️ Ciclos completados: <span id="cycles-count">0</span>
+          </div>
+
+          <div class="card" style="background:rgba(16,185,129,0.05);border-color:rgba(16,185,129,0.15);">
+            <div class="telemetry-title" style="color:#10b981;">Observación del Tutor:</div>
+            <p style="font-size:0.85rem;line-height:1.5;color:var(--text-secondary);">
+              Observa la transformación de energía (gráfica inferior derecha). En el extremo del movimiento, la energía
+              potencial (PE) es máxima y la cinética (KE) es cero. Al pasar por el punto de equilibrio, es al revés.
+            </p>
+          </div>
+
+          <button id="btn-next-to-phase4" class="btn-action" disabled>Ver Resultados: Fase 4 →</button>
+          <button id="btn-back-to-phase2" class="btn-secondary">← Regresar a Fase 2</button>
+        </div>
+
+        <!-- FASE 4: REVISAR -->
+        <div id="phase4-container" class="polya-phase-container">
+          <h2><span class="phase-number">4</span> Examinar la solución</h2>
+
+          <table class="contrast-table">
+            <thead>
+              <tr>
+                <th>Parámetro</th>
+                <th>Predicción</th>
+                <th>Real</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="parameter-name">Período T (s)</td>
+                <td id="table-pred-period">—</td>
+                <td id="table-real-period">—</td>
+              </tr>
+              <tr>
+                <td class="parameter-name">Error</td>
+                <td colspan="2"><span id="badge-period-error" class="error-badge low">—</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="tutor-feedback-box">
+            <strong>Retroalimentación didáctica:</strong>
+            <span id="tutor-feedback-text">Completa al menos un ciclo para ver los resultados.</span>
+          </div>
+
+          <button id="btn-restart-lab" class="btn-action" style="margin-top:16px;">Reiniciar laboratorio ↺</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="../js/oscilaciones/main.js"></script>
+</body>
+
+</html>

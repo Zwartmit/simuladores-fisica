@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Simulador interactivo de Conservación de la Energía con rampa tipo skatepark. Guiado bajo el método de resolución de problemas de George Polya (Comprender, Planear, Ejecutar, Revisar).">
+  <title>Laboratorio virtual de física — Conservación de la Energía</title>
+
+  <!-- SEO & Meta Tags -->
+  <meta name="description" content="Laboratorio virtual de física. Simuladores interactivos con metodología de Polya. Conservación de la energía, cinemática, fuerzas, rotación, gravitación y oscilaciones.">
+  <meta name="keywords" content="física, simulador, virtual, polya, cinemática, dinámica, energía, gravitación, péndulo, masa-resorte, educación, UNIR">
+  <meta name="author" content="Zwartmit">
+  
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Laboratorio virtual de física">
+  <meta property="og:description" content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta property="og:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+  <meta property="og:url" content="https://steam-unir.netlify.app/">
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Laboratorio virtual de física">
+  <meta name="twitter:description" content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta name="twitter:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+
+  <!-- Favicons -->
+  <link rel="icon" href="../assets/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="../assets/favicon.png">
+
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    /* Colores semánticos de energía */
+    :root {
+      --ke-color:      #10b981;
+      --pe-color:      #3b82f6;
+      --thermal-color: #ef4444;
+      --total-color:   #a855f7;
+    }
+
+    .ke-dot::before      { background-color: var(--ke-color)!important;      box-shadow: 0 0 6px var(--ke-color)!important; }
+    .pe-dot::before      { background-color: var(--pe-color)!important;      box-shadow: 0 0 6px var(--pe-color)!important; }
+    .thermal-dot::before { background-color: var(--thermal-color)!important; box-shadow: 0 0 6px var(--thermal-color)!important; }
+
+    /* Badge de conservación */
+    #conservation-msg {
+      margin-top: 12px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      min-height: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cabecera Principal -->
+  <header>
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <a href="../index.html" class="tutor-badge" style="background: rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.3); color: #60a5fa; text-decoration: none; cursor: pointer; font-weight: bold;">🏠 Menú Principal</a>
+    </div>
+    <h1>Laboratorio de física: <span>Conservación de la energía</span></h1>
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <a href="guide_energia.html" class="tutor-badge" style="background: rgba(168,85,247,0.15); border-color: rgba(168,85,247,0.3); color: #c084fc; text-decoration: none; cursor: pointer;">Ver Guía Didáctica 📖</a>
+      <div class="tutor-badge">Tutor Activo: Polya</div>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal -->
+  <div id="app-layout">
+
+    <!-- Área del Canvas -->
+    <div id="simulation-area">
+
+      <!-- Telemetría superpuesta -->
+      <div id="vector-telemetry">
+        <div class="telemetry-title">Estado Energético</div>
+        <div class="telemetry-grid">
+          <div class="vector-indicator velocity ke-dot">Velocidad (v)</div>
+          <div id="telemetry-v" class="value-display">0.00 m/s</div>
+
+          <div class="vector-indicator ke-dot">Ec. Cinética (K)</div>
+          <div id="telemetry-ke" class="value-display">0.0 J</div>
+
+          <div class="vector-indicator pe-dot">Ec. Potencial (U)</div>
+          <div id="telemetry-pe" class="value-display">0.0 J</div>
+
+          <div>Altura (h)</div>
+          <div id="telemetry-h" class="value-display">0.00 m</div>
+
+          <div>Tiempo (t)</div>
+          <div id="telemetry-t" class="value-display">0.00 s</div>
+        </div>
+      </div>
+
+      <!-- Lienzo de renderizado -->
+      <canvas id="physics-canvas"></canvas>
+    </div>
+
+    <!-- Panel Lateral del Tutor -->
+    <div id="tutor-panel">
+
+      <!-- Barra de fases de Polya -->
+      <div id="polya-steps-bar">
+        <div id="tab-phase1" class="step-tab active">1. Comprender</div>
+        <div id="tab-phase2" class="step-tab">2. Planear</div>
+        <div id="tab-phase3" class="step-tab">3. Ejecutar</div>
+        <div id="tab-phase4" class="step-tab">4. Revisar</div>
+      </div>
+
+      <div class="panel-content-wrapper">
+
+        <!-- ═══════════════════════════════════════════════════════════
+             FASE 1: COMPRENDER EL PROBLEMA
+        ════════════════════════════════════════════════════════════════ -->
+        <div id="phase1-container" class="polya-phase-container active">
+          <h2><span class="phase-number">1</span> Comprender el problema</h2>
+          <p class="phase-intro">
+            Un bloque se desliza sobre una rampa curva tipo <em>skatepark</em>. El sistema tiene energía cinética (K), energía potencial gravitatoria (U) y, con fricción, también térmica (Q). Configura el escenario e identifica el principio clave.
+          </p>
+
+          <!-- Parámetros del escenario -->
+          <div class="card">
+            <div class="telemetry-title" style="margin-bottom: 12px;">Condiciones del Escenario</div>
+
+            <div class="control-group">
+              <label for="input-mass">Masa del Bloque (m)</label>
+              <div class="slider-container">
+                <input type="range" id="input-mass" min="1" max="20" step="0.5" value="5">
+                <div id="val-mass" class="value-display">5 kg</div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label for="input-gravity">Gravedad (g)</label>
+              <div class="slider-container">
+                <input type="range" id="input-gravity" min="1" max="25" step="0.1" value="9.81">
+                <div id="val-gravity" class="value-display">9.81 m/s²</div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label for="input-height">Altura Inicial (%)</label>
+              <div class="slider-container">
+                <input type="range" id="input-height" min="20" max="95" step="5" value="80">
+                <div id="val-height" class="value-display">80%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quiz de Comprensión -->
+          <div class="card">
+            <div class="quiz-question">
+              En una rampa sin fricción, cuando el bloque llega al punto más bajo de la rampa, ¿cuál de las siguientes afirmaciones es correcta?
+            </div>
+            <div class="quiz-options">
+              <button class="option-btn" data-correct="false">La velocidad del bloque es cero porque toda la energía cinética se perdió.</button>
+              <button class="option-btn" data-correct="true">Toda la energía potencial inicial se transformó en energía cinética máxima.</button>
+              <button class="option-btn" data-correct="false">La energía total del sistema aumenta porque el bloque gana velocidad.</button>
+            </div>
+            <div id="phase1-feedback" style="margin-top: 12px; font-size: 0.82rem; min-height: 20px;"></div>
+          </div>
+
+          <button id="btn-next-to-phase2" class="btn-action" disabled>
+            Proceder a Fase 2: Planear →
+          </button>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             FASE 2: CONCEBIR UN PLAN
+        ════════════════════════════════════════════════════════════════ -->
+        <div id="phase2-container" class="polya-phase-container">
+          <h2><span class="phase-number">2</span> Concebir un plan</h2>
+          <p class="phase-intro">
+            Antes de iniciar la simulación, formula tus hipótesis. Recuerda que la energía inicial es:
+            <strong>E₀ = m × g × h₀</strong>. Al llegar al fondo, <em>sin fricción</em> toda se convierte en K.
+          </p>
+
+          <div class="card prediction-instructions">
+            <strong>Tu hipótesis:</strong><br>
+            Calcula mentalmente qué energía cinética debería tener el bloque al llegar al punto más bajo de la rampa, e introduce tu predicción abajo.
+          </div>
+
+          <div class="card">
+            <div class="control-group">
+              <label for="input-predicted-ke">Predicción de energía cinética en el fondo (K<sub>max</sub>)</label>
+              <div class="slider-container">
+                <input type="range" id="input-predicted-ke" min="0" max="2000" step="5" value="400">
+                <div id="val-predicted-ke" class="value-display">400 J</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="telemetry-title" style="margin-bottom: 12px;">Parámetro de disipación</div>
+            <div class="control-group">
+              <label for="input-friction">Coeficiente de fricción (μk)</label>
+              <div class="slider-container">
+                <input type="range" id="input-friction" min="0" max="0.5" step="0.01" value="0">
+                <div id="val-friction" class="value-display">μ = 0.00</div>
+              </div>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 6px;">
+              μ = 0 → sistema conservativo. μ &gt; 0 → parte de la energía se disipa como calor.
+            </p>
+          </div>
+
+          <button id="btn-next-to-phase3" class="btn-action">
+            Proceder a Fase 3: Ejecutar →
+          </button>
+          <button id="btn-back-to-phase1" class="btn-secondary">
+            ← Regresar a Fase 1
+          </button>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             FASE 3: EJECUTAR EL PLAN
+        ════════════════════════════════════════════════════════════════ -->
+        <div id="phase3-container" class="polya-phase-container">
+          <h2><span class="phase-number">3</span> Ejecutar el plan</h2>
+          <p class="phase-intro">
+            Inicia la simulación. Observa las <strong>gráficas de barras</strong> de energía cinética (verde), potencial (azul) y térmica (rojo) cambiar en tiempo real. Su suma debe permanecer constante.
+          </p>
+
+          <!-- Controles de simulación -->
+          <div class="sim-controls-wrapper">
+            <button id="btn-sim-play" class="btn-action success btn-sim-play">▶ Iniciar simulación</button>
+            <button id="btn-sim-reset" class="btn-secondary btn-sim-reset">↺ Reiniciar</button>
+          </div>
+
+          <!-- Leyenda de colores -->
+          <div class="card" style="background: rgba(15,23,42,0.6);">
+            <div class="telemetry-title" style="margin-bottom: 10px;">Leyenda de colores</div>
+            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem;">
+              <div class="vector-indicator ke-dot" style="color: var(--ke-color);">Energía cinética (K = ½mv²)</div>
+              <div class="vector-indicator pe-dot" style="color: var(--pe-color);">Energía potencial (U = mgh)</div>
+              <div class="vector-indicator thermal-dot" style="color: var(--thermal-color);">Energía térmica / disipada (Q)</div>
+            </div>
+          </div>
+
+          <div class="card" style="background: rgba(16,185,129,0.05); border-color: rgba(16,185,129,0.15);">
+            <div class="telemetry-title" style="color: var(--speed-color);">Observaciones del Tutor:</div>
+            <p style="font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary);">
+              Fíjate cómo la barra <strong style="color:var(--ke-color);">verde (K)</strong> crece mientras la barra <strong style="color:var(--pe-color);">azul (U)</strong> decrece al bajar. En el fondo, K es máxima y U es mínima. La suma K + U + Q = E₀ siempre.
+            </p>
+          </div>
+
+          <button id="btn-next-to-phase4" class="btn-action" disabled>
+            Ver Resultados: Fase 4 →
+          </button>
+          <button id="btn-back-to-phase2" class="btn-secondary">
+            ← Regresar a Fase 2
+          </button>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             FASE 4: EXAMINAR LA SOLUCIÓN
+        ════════════════════════════════════════════════════════════════ -->
+        <div id="phase4-container" class="polya-phase-container">
+          <h2><span class="phase-number">4</span> Examinar la solución</h2>
+          <p class="phase-intro">
+            Compara tu predicción con los valores reales del simulador. Evalúa si el principio de conservación de la energía se cumplió correctamente.
+          </p>
+
+          <!-- Tabla comparativa -->
+          <table class="contrast-table">
+            <thead>
+              <tr>
+                <th>Magnitud</th>
+                <th>Tu Predicción</th>
+                <th>Física Real</th>
+                <th>Error</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="parameter-name">K en el fondo</td>
+                <td id="table-pred-ke">— J</td>
+                <td id="table-ke-real">— J</td>
+                <td><span id="badge-ke-error" class="error-badge low">—</span></td>
+              </tr>
+              <tr>
+                <td class="parameter-name">U en el fondo</td>
+                <td style="color: var(--text-muted);">≈ 0 J</td>
+                <td id="table-pe-real">— J</td>
+                <td style="color: var(--text-muted);">N/A</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Mensaje de conservación -->
+          <div id="conservation-msg"></div>
+
+          <!-- Retroalimentación pedagógica -->
+          <div class="tutor-feedback-box" style="margin-top: 16px;">
+            <strong>Retroalimentación didáctica:</strong>
+            <span id="tutor-feedback-text">Ejecuta la simulación hasta el fondo de la rampa para ver los resultados.</span>
+          </div>
+
+          <button id="btn-restart-lab" class="btn-action" style="margin-top: 16px;">
+            Reiniciar laboratorio ↺
+          </button>
+        </div>
+
+      </div><!-- /panel-content-wrapper -->
+    </div><!-- /tutor-panel -->
+  </div><!-- /app-layout -->
+
+  <script type="module" src="../js/energia/main.js"></script>
+</body>
+</html>

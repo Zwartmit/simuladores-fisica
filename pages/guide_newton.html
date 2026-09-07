@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Guía didáctica interactiva para el laboratorio virtual de Leyes de Newton y Plano Inclinado, bajo Polya.">
+  <title>Guía Didáctica — Leyes de Newton</title>
+
+  <!-- SEO & Meta Tags -->
+  <meta name="description"
+    content="Laboratorio virtual de física. Simuladores interactivos con metodología de Polya. Conservación de la energía, cinemática, fuerzas, rotación, gravitación y oscilaciones.">
+  <meta name="keywords"
+    content="física, simulador, virtual, polya, cinemática, dinámica, energía, gravitación, péndulo, masa-resorte, educación, UNIR">
+  <meta name="author" content="Zwartmit">
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Laboratorio virtual de física">
+  <meta property="og:description"
+    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta property="og:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+  <meta property="og:url" content="https://steam-unir.netlify.app/">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Laboratorio virtual de física">
+  <meta name="twitter:description"
+    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta name="twitter:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+
+  <!-- Favicons -->
+  <link rel="icon" href="../assets/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="../assets/favicon.png">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --bg-primary: #090f1a;
+      --bg-secondary: #0f172a;
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #64748b;
+      --accent: #3b82f6;
+      --glow-accent: 0 0 15px rgba(59, 130, 246, 0.4);
+      --font-sans: 'Outfit', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --border-radius-lg: 16px;
+      --border-radius-md: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .guide-container {
+      max-width: 900px;
+      width: 100%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--border-radius-lg);
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    header {
+      border-bottom: 1px solid var(--panel-border);
+      padding-bottom: 24px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .guide-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    .guide-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .back-btn {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #60a5fa;
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+      background: rgba(59, 130, 246, 0.25);
+    }
+
+    p {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-top: 40px;
+      margin-bottom: 16px;
+      color: #f8fafc;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 8px;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-top: 24px;
+      margin-bottom: 12px;
+      color: #93c5fd;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .phase-badge {
+      background: var(--accent);
+      color: #ffffff;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+
+    .card {
+      background: rgba(30, 41, 59, 0.4);
+      border: 1px solid var(--panel-border);
+      padding: 20px;
+      border-radius: var(--border-radius-md);
+      margin-bottom: 24px;
+    }
+
+    .math-block {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(59, 130, 246, 0.15);
+      padding: 16px;
+      border-radius: var(--border-radius-md);
+      margin: 16px 0;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      color: #93c5fd;
+      text-align: center;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .screenshot-container {
+      margin: 24px 0;
+      text-align: center;
+    }
+
+    .screenshot {
+      width: 100%;
+      max-width: 780px;
+      border-radius: var(--border-radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s ease;
+    }
+
+    .screenshot:hover {
+      transform: scale(1.01);
+      border-color: rgba(59, 130, 246, 0.4);
+    }
+
+    .caption {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+      font-style: italic;
+    }
+
+    ul {
+      margin-left: 20px;
+      margin-bottom: 20px;
+      color: var(--text-secondary);
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    strong {
+      color: #ffffff;
+    }
+
+    /* Enlaces */
+  </style>
+</head>
+
+<body>
+
+  <div class="guide-container">
+    <header>
+      <div>
+        <div class="guide-title">🍎 Leyes de Newton y Fuerzas</div>
+        <div class="guide-subtitle">Guía Didáctica del Estudiante · Metodología de Polya · Física — UNIR</div>
+      </div>
+      <a href="newton.html" class="back-btn">← Volver al simulador</a>
+    </header>
+
+    <p>
+      Bienvenido al **Laboratorio Virtual de Fuerzas**. Esta guía te apoyará en la comprensión y modelación de las
+      fuerzas de la gravedad, contacto y rozamiento que interactúan sobre un bloque apoyado en una rampa.
+      Estructuraremos tu razonamiento físico bajo las **fases heurísticas de resolución de problemas de George Pólya**,
+      basadas en la investigación del **Profesor Marcos Chacón Castro**.
+    </p>
+
+    <h2>1. Conceptos Físicos de Dinámica en Plano Inclinado</h2>
+    <p>
+      La dinámica estudia las causas del movimiento de los cuerpos basándose en las fuerzas aplicadas. En un plano
+      inclinado a un ángulo $\theta$ con rozamiento, actúan tres fuerzas fundamentales sobre el bloque:
+    </p>
+
+    <h3>1. Peso (Gravedad, W)</h3>
+    <p>
+      La atracción que ejerce la Tierra sobre el bloque de masa $m$. Apunta siempre de forma **vertical hacia el centro
+      del planeta (hacia abajo, ángulo polar 270°)**:
+    </p>
+    <div class="math-block">
+      W = m * g
+    </div>
+    <p>
+      Debido a la inclinación de la rampa, este vector se descompone en dos componentes ortogonales a los ejes de la
+      rampa:
+    </p>
+    <div class="math-block">
+      Wₓ = W * sin(θ) (Fuerza impulsora paralela a la rampa)<br>
+      W_y = W * cos(θ) (Fuerza perpendicular que empuja contra la rampa)
+    </div>
+
+    <h3>2. Fuerza Normal (N)</h3>
+    <p>
+      La reacción de la superficie de la rampa al ser presionada por el bloque. Apunta siempre de forma **perpendicular
+      al plano inclinado hacia arriba (ángulo polar θ + 90°)**. Por equilibrio en el eje perpendicular:
+    </p>
+    <div class="math-block">
+      N = W_y = W * cos(θ)
+    </div>
+
+    <h3>3. Fuerza de Fricción / Rozamiento (Ff)</h3>
+    <p>
+      La fuerza obstructiva generada por el contacto de las imperfecciones de las superficies. Se opone siempre al
+      sentido de deslizamiento **(paralela a la rampa hacia arriba, ángulo polar θ)**:
+    </p>
+    <ul>
+      <li><strong>Fricción Estática Máxima:</strong> La fuerza límite antes de romper el reposo ($F_{fs\_max} = \mu_s
+        \cdot N$).</li>
+      <li><strong>Si $W_x \le F_{fs\_max}$ (Equilibrio):</strong> El bloque no se mueve y la fricción estática real es
+        exactamente igual a la componente impulsora del peso ($F_f = W_x$).</li>
+      <li><strong>Si $W_x > F_{fs\_max}$ (Dinámica):</strong> El bloque acelera rampa abajo venciendo la fricción
+        cinética constante ($F_f = F_{fk} = \mu_k \cdot N$).</li>
+    </ul>
+
+    <h2>2. Secuencia de Aprendizaje en el Simulador</h2>
+
+    <!-- Fase 1 -->
+    <h3><span class="phase-badge">1</span> Comprender el problema (Variables)</h3>
+    <p>
+      Familiarízate con las variables de la rampa ($\theta$, masa $m$, coeficientes de rozamiento $\mu_s, \mu_k$).
+    </p>
+
+    <div class="screenshot-container">
+      <img class="screenshot" src="../assets/guides/sim_newton_comprension_1779849993959.png" alt="Fase 1: Configurar Plano y Gravedad">
+      <div class="caption">Figura 1: Interfaz de la Fase 1. Muestra la rampa del plano inclinado a un ángulo variable y
+        el bloque en reposo, con sliders para regular masa, inclinación y fricciones.</div>
+    </div>
+
+    <!-- Fase 2 -->
+    <h3><span class="phase-badge">2</span> Concebir un plan (Diagrama de cuerpo libre - DCL)</h3>
+    <p>
+      Formula tu hipótesis de fuerzas. En esta fase debes **diseñar el Diagrama de cuerpo libre (DCL)** estimando las
+      magnitudes y direcciones polares exactas en Newtons.
+    </p>
+
+    <div class="screenshot-container">
+      <img class="screenshot" src="../assets/guides/sim_newton_dcl_1779850010919.png" alt="Fase 2: Dibujar el DCL interactivo">
+      <div class="caption">Figura 2: Interfaz de la Fase 2. Muestra los vectores interactivos de hipótesis W?, N?, Ff?
+        dibujados por el alumno en color morado neón sobre el bloque.</div>
+    </div>
+
+    <div class="card">
+      <strong>Guía para orientar tus vectores en el DCL (Fase 2):</strong>
+      <ul>
+        <li><strong>Peso (W):</strong> Dirección vertical abajo (Ángulo polar: <strong>270°</strong>). Su magnitud es $m
+          \cdot g$.</li>
+        <li><strong>Normal (N):</strong> Dirección perpendicular a la rampa (Ángulo polar: <strong>θ + 90°</strong>). Su
+          magnitud es $W \cos(\theta)$.</li>
+        <li><strong>Fricción (Ff):</strong> Dirección paralela a la rampa opuesta al deslizamiento (Ángulo polar:
+          <strong>θ</strong>). Su magnitud es $W \sin(\theta)$ en equilibrio.
+        </li>
+      </ul>
+    </div>
+
+    <!-- Fase 3 -->
+    <h3><span class="phase-badge">3</span> Ejecutar el plan (Dinámica en vivo)</h3>
+    <p>
+      Inicia el experimento para observar si las fuerzas impuestas generan movimiento o equilibrio estático.
+    </p>
+
+    <!-- Fase 4 -->
+    <h3><span class="phase-badge">4</span> Examinar la solución ("Mirar hacia atrás")</h3>
+    <p>
+      Evalúa tu precisión matemática. El Tutor Pólya confrontará tus ángulos y magnitudes del DCL de la Fase 2 contra
+      las fuerzas reales analíticas.
+    </p>
+
+    <div class="screenshot-container">
+      <img class="screenshot" src="../assets/guides/sim_newton_revisar_1779850032088.png" alt="Fase 4: Contraste y Calificación del DCL">
+      <div class="caption">Figura 3: Interfaz de la Fase 4. Muestra la rampa con los vectores teóricos finales (Peso en
+        rojo, Normal en azul, Fricción en naranja) y tu calificación didáctica.</div>
+    </div>
+
+    <div class="card">
+      <strong>Retroalimentación Metacognitiva:</strong>
+      <p>
+        El Tutor calculará la desviación angular y de magnitud, otorgándote una puntuación. Si cometiste un desvío (como
+        apuntar el Peso en la dirección del plano), el Tutor te guiará para que identifiques el error de modelación
+        vectorial y asimiles las leyes de Newton.
+      </p>
+    </div>
+
+
+
+  </div>
+
+</body>
+
+</html>
