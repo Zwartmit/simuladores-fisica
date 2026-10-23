@@ -1,36 +1,50 @@
 /**
- * @fileoverview Renderizador Canvas para la simulación de Gravitación universal.
- * Dibuja el sistema estrella-planeta: trayectoria orbital, vectores de fuerza
- * y velocidad, panel de energía, y tabla de Kepler III en tiempo real.
+ * @fileoverview Renderizador Canvas para la simulación de Gravitación universal (estilo "cuaderno").
+ * Esquema orbital sobre papel polar: la estrella (ocre) en el foco, la elipse teórica
+ * punteada, la trayectoria recorrida a lápiz, el planeta en tinta, la velocidad en azul y
+ * la fuerza gravitatoria en rojo. Arriba a la derecha, la tabla de verificación de Kepler III.
  */
+
+import { readInkPalette, FONTS, drawArrowHead } from '../shared/inkPalette.js';
 
 export class CanvasRendererGravitacion {
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
+    this.palette = readInkPalette();
 
-    // Colores
-    this.COLOR_STAR = '#fbbf24'; // Amarillo dorado → estrella
-    this.COLOR_PLANET = '#60a5fa'; // Azul            → planeta
-    this.COLOR_ORBIT = '#1e3a5f'; // Azul oscuro     → trayectoria
-    this.COLOR_FORCE = '#ef4444'; // Rojo            → fuerza gravitacional
-    this.COLOR_VELOCITY = '#10b981'; // Verde           → velocidad
-    this.COLOR_ENERGY = '#a855f7'; // Púrpura         → energía total
+    // Tintas
+    this.COLOR_STAR = this.palette.ochre;
+    this.COLOR_PLANET = this.palette.ink;
+    this.COLOR_ORBIT = this.palette.blue;
+    this.COLOR_FORCE = this.palette.red;
+    this.COLOR_VELOCITY = this.palette.blue;
+    this.COLOR_KEPLER = this.palette.green;
 
+    this.scale = 1;
+    this.W = 0;
+    this.H = 0;
+    this._dpr = 0;
     this._resize();
   }
 
   _resize() {
     const rect = this.canvas.parentElement.getBoundingClientRect();
-    this.canvas.width = rect.width || 800;
-    this.canvas.height = rect.height || 600;
-    this.W = this.canvas.width;
-    this.H = this.canvas.height;
-    // Centro del sistema en el canvas
+    const dpr = window.devicePixelRatio || 1;
+    const w = rect.width || 800;
+    const h = rect.height || 600;
+
+    if (w !== this.W || h !== this.H || dpr !== this._dpr) {
+      this.canvas.width = w * dpr;
+      this.canvas.height = h * dpr;
+      this._dpr = dpr;
+    }
+    this.ctx.setTransform(this._dpr, 0, 0, this._dpr, 0, 0);
+    this.W = w;
+    this.H = h;
+    // Centro del sistema (la estrella): algo a la izquierda para dejar sitio a la tabla
     this.cx = this.W * 0.47;
-    this.cy = this.H * 0.50;
-    // Factor de escala: 1 unidad de mundo = scale px
-    this.scale = Math.min(this.W, this.H) / 500;
+    this.cy = this.H * 0.5;
   }
 
   /** Convierte coordenadas de mundo a píxeles del canvas */
@@ -51,46 +65,68 @@ export class CanvasRendererGravitacion {
     // Escala para que toda la elipse quepa (el foco/estrella está a la izquierda del centro)
     const halfExtent = Math.min(this.W * 0.47, this.H * 0.5) * 0.85;
     this.scale = halfExtent / Math.max(engine.getTheoreticalApoapsis(), 100);
+
     const { ctx, W, H } = this;
     ctx.clearRect(0, 0, W, H);
 
     this._drawBackground();
+    this._drawTheoreticalOrbit(engine);
     this._drawOrbitPath(engine.getOrbitPath());
     this._drawStar();
     this._drawPlanet(state);
     this._drawVectors(state);
-    this._drawInfoPanel(state, engine);
-    this._drawKeplerPanel(engine.getKeplerLog());
+    this._drawKeplerPanel(engine.getKeplerLog(), engine);
   }
 
-  // ─── Fondo espacial ──────────────────────────────────────────────────────────
+  // ─── Fondo: papel polar ──────────────────────────────────────────────────────
 
   _drawBackground() {
-    const { ctx, W, H } = this;
-
-    // Gradiente de fondo
-    const grad = ctx.createRadialGradient(this.cx, this.cy, 0, this.cx, this.cy, Math.max(W, H));
-    grad.addColorStop(0, '#0d1b2a');
-    grad.addColorStop(0.5, '#090f1a');
-    grad.addColorStop(1, '#060b14');
-    ctx.fillStyle = grad;
+    const { ctx, W, H, palette, cx, cy } = this;
+    ctx.fillStyle = palette.paper;
     ctx.fillRect(0, 0, W, H);
 
-    // Estrellas de fondo (pseudo-random fijo por semilla)
-    ctx.fillStyle = 'rgba(255,255,255,0.6)';
-    const stars = [[42, 87], [185, 34], [320, 210], [90, 450], [700, 120], [550, 380],
-    [130, 300], [450, 80], [670, 500], [230, 500], [370, 430], [610, 220],
-    [80, 180], [480, 310], [730, 70], [290, 140], [620, 440], [160, 390],
-    [510, 160], [350, 490], [75, 520], [430, 250], [680, 340], [200, 60]];
-    stars.forEach(([sx, sy]) => {
-      const r = 0.8 + ((sx * sy) % 7) * 0.2;
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = palette.graphMinor;
+
+    // Circunferencias concéntricas cada 50 unidades (cada 100 algo más marcadas)
+    const maxR = Math.hypot(W, H);
+    for (let r = 50; r * this.scale < maxR; r += 50) {
+      ctx.strokeStyle = r % 100 === 0 ? palette.graphMajor : palette.graphMinor;
       ctx.beginPath();
-      ctx.arc(sx % W, sy % H, r, 0, Math.PI * 2);
-      ctx.fill();
-    });
+      ctx.arc(cx, cy, r * this.scale, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // Ejes que pasan por la estrella
+    ctx.strokeStyle = palette.graphMajor;
+    ctx.beginPath();
+    ctx.moveTo(0, cy);
+    ctx.lineTo(W, cy);
+    ctx.moveTo(cx, 0);
+    ctx.lineTo(cx, H);
+    ctx.stroke();
   }
 
-  // ─── Trayectoria orbital ─────────────────────────────────────────────────────
+  // ─── Elipse teórica (referencia punteada) ────────────────────────────────────
+
+  _drawTheoreticalOrbit(engine) {
+    const { ctx, palette } = this;
+    const a = engine.a;
+    const e = engine.ecc;
+    const b = a * Math.sqrt(1 - e * e);
+    const center = this.w2c(-a * e, 0); // el centro de la elipse queda opuesto al periapsis
+
+    ctx.save();
+    ctx.strokeStyle = palette.muted;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([2, 5]);
+    ctx.beginPath();
+    ctx.ellipse(center.x, center.y, a * this.scale, b * this.scale, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // ─── Trayectoria orbital recorrida ───────────────────────────────────────────
 
   _drawOrbitPath(path) {
     if (path.length < 2) return;
@@ -101,8 +137,8 @@ export class CanvasRendererGravitacion {
       const { x, y } = this.w2c(pt.x, pt.y);
       i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
     });
-    ctx.strokeStyle = 'rgba(59,130,246,0.35)';
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = this.COLOR_ORBIT;
+    ctx.lineWidth = 2;
     ctx.stroke();
   }
 
@@ -110,189 +146,127 @@ export class CanvasRendererGravitacion {
 
   _drawStar() {
     const { ctx, cx, cy } = this;
-    const r = 22;
+    const r = 11;
 
-    // Halo exterior
-    const halo = ctx.createRadialGradient(cx, cy, r * 0.5, cx, cy, r * 3);
-    halo.addColorStop(0, 'rgba(251,191,36,0.3)');
-    halo.addColorStop(1, 'rgba(251,191,36,0)');
-    ctx.fillStyle = halo;
+    // Rayos cortos alrededor (símbolo de Sol de esquema técnico)
+    ctx.strokeStyle = this.COLOR_STAR;
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(cx, cy, r * 3, 0, Math.PI * 2);
-    ctx.fill();
+    for (let i = 0; i < 12; i++) {
+      const a = (i * Math.PI) / 6;
+      ctx.moveTo(cx + Math.cos(a) * (r + 4), cy + Math.sin(a) * (r + 4));
+      ctx.lineTo(cx + Math.cos(a) * (r + 10), cy + Math.sin(a) * (r + 10));
+    }
+    ctx.stroke();
 
-    // Cuerpo de la estrella
-    const grad = ctx.createRadialGradient(cx - 6, cy - 6, 2, cx, cy, r);
-    grad.addColorStop(0, '#fff7ed');
-    grad.addColorStop(0.4, '#fbbf24');
-    grad.addColorStop(1, '#d97706');
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.fillStyle = grad;
-    ctx.shadowColor = '#fbbf24';
-    ctx.shadowBlur = 30;
+    ctx.fillStyle = this.COLOR_STAR;
     ctx.fill();
-    ctx.shadowBlur = 0;
   }
 
   // ─── Planeta ─────────────────────────────────────────────────────────────────
 
   _drawPlanet(state) {
-    const { ctx } = this;
+    const { ctx, palette } = this;
     const { x, y } = this.w2c(state.x, state.y);
-    const r = 9;
 
-    const grad = ctx.createRadialGradient(x - 3, y - 3, 1, x, y, r);
-    grad.addColorStop(0, '#bfdbfe');
-    grad.addColorStop(0.5, '#3b82f6');
-    grad.addColorStop(1, '#1e40af');
     ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fillStyle = grad;
-    ctx.shadowColor = '#3b82f6';
-    ctx.shadowBlur = 15;
+    ctx.arc(x, y, 6, 0, Math.PI * 2);
+    ctx.fillStyle = this.COLOR_PLANET;
     ctx.fill();
-    ctx.shadowBlur = 0;
 
-    // Velocímetro encima del planeta
-    ctx.fillStyle = 'rgba(255,255,255,0.85)';
-    ctx.font = 'bold 9px JetBrains Mono, monospace';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'bottom';
-    ctx.fillText(`${state.v.toFixed(1)} u/s`, x, y - r - 3);
+    ctx.strokeStyle = palette.ink;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(x, y, 10, 0, Math.PI * 2);
+    ctx.stroke();
   }
 
   // ─── Vectores de fuerza y velocidad ─────────────────────────────────────────
 
   _drawVectors(state) {
-    const { ctx } = this;
     const pCanvas = this.w2c(state.x, state.y);
 
-    // Velocidad (verde) — tangente a la órbita
-    const vScale = 3;
-    const vLen = Math.min(state.v * vScale, 80);
+    // Velocidad: tangente a la órbita
+    const vLen = Math.min(state.v * 0.6, 80);
     const vAngle = Math.atan2(-state.vy, state.vx); // invertir Y para canvas
-    this._arrow(pCanvas.x, pCanvas.y, vLen, vAngle, this.COLOR_VELOCITY, `v`);
+    this._arrow(pCanvas.x, pCanvas.y, vLen, vAngle, this.COLOR_VELOCITY, 'v');
 
-    // Fuerza gravitacional (rojo) — apunta al centro
-    const fAngle = Math.atan2(-(-state.y), -state.x); // hacia (0,0) en canvas
-    const fLen = Math.min(state.F * 0.4, 70);
-    this._arrow(pCanvas.x, pCanvas.y, fLen, fAngle, this.COLOR_FORCE, `F_g`);
+    // Fuerza gravitacional: apunta al centro
+    const fAngle = Math.atan2(state.y, -state.x);
+    const fLen = Math.min(state.F * 0.8, 70);
+    this._arrow(pCanvas.x, pCanvas.y, fLen, fAngle, this.COLOR_FORCE, 'F');
   }
 
   _arrow(x, y, len, angle, color, label) {
-    const { ctx } = this;
     if (len < 3) return;
+    const { ctx } = this;
     const ex = x + len * Math.cos(angle);
     const ey = y + len * Math.sin(angle);
 
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 2.5;
     ctx.beginPath();
     ctx.moveTo(x, y);
     ctx.lineTo(ex, ey);
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 2.5;
-    ctx.shadowColor = color;
-    ctx.shadowBlur = 8;
     ctx.stroke();
-    ctx.shadowBlur = 0;
+    drawArrowHead(ctx, ex, ey, angle, 10);
 
-    // Punta
-    ctx.beginPath();
-    ctx.moveTo(ex, ey);
-    ctx.lineTo(ex - 10 * Math.cos(angle - 0.4), ey - 10 * Math.sin(angle - 0.4));
-    ctx.lineTo(ex - 10 * Math.cos(angle + 0.4), ey - 10 * Math.sin(angle + 0.4));
-    ctx.closePath();
-    ctx.fillStyle = color;
-    ctx.fill();
-
-    // Label
-    ctx.fillStyle = color;
-    ctx.font = 'bold 10px JetBrains Mono, monospace';
+    ctx.font = `italic 600 17px ${FONTS.display}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(label, ex + 14 * Math.cos(angle), ey + 14 * Math.sin(angle));
   }
 
-  // ─── Panel de estado orbital ─────────────────────────────────────────────────
+  // ─── Tabla de Kepler III ─────────────────────────────────────────────────────
 
-  _drawInfoPanel(state, engine) {
-    const { ctx, H } = this;
-    const panelX = 20, panelY = H - 185;
-    const panelW = 210, panelH = 165;
-
-    ctx.fillStyle = 'rgba(9,15,26,0.90)';
-    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.roundRect(panelX, panelY, panelW, panelH, 12);
-    ctx.fill(); ctx.stroke();
-
-    ctx.fillStyle = 'rgba(100,116,139,1)';
-    ctx.font = 'bold 10px Outfit, sans-serif';
-    ctx.textAlign = 'left'; ctx.textBaseline = 'top';
-    ctx.fillText('ESTADO ORBITAL', panelX + 12, panelY + 10);
-
-    const rows = [
-      { label: 'r (dist)', value: `${state.r.toFixed(1)} u`, color: '#cbd5e1' },
-      { label: 'v (vel)', value: `${state.v.toFixed(2)} u/s`, color: this.COLOR_VELOCITY },
-      { label: 'F_g (fuerza)', value: `${state.F.toFixed(2)} u`, color: this.COLOR_FORCE },
-      { label: 'KE', value: `${state.KE.toFixed(1)} J`, color: '#10b981' },
-      { label: 'PE', value: `${state.PE.toFixed(1)} J`, color: '#3b82f6' },
-      { label: 'E_total', value: `${state.E.toFixed(1)} J`, color: this.COLOR_ENERGY },
-    ];
-
-    rows.forEach((row, i) => {
-      const y = panelY + 26 + i * 22;
-      ctx.fillStyle = 'rgba(148,163,184,0.7)'; ctx.font = '10px Outfit, sans-serif';
-      ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-      ctx.fillText(row.label, panelX + 12, y);
-      ctx.fillStyle = row.color; ctx.font = 'bold 10px JetBrains Mono, monospace';
-      ctx.textAlign = 'right';
-      ctx.fillText(row.value, panelX + panelW - 10, y);
-    });
-  }
-
-  // ─── Panel de Kepler III ─────────────────────────────────────────────────────
-
-  _drawKeplerPanel(keplerLog) {
+  _drawKeplerPanel(keplerLog, engine) {
     if (keplerLog.length === 0) return;
-    const { ctx, W } = this;
+    const { ctx, W, palette } = this;
 
-    const panelW = 220, panelH = 90 + keplerLog.length * 18;
-    const panelX = W - panelW - 20, panelY = 20;
+    const rows = keplerLog.slice(-4);
+    const panelW = Math.min(200, W * 0.46);
+    const panelH = 70 + rows.length * 18;
+    const x = W - panelW - 16;
+    const y = 16;
 
-    ctx.fillStyle = 'rgba(9,15,26,0.90)';
-    ctx.strokeStyle = 'rgba(168,85,247,0.2)';
+    ctx.fillStyle = palette.paper;
+    ctx.fillRect(x, y, panelW, panelH);
+    ctx.strokeStyle = palette.ink;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + panelW, y);
+    ctx.stroke();
+
+    ctx.fillStyle = palette.muted;
+    ctx.font = `500 10px ${FONTS.mono}`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText('KEPLER III', x, y + 8);
+    ctx.fillText('ÓRBITA  T (s)   a³/T²', x, y + 24);
+
+    ctx.strokeStyle = palette.rule;
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.roundRect(panelX, panelY, panelW, panelH, 12);
-    ctx.fill(); ctx.stroke();
+    ctx.moveTo(x, y + 38);
+    ctx.lineTo(x + panelW, y + 38);
+    ctx.stroke();
 
-    ctx.fillStyle = '#a855f7'; ctx.font = 'bold 10px Outfit, sans-serif';
-    ctx.textAlign = 'left'; ctx.textBaseline = 'top';
-    ctx.fillText('VERIFICACIÓN KEPLER III', panelX + 10, panelY + 10);
-
-    ctx.fillStyle = 'rgba(148,163,184,0.7)'; ctx.font = '9px Outfit, sans-serif';
-    ctx.fillText('Órbita   |   T (s)   |  a³/T² (cte.)', panelX + 10, panelY + 26);
-
-    ctx.strokeStyle = 'rgba(168,85,247,0.15)'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(panelX + 10, panelY + 38); ctx.lineTo(panelX + panelW - 10, panelY + 38); ctx.stroke();
-
-    keplerLog.slice(-5).forEach((entry, i) => {
-      const y = panelY + 46 + i * 18;
-      ctx.fillStyle = '#e9d5ff'; ctx.font = '9px JetBrains Mono, monospace';
-      ctx.textAlign = 'left';
-      ctx.fillText(`#${entry.orbit}`, panelX + 12, y);
-      ctx.fillText(`${entry.T.toFixed(1)}`, panelX + 55, y);
-      ctx.fillStyle = '#c084fc';
-      ctx.fillText(`${entry.ratio.toFixed(1)}`, panelX + 130, y);
+    rows.forEach((entry, i) => {
+      const ry = y + 46 + i * 18;
+      ctx.fillStyle = palette.ink;
+      ctx.font = `400 11px ${FONTS.mono}`;
+      ctx.fillText(`#${entry.orbit}`, x, ry);
+      ctx.fillText(entry.T.toFixed(1), x + 56, ry);
+      ctx.fillStyle = this.COLOR_KEPLER;
+      ctx.fillText(entry.ratio.toFixed(0), x + 118, ry);
     });
 
-    // Constante promedio
-    if (keplerLog.length > 0) {
-      const avgRatio = keplerLog.reduce((s, e) => s + e.ratio, 0) / keplerLog.length;
-      ctx.fillStyle = '#fbbf24'; ctx.font = 'bold 9px Outfit, sans-serif';
-      ctx.fillText(`Promedio a³/T² = ${avgRatio.toFixed(1)}`, panelX + 12, panelY + 46 + Math.min(keplerLog.length, 5) * 18 + 6);
-    }
+    ctx.fillStyle = palette.muted;
+    ctx.font = `400 10px ${FONTS.mono}`;
+    ctx.fillText(`GM/4π² = ${engine.getTheoreticalKeplerConstant().toFixed(0)}`, x, y + 48 + rows.length * 18);
   }
 }

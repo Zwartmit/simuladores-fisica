@@ -132,13 +132,13 @@ function startSimulation() {
     engine.isRunning = false;
     cancelAnimationFrame(animFrameId);
     lastTimestamp = null;
-    dom.btnSimPlay.textContent = '▶ Continuar Simulación';
+    dom.btnSimPlay.textContent = 'Continuar Simulación';
     dom.btnSimPlay.classList.remove('success');
   } else {
     // Iniciar / Reanudar
     engine.isRunning = true;
     lastTimestamp = null;
-    dom.btnSimPlay.textContent = '⏸ Pausar Simulación';
+    dom.btnSimPlay.textContent = 'Pausar Simulación';
     dom.btnSimPlay.classList.add('success');
     animFrameId = requestAnimationFrame(animationLoop);
   }
@@ -150,7 +150,7 @@ function resetSimulation() {
   engine.isRunning = false;
   engine.reset();
   peakKE = 0;
-  dom.btnSimPlay.textContent = '▶ Iniciar simulación';
+  dom.btnSimPlay.textContent = 'Iniciar simulación';
   dom.btnSimPlay.classList.remove('success');
   dom.btnNextToPhase4.disabled = true;
   renderer.draw(engine.getState(), engine);
@@ -187,14 +187,14 @@ function populateReview() {
   if (dom.conservationMsg) {
     if (friction === 0) {
       dom.conservationMsg.textContent = conserved
-        ? '✅ La energía mecánica se conservó. Sistema conservativo perfecto.'
-        : '⚠️ Pequeña discrepancia por error numérico del integrador.';
-      dom.conservationMsg.style.color = conserved ? '#10b981' : '#f59e0b';
+        ? 'La energía mecánica se conservó. Sistema conservativo perfecto.'
+        : 'Pequeña discrepancia por error numérico del integrador.';
+      dom.conservationMsg.style.color = conserved ? 'var(--blue)' : 'var(--ochre)';
     } else {
       const Q = state.Q.toFixed(1);
       dom.conservationMsg.textContent =
-        `🔥 Se disiparon ${Q} J como calor por fricción (μ=${friction.toFixed(2)}). Energía total conservada con disipación.`;
-      dom.conservationMsg.style.color = '#f59e0b';
+        `Se disiparon ${Q} J como calor por fricción (μ=${friction.toFixed(2)}). Energía total conservada con disipación.`;
+      dom.conservationMsg.style.color = 'var(--ochre)';
     }
   }
 
@@ -248,9 +248,9 @@ dom.quizOptions.forEach(btn => {
     const correct = btn.dataset.correct === 'true';
     btn.classList.add(correct ? 'correct' : 'incorrect');
     dom.phase1Feedback.textContent = correct
-      ? '✅ ¡Correcto! La energía total del sistema se conserva (sin fricción). KE + PE = constante.'
-      : '❌ Incorrecto. No es la velocidad — es la suma de energías (mecánica total) lo que se conserva.';
-    dom.phase1Feedback.style.color = correct ? '#10b981' : '#ef4444';
+      ? '¡Correcto! La energía total del sistema se conserva (sin fricción). KE + PE = constante.'
+      : 'Incorrecto. No es la velocidad — es la suma de energías (mecánica total) lo que se conserva.';
+    dom.phase1Feedback.style.color = correct ? 'var(--blue)' : 'var(--red)';
     dom.btnNextToPhase2.disabled = !correct;
   });
 });

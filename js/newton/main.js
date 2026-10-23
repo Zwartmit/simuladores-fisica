@@ -130,6 +130,7 @@ function init() {
  * Redibuja el lienzo.
  */
 function renderScene() {
+  renderer.fitView(engine.angleDeg, engine.maxRampLength);
   renderer.clear();
   renderer.drawGrid();
   renderer.drawRamp(engine.angleDeg, engine.maxRampLength);
@@ -141,9 +142,9 @@ function renderScene() {
 
   // Fase 2: Mostrar el DCL que está dibujando el estudiante en color morado neón
   if (currentPhase === 2) {
-    renderer.drawForceArrow(centerOfMass.x, centerOfMass.y, userForces.W.angle, userForces.W.magnitude, '#a855f7', 'W?');
-    renderer.drawForceArrow(centerOfMass.x, centerOfMass.y, userForces.N.angle, userForces.N.magnitude, '#a855f7', 'N?');
-    renderer.drawForceArrow(centerOfMass.x, centerOfMass.y, userForces.Ff.angle, userForces.Ff.magnitude, '#a855f7', 'Ff?');
+    renderer.drawForceArrow(centerOfMass.x, centerOfMass.y, userForces.W.angle, userForces.W.magnitude, renderer.palette.ochre, 'W?');
+    renderer.drawForceArrow(centerOfMass.x, centerOfMass.y, userForces.N.angle, userForces.N.magnitude, renderer.palette.ochre, 'N?');
+    renderer.drawForceArrow(centerOfMass.x, centerOfMass.y, userForces.Ff.angle, userForces.Ff.magnitude, renderer.palette.ochre, 'Ff?');
   }
 
   // Fases 3 y 4: Graficar los vectores de fuerzas físicas reales
@@ -214,12 +215,19 @@ function updateTelemetryDisplay() {
   telemetryFf.textContent = `${engine.Ff_real.toFixed(2)} N`;
   telemetryA.textContent = `${engine.acceleration.toFixed(2)} m/s²`;
 
-  if (engine.isMoving && engine.t > 0) {
-    telemetryStatus.textContent = 'En Movimiento';
-    telemetryStatus.style.color = '#10b981'; // Verde
+  // El estado refleja la física del escenario, no solo si la simulación ya arrancó
+  if (!engine.isMoving) {
+    telemetryStatus.textContent = 'Equilibrio estático';
+    telemetryStatus.style.color = 'var(--ochre)'; // Tinta ocre: la fricción estática basta
+  } else if (engine.isAtBottom) {
+    telemetryStatus.textContent = 'Llegó al final';
+    telemetryStatus.style.color = 'var(--ink)';
+  } else if (engine.t > 0) {
+    telemetryStatus.textContent = 'Deslizando';
+    telemetryStatus.style.color = 'var(--blue)'; // Tinta azul: en movimiento
   } else {
-    telemetryStatus.textContent = 'Equilibrio / Estático';
-    telemetryStatus.style.color = '#f59e0b'; // Amarillo
+    telemetryStatus.textContent = 'Se deslizará';
+    telemetryStatus.style.color = 'var(--red)'; // Tinta roja: el peso vence a la fricción
   }
 }
 

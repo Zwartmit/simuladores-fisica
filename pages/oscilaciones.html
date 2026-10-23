@@ -34,107 +34,58 @@
   <link rel="icon" href="../assets/favicon.png" type="image/png">
   <link rel="apple-touch-icon" href="../assets/favicon.png">
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="../css/style.css">
-  <style>
-    .system-selector {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .btn-sys {
-      flex: 1;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(15, 23, 42, 0.5);
-      color: var(--text-secondary);
-      cursor: pointer;
-      font-weight: 600;
-      font-family: var(--font-sans);
-      transition: all 0.2s;
-    }
-
-    .btn-sys:hover {
-      background: rgba(30, 41, 59, 0.8);
-    }
-
-    .btn-sys.active {
-      background: rgba(59, 130, 246, 0.2);
-      border-color: #3b82f6;
-      color: #60a5fa;
-    }
-
-    .cycles-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(59, 130, 246, 0.1);
-      border: 1px solid rgba(59, 130, 246, 0.25);
-      border-radius: 8px;
-      padding: 8px 14px;
-      font-size: 0.88rem;
-      color: #93c5fd;
-      font-weight: 600;
-      margin-bottom: 14px;
-    }
-
-    .cycles-badge span {
-      font-family: var(--font-mono);
-      font-size: 1.1rem;
-      color: #bfdbfe;
-    }
-  </style>
 </head>
 
 <body>
 
-  <header>
-    <div style="display:flex;align-items:center;gap:15px;">
-      <a href="../index.html" class="tutor-badge"
-        style="background:rgba(59,130,246,0.15);border-color:rgba(59,130,246,0.3);color:#60a5fa;text-decoration:none;cursor:pointer;font-weight:bold;">🏠
-        Menú Principal</a>
-    </div>
-    <h1>Laboratorio de física: <span>Oscilaciones mecánicas</span></h1>
-    <div style="display:flex;align-items:center;gap:15px;">
-      <a href="guide_oscilaciones.html" class="tutor-badge"
-        style="background:rgba(168,85,247,0.15);border-color:rgba(168,85,247,0.3);color:#c084fc;text-decoration:none;cursor:pointer;">Ver
-        Guía Didáctica 📖</a>
-      <div class="tutor-badge">Tutor Activo: Polya</div>
-    </div>
-  </header>
-
   <div id="app-layout">
 
-    <!-- Canvas -->
-    <div id="simulation-area">
-      <div id="vector-telemetry">
-        <div class="telemetry-title">Telemetría MAS</div>
-        <div class="telemetry-grid">
-          <div id="q-label">Posición (x/θ)</div>
-          <div id="telemetry-q" class="value-display">0.0</div>
-
-          <div id="v-label">Velocidad (v/ω)</div>
-          <div id="telemetry-v" class="value-display" style="color:#ef4444;">0.00</div>
-
-          <div>Energía Total</div>
-          <div id="telemetry-e" class="value-display" style="color:#fbbf24;">0.0 J</div>
-
-          <div>Tiempo (t)</div>
-          <div id="telemetry-t" class="value-display">0.0 s</div>
-        </div>
+    <!-- Escenario: título, lienzo interactivo y lectura de datos -->
+    <main id="simulation-area">
+      <div class="masthead rise" style="--i: 0">
+        <a class="crumb" href="../index.html">← Índice de laboratorios</a>
+        <a class="crumb" href="guide_oscilaciones.html">Guía didáctica ↗</a>
       </div>
-      <canvas id="physics-canvas"></canvas>
-    </div>
+      <h1 class="stage-title rise" style="--i: 1">Oscilaciones <em>mecánicas</em></h1>
+      <p class="stage-subtitle rise" style="--i: 2">Un péndulo o un resorte: ¿cuánto tarda en repetirse el movimiento?</p>
+
+      <!-- Lienzo de renderizado -->
+      <div class="canvas-wrap rise" style="--i: 3">
+        <canvas id="physics-canvas" aria-label="Péndulo o masa-resorte oscilando"></canvas>
+      </div>
+
+      <!-- Lectura de datos en tiempo real -->
+      <dl id="vector-telemetry" class="readout rise" style="--i: 4">
+        <div>
+          <dt><span id="q-label">Posición (x/θ)</span></dt>
+          <dd id="telemetry-q">0.0</dd>
+        </div>
+        <div>
+          <dt><span id="v-label">Velocidad (v/ω)</span></dt>
+          <dd id="telemetry-v">0.00</dd>
+        </div>
+        <div>
+          <dt>Energía Total</dt>
+          <dd id="telemetry-e">0.0 J</dd>
+        </div>
+        <div>
+          <dt>Tiempo (t)</dt>
+          <dd id="telemetry-t">0.0 s</dd>
+        </div>
+      </dl>
+    </main>
 
     <!-- Panel Tutor -->
     <div id="tutor-panel">
-      <div id="polya-steps-bar">
-        <div id="tab-phase1" class="step-tab active">1. Comprender</div>
-        <div id="tab-phase2" class="step-tab">2. Planear</div>
-        <div id="tab-phase3" class="step-tab">3. Ejecutar</div>
-        <div id="tab-phase4" class="step-tab">4. Revisar</div>
-      </div>
+      <nav id="polya-steps-bar" class="rise" style="--i: 2" aria-label="Fases del método de Pólya">
+        <div id="tab-phase1" class="step-tab active">1 Comprender</div>
+        <div id="tab-phase2" class="step-tab">2 Planear</div>
+        <div id="tab-phase3" class="step-tab">3 Ejecutar</div>
+        <div id="tab-phase4" class="step-tab">4 Revisar</div>
+      </nav>
 
       <div class="panel-content-wrapper">
 
@@ -151,7 +102,7 @@
           </div>
 
           <div class="card">
-            <div class="telemetry-title" style="margin-bottom:12px;">Parámetros del Sistema</div>
+            <div class="telemetry-title">Parámetros del Sistema</div>
 
             <!-- Panel Péndulo (Fase 1) -->
             <div id="panel-pendulum-phase1">
@@ -200,10 +151,11 @@
               <button class="option-btn" data-correct="false">Aumenta al doble</button>
               <button class="option-btn" data-correct="true">Se mantiene igual</button>
             </div>
-            <div id="phase1-feedback" style="margin-top:12px;font-size:0.82rem;min-height:20px;"></div>
+            <div id="phase1-feedback"></div>
           </div>
 
-          <button id="btn-next-to-phase2" class="btn-action" disabled>Proceder a Fase 2: Planear →</button>
+          <button id="btn-next-to-phase2" class="btn-action" disabled>Proceder a Fase 2: Planear
+          </button>
         </div>
 
         <!-- FASE 2: PLANEAR -->
@@ -249,19 +201,20 @@
               </div>
             </div>
 
-            <div id="teo-period-label" style="font-size:0.82rem;color:#3b82f6;font-weight:600;margin-top:8px;"></div>
+            <div id="teo-period-label" class="c-blue"></div>
           </div>
 
           <div class="card">
             <label for="input-pred-period">Predicción del período T (s)</label>
-            <div class="slider-container" style="margin-top:8px;">
+            <div class="slider-container">
               <input type="range" id="input-pred-period" min="0.1" max="10.0" step="0.1" value="2.5">
               <div id="val-pred-period" class="value-display">2.5 s</div>
             </div>
           </div>
 
-          <button id="btn-next-to-phase3" class="btn-action">Proceder a Fase 3: Ejecutar →</button>
-          <button id="btn-back-to-phase1" class="btn-secondary">← Regresar a Fase 1</button>
+          <button id="btn-next-to-phase3" class="btn-action">Proceder a Fase 3: Ejecutar
+          </button>
+          <button id="btn-back-to-phase1" class="btn-secondary">Regresar a Fase 1</button>
         </div>
 
         <!-- FASE 3: EJECUTAR -->
@@ -271,24 +224,25 @@
             verificar el período.</p>
 
           <div class="sim-controls-wrapper">
-            <button id="btn-sim-play" class="btn-action success btn-sim-play">▶ Iniciar oscilación</button>
-            <button id="btn-sim-reset" class="btn-secondary btn-sim-reset">↺ Reiniciar</button>
+            <button id="btn-sim-play" class="btn-action success btn-sim-play">Iniciar oscilación</button>
+            <button id="btn-sim-reset" class="btn-secondary btn-sim-reset">Reiniciar</button>
           </div>
 
           <div class="cycles-badge">
-            ⏱️ Ciclos completados: <span id="cycles-count">0</span>
+            Ciclos completados: <span id="cycles-count">0</span>
           </div>
 
-          <div class="card" style="background:rgba(16,185,129,0.05);border-color:rgba(16,185,129,0.15);">
-            <div class="telemetry-title" style="color:#10b981;">Observación del Tutor:</div>
-            <p style="font-size:0.85rem;line-height:1.5;color:var(--text-secondary);">
+          <div class="card margin-note">
+            <div class="telemetry-title c-blue">Observación del Tutor:</div>
+            <p>
               Observa la transformación de energía (gráfica inferior derecha). En el extremo del movimiento, la energía
               potencial (PE) es máxima y la cinética (KE) es cero. Al pasar por el punto de equilibrio, es al revés.
             </p>
           </div>
 
-          <button id="btn-next-to-phase4" class="btn-action" disabled>Ver Resultados: Fase 4 →</button>
-          <button id="btn-back-to-phase2" class="btn-secondary">← Regresar a Fase 2</button>
+          <button id="btn-next-to-phase4" class="btn-action" disabled>Ver Resultados: Fase 4
+          </button>
+          <button id="btn-back-to-phase2" class="btn-secondary">Regresar a Fase 2</button>
         </div>
 
         <!-- FASE 4: REVISAR -->
@@ -321,7 +275,7 @@
             <span id="tutor-feedback-text">Completa al menos un ciclo para ver los resultados.</span>
           </div>
 
-          <button id="btn-restart-lab" class="btn-action" style="margin-top:16px;">Reiniciar laboratorio ↺</button>
+          <button id="btn-restart-lab" class="btn-action">Reiniciar laboratorio</button>
         </div>
 
       </div>

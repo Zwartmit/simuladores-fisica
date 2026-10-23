@@ -34,171 +34,62 @@
   <link rel="icon" href="../assets/favicon.png" type="image/png">
   <link rel="apple-touch-icon" href="../assets/favicon.png">
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="../css/style.css">
-  <style>
-    :root {
-      --torque-color: #f59e0b;
-      --omega-color: #10b981;
-      --alpha-color: #ef4444;
-      --L-color: #a855f7;
-    }
-
-    /* Selector de cuerpo rígido */
-    .body-selector {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .body-btn {
-      flex: 1;
-      padding: 9px 6px;
-      background: rgba(30, 41, 59, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: var(--text-secondary);
-      border-radius: var(--border-radius-md);
-      font-family: var(--font-sans);
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition-smooth);
-      text-align: center;
-    }
-
-    .body-btn:hover {
-      background: rgba(59, 130, 246, 0.1);
-      border-color: rgba(59, 130, 246, 0.3);
-      color: var(--text-primary);
-    }
-
-    .body-btn.selected {
-      background: rgba(59, 130, 246, 0.2);
-      border-color: var(--accent);
-      color: #60a5fa;
-      box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
-    }
-
-    /* Barra de progreso de tiempo */
-    .time-progress-wrapper {
-      background: rgba(30, 41, 59, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 6px;
-      height: 10px;
-      overflow: hidden;
-      margin-bottom: 6px;
-    }
-
-    #time-progress {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--accent), #a855f7);
-      border-radius: 6px;
-      transition: width 0.1s linear;
-    }
-
-    #time-label {
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      text-align: right;
-      margin-bottom: 14px;
-    }
-
-    /* Indicadores de color para vectores */
-    .torque-tag {
-      color: var(--torque-color);
-      font-weight: 700;
-    }
-
-    .omega-tag {
-      color: var(--omega-color);
-      font-weight: 700;
-    }
-
-    .alpha-tag {
-      color: var(--alpha-color);
-      font-weight: 700;
-    }
-
-    .L-tag {
-      color: var(--L-color);
-      font-weight: 700;
-    }
-
-    /* Leyenda de vectores en el canvas */
-    .vector-legend {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      font-size: 0.83rem;
-    }
-
-    .vector-legend-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .vector-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-  </style>
 </head>
 
 <body>
 
-  <header>
-    <div style="display: flex; align-items: center; gap: 15px;">
-      <a href="../index.html" class="tutor-badge"
-        style="background:rgba(59,130,246,0.15);border-color:rgba(59,130,246,0.3);color:#60a5fa;text-decoration:none;cursor:pointer;font-weight:bold;">🏠
-        Menú Principal</a>
-    </div>
-    <h1>Laboratorio de física: <span>Dinámica rotacional</span></h1>
-    <div style="display: flex; align-items: center; gap: 15px;">
-      <a href="guide_rotacion.html" class="tutor-badge"
-        style="background:rgba(168,85,247,0.15);border-color:rgba(168,85,247,0.3);color:#c084fc;text-decoration:none;cursor:pointer;">Ver
-        Guía Didáctica 📖</a>
-      <div class="tutor-badge">Tutor Activo: Polya</div>
-    </div>
-  </header>
-
   <div id="app-layout">
 
-    <!-- Canvas -->
-    <div id="simulation-area">
-      <div id="vector-telemetry">
-        <div class="telemetry-title">Magnitudes Rotacionales</div>
-        <div class="telemetry-grid">
-          <div class="vector-indicator omega-tag" style="display:flex;align-items:center;gap:6px;">ω (angular)</div>
-          <div id="telemetry-omega" class="value-display">0.000 rad/s</div>
-
-          <div class="vector-indicator alpha-tag" style="display:flex;align-items:center;gap:6px;">α (aceler.)</div>
-          <div id="telemetry-alpha" class="value-display">0.000 rad/s²</div>
-
-          <div class="vector-indicator L-tag" style="display:flex;align-items:center;gap:6px;">L (moment.)</div>
-          <div id="telemetry-l" class="value-display">0.000 kg·m²/s</div>
-
-          <div>I (inercia)</div>
-          <div id="telemetry-i" class="value-display">0.0000 kg·m²</div>
-
-          <div>Tiempo (t)</div>
-          <div id="telemetry-t" class="value-display">0.00 s</div>
-        </div>
+    <!-- Escenario: título, lienzo interactivo y lectura de datos -->
+    <main id="simulation-area">
+      <div class="masthead rise" style="--i: 0">
+        <a class="crumb" href="../index.html">← Índice de laboratorios</a>
+        <a class="crumb" href="guide_rotacion.html">Guía didáctica ↗</a>
       </div>
-      <canvas id="physics-canvas"></canvas>
-    </div>
+      <h1 class="stage-title rise" style="--i: 1">Dinámica <em>rotacional</em></h1>
+      <p class="stage-subtitle rise" style="--i: 2">Un torque, un cuerpo rígido y una ley: τ = I·α.</p>
+
+      <!-- Lienzo de renderizado -->
+      <div class="canvas-wrap rise" style="--i: 3">
+        <canvas id="physics-canvas" aria-label="Cuerpo rígido girando con torque aplicado"></canvas>
+      </div>
+
+      <!-- Lectura de datos en tiempo real -->
+      <dl id="vector-telemetry" class="readout rise" style="--i: 4">
+        <div>
+          <dt><span class="vector-indicator omega-tag">ω (angular)</span></dt>
+          <dd id="telemetry-omega">0.000 rad/s</dd>
+        </div>
+        <div>
+          <dt><span class="vector-indicator alpha-tag">α (aceler.)</span></dt>
+          <dd id="telemetry-alpha">0.000 rad/s²</dd>
+        </div>
+        <div>
+          <dt><span class="vector-indicator L-tag">L (moment.)</span></dt>
+          <dd id="telemetry-l">0.000 kg·m²/s</dd>
+        </div>
+        <div>
+          <dt>I (inercia)</dt>
+          <dd id="telemetry-i">0.0000 kg·m²</dd>
+        </div>
+        <div>
+          <dt>Tiempo (t)</dt>
+          <dd id="telemetry-t">0.00 s</dd>
+        </div>
+      </dl>
+    </main>
 
     <!-- Panel Tutor -->
     <div id="tutor-panel">
-      <div id="polya-steps-bar">
-        <div id="tab-phase1" class="step-tab active">1. Comprender</div>
-        <div id="tab-phase2" class="step-tab">2. Planear</div>
-        <div id="tab-phase3" class="step-tab">3. Ejecutar</div>
-        <div id="tab-phase4" class="step-tab">4. Revisar</div>
-      </div>
+      <nav id="polya-steps-bar" class="rise" style="--i: 2" aria-label="Fases del método de Pólya">
+        <div id="tab-phase1" class="step-tab active">1 Comprender</div>
+        <div id="tab-phase2" class="step-tab">2 Planear</div>
+        <div id="tab-phase3" class="step-tab">3 Ejecutar</div>
+        <div id="tab-phase4" class="step-tab">4 Revisar</div>
+      </nav>
 
       <div class="panel-content-wrapper">
 
@@ -215,14 +106,11 @@
           </p>
 
           <div class="card">
-            <div class="telemetry-title" style="margin-bottom: 10px;">Selecciona el Cuerpo Rígido</div>
+            <div class="telemetry-title">Selecciona el Cuerpo Rígido</div>
             <div class="body-selector">
-              <button class="body-btn selected" data-body="disk">💿 Disco<br><small
-                  style="font-weight:400;color:var(--text-muted);">I = ½mr²</small></button>
-              <button class="body-btn" data-body="ring">⭕ Aro<br><small
-                  style="font-weight:400;color:var(--text-muted);">I = mr²</small></button>
-              <button class="body-btn" data-body="rod">📏 Barra<br><small
-                  style="font-weight:400;color:var(--text-muted);">I = mL²/12</small></button>
+              <button class="body-btn selected" data-body="disk">Disco<br><small class="c-muted">I = ½mr²</small></button>
+              <button class="body-btn" data-body="ring">Aro<br><small class="c-muted">I = mr²</small></button>
+              <button class="body-btn" data-body="rod">Barra<br><small class="c-muted">I = mL²/12</small></button>
             </div>
 
             <div class="control-group">
@@ -253,11 +141,11 @@
               <button class="option-btn" data-correct="true">Se cuadruplica (×4)</button>
               <button class="option-btn" data-correct="false">Se mantiene igual</button>
             </div>
-            <div id="phase1-feedback" style="margin-top:12px;font-size:0.82rem;min-height:20px;"></div>
+            <div id="phase1-feedback"></div>
           </div>
 
           <button id="btn-next-to-phase2" class="btn-action" disabled>
-            Proceder a Fase 2: Planear →
+            Proceder a Fase 2: Planear
           </button>
         </div>
 
@@ -306,16 +194,16 @@
 
           <div class="card">
             <label for="input-predicted-omega">Predicción de ω al final (rad/s)</label>
-            <div class="slider-container" style="margin-top:8px;">
+            <div class="slider-container">
               <input type="range" id="input-predicted-omega" min="0" max="500" step="0.5" value="20">
               <div id="val-predicted-omega" class="value-display">20 rad/s</div>
             </div>
           </div>
 
           <button id="btn-next-to-phase3" class="btn-action">
-            Proceder a Fase 3: Ejecutar →
+            Proceder a Fase 3: Ejecutar
           </button>
-          <button id="btn-back-to-phase1" class="btn-secondary">← Regresar a Fase 1</button>
+          <button id="btn-back-to-phase1" class="btn-secondary">Regresar a Fase 1</button>
         </div>
 
         <!-- ══════════════════════════════════════
@@ -324,13 +212,13 @@
         <div id="phase3-container" class="polya-phase-container">
           <h2><span class="phase-number">3</span> Ejecutar el plan</h2>
           <p class="phase-intro">
-            Observa el cuerpo rígido girar bajo el torque aplicado. La gráfica superior muestra <span
+            Observa el cuerpo rígido girar bajo el torque aplicado. La gráfica inferior muestra <span
               class="omega-tag">ω(t)</span> creciendo linealmente (sin fricción) o asintóticamente (con fricción).
           </p>
 
           <div class="sim-controls-wrapper">
-            <button id="btn-sim-play" class="btn-action success btn-sim-play">▶ Iniciar simulación</button>
-            <button id="btn-sim-reset" class="btn-secondary btn-sim-reset">↺ Reiniciar</button>
+            <button id="btn-sim-play" class="btn-action success btn-sim-play">Iniciar simulación</button>
+            <button id="btn-sim-reset" class="btn-secondary btn-sim-reset">Reiniciar</button>
           </div>
 
           <!-- Barra de progreso de tiempo -->
@@ -340,32 +228,32 @@
           <div id="time-label">0.00 / 3 s</div>
 
           <!-- Leyenda de vectores -->
-          <div class="card" style="background:rgba(15,23,42,0.6);">
-            <div class="telemetry-title" style="margin-bottom:10px;">Leyenda de Vectores</div>
+          <div class="card">
+            <div class="telemetry-title">Leyenda de Vectores</div>
             <div class="vector-legend">
               <div class="vector-legend-item">
-                <div class="vector-dot" style="background:#f59e0b;box-shadow:0 0 6px #f59e0b;"></div>
-                <span style="color:#f59e0b;font-weight:600;">Torque τ</span> — arco curvo que indica la dirección del
+                <div class="vector-dot bg-ochre"></div>
+                <span class="c-ochre">Torque τ</span> — arco curvo que indica la dirección del
                 giro
               </div>
               <div class="vector-legend-item">
-                <div class="vector-dot" style="background:#10b981;box-shadow:0 0 6px #10b981;"></div>
-                <span style="color:#10b981;font-weight:600;">Vel. angular ω</span> — crece con el tiempo
+                <div class="vector-dot bg-blue"></div>
+                <span class="c-blue">Vel. angular ω</span> — crece con el tiempo
               </div>
               <div class="vector-legend-item">
-                <div class="vector-dot" style="background:#ef4444;box-shadow:0 0 6px #ef4444;"></div>
-                <span style="color:#ef4444;font-weight:600;">Aceler. angular α</span> — α = τ/I (constante sin fricción)
+                <div class="vector-dot bg-red"></div>
+                <span class="c-red">Aceler. angular α</span> — α = τ/I (constante sin fricción)
               </div>
               <div class="vector-legend-item">
-                <div class="vector-dot" style="background:#a855f7;box-shadow:0 0 6px #a855f7;"></div>
-                <span style="color:#a855f7;font-weight:600;">Momento angular L</span> — L = I·ω
+                <div class="vector-dot bg-green"></div>
+                <span class="c-green">Momento angular L</span> — L = I·ω
               </div>
             </div>
           </div>
 
-          <div class="card" style="background:rgba(16,185,129,0.05);border-color:rgba(16,185,129,0.15);">
-            <div class="telemetry-title" style="color:var(--speed-color);">Observación del Tutor:</div>
-            <p style="font-size:0.85rem;line-height:1.5;color:var(--text-secondary);">
+          <div class="card margin-note">
+            <div class="telemetry-title c-blue">Observación del Tutor:</div>
+            <p>
               Sin fricción, <span class="alpha-tag">α</span> es constante y <span class="omega-tag">ω</span> crece
               linealmente con el tiempo. Con fricción viscosa, el sistema alcanza un estado estacionario donde τ_ext =
               τ_fricción y α → 0.
@@ -373,9 +261,9 @@
           </div>
 
           <button id="btn-next-to-phase4" class="btn-action" disabled>
-            Ver Resultados: Fase 4 →
+            Ver Resultados: Fase 4
           </button>
-          <button id="btn-back-to-phase2" class="btn-secondary">← Regresar a Fase 2</button>
+          <button id="btn-back-to-phase2" class="btn-secondary">Regresar a Fase 2</button>
         </div>
 
         <!-- ══════════════════════════════════════
@@ -406,35 +294,35 @@
               </tr>
               <tr>
                 <td class="parameter-name">ω teórica (rad/s)</td>
-                <td style="color:var(--text-muted);">N/A</td>
+                <td class="c-muted">N/A</td>
                 <td id="table-teo-omega">—</td>
-                <td style="color:var(--text-muted);">ref.</td>
+                <td class="c-muted">ref.</td>
               </tr>
               <tr>
                 <td class="parameter-name">I (kg·m²)</td>
-                <td style="color:var(--text-muted);">—</td>
+                <td class="c-muted">—</td>
                 <td id="table-i">—</td>
-                <td style="color:var(--text-muted);">—</td>
+                <td class="c-muted">—</td>
               </tr>
               <tr>
                 <td class="parameter-name">L = I·ω (kg·m²/s)</td>
-                <td style="color:var(--text-muted);">—</td>
+                <td class="c-muted">—</td>
                 <td id="table-l">—</td>
-                <td style="color:var(--text-muted);">—</td>
+                <td class="c-muted">—</td>
               </tr>
             </tbody>
           </table>
 
           <!-- Verificación τ = I·α -->
-          <div id="newton-check" style="font-size:0.88rem;font-weight:600;margin:14px 0;min-height:20px;"></div>
+          <div id="newton-check"></div>
 
           <div class="tutor-feedback-box">
             <strong>Retroalimentación didáctica:</strong>
             <span id="tutor-feedback-text">Ejecuta la simulación para ver los resultados.</span>
           </div>
 
-          <button id="btn-restart-lab" class="btn-action" style="margin-top:16px;">
-            Reiniciar laboratorio ↺
+          <button id="btn-restart-lab" class="btn-action">
+            Reiniciar laboratorio
           </button>
         </div>
 

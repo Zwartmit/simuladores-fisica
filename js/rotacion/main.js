@@ -148,7 +148,7 @@ function animationLoop(timestamp) {
   if (simTime >= targetTime) {
     engine.isRunning = false;
     cancelAnimationFrame(animFrameId);
-    dom.btnSimPlay.textContent = '▶ Iniciar simulación';
+    dom.btnSimPlay.textContent = 'Iniciar simulación';
     dom.btnSimPlay.classList.remove('success');
     dom.btnNextToPhase4.disabled = false;
     return;
@@ -162,13 +162,13 @@ function startSimulation() {
     engine.isRunning = false;
     cancelAnimationFrame(animFrameId);
     lastTimestamp = null;
-    dom.btnSimPlay.textContent = '▶ Continuar';
+    dom.btnSimPlay.textContent = 'Continuar';
     dom.btnSimPlay.classList.remove('success');
   } else {
     if (simTime >= targetTime) return;
     engine.isRunning = true;
     lastTimestamp = null;
-    dom.btnSimPlay.textContent = '⏸ Pausar';
+    dom.btnSimPlay.textContent = 'Pausar';
     dom.btnSimPlay.classList.add('success');
     animFrameId = requestAnimationFrame(animationLoop);
   }
@@ -180,7 +180,7 @@ function resetSimulation() {
   simTime = 0;
   engine.isRunning = false;
   engine.reset();
-  dom.btnSimPlay.textContent = '▶ Iniciar simulación';
+  dom.btnSimPlay.textContent = 'Iniciar simulación';
   dom.btnSimPlay.classList.remove('success');
   dom.btnNextToPhase4.disabled = true;
   updateTimeProgress(0);
@@ -222,9 +222,9 @@ function populateReview() {
   const newtonOk = tol(tauNet, I_alpha) && tol(impulse, state.L);
   if (dom.newtonCheck) {
     dom.newtonCheck.textContent = newtonOk
-      ? `✅ τ_neto = I·α se cumple (${tauNet.toFixed(2)} ≈ ${I_alpha.toFixed(2)} N·m) y ∫τ_neto·dt = ΔL (${impulse.toFixed(2)} ≈ ${state.L.toFixed(2)} kg·m²/s)`
-      : `⚠️ Discrepancia: τ_neto=${tauNet.toFixed(2)} vs I·α=${I_alpha.toFixed(2)} N·m; ∫τ_neto·dt=${impulse.toFixed(2)} vs ΔL=${state.L.toFixed(2)}`;
-    dom.newtonCheck.style.color = newtonOk ? '#10b981' : '#f59e0b';
+      ? `τ_neto = I·α se cumple (${tauNet.toFixed(2)} ≈ ${I_alpha.toFixed(2)} N·m) y ∫τ_neto·dt = ΔL (${impulse.toFixed(2)} ≈ ${state.L.toFixed(2)} kg·m²/s)`
+      : `Discrepancia: τ_neto=${tauNet.toFixed(2)} vs I·α=${I_alpha.toFixed(2)} N·m; ∫τ_neto·dt=${impulse.toFixed(2)} vs ΔL=${state.L.toFixed(2)}`;
+    dom.newtonCheck.style.color = newtonOk ? 'var(--blue)' : 'var(--ochre)';
   }
 
   // Retroalimentación del tutor
@@ -273,9 +273,9 @@ dom.quizOptions.forEach(btn => {
     const correct = btn.dataset.correct === 'true';
     btn.classList.add(correct ? 'correct' : 'incorrect');
     dom.phase1Feedback.textContent = correct
-      ? '✅ ¡Correcto! La aceleración angular α = τ/I. El momento de inercia I determina "qué tan difícil es hacer girar" el cuerpo.'
-      : '❌ Incorrecto. La aceleración angular no depende directamente de la masa sola, sino del momento de inercia I, que también depende de cómo se distribuye esa masa.';
-    dom.phase1Feedback.style.color = correct ? '#10b981' : '#ef4444';
+      ? '¡Correcto! La aceleración angular α = τ/I. El momento de inercia I determina "qué tan difícil es hacer girar" el cuerpo.'
+      : 'Incorrecto. La aceleración angular no depende directamente de la masa sola, sino del momento de inercia I, que también depende de cómo se distribuye esa masa.';
+    dom.phase1Feedback.style.color = correct ? 'var(--blue)' : 'var(--red)';
     dom.btnNextToPhase2.disabled = !correct;
   });
 });

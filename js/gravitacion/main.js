@@ -137,12 +137,12 @@ function startSimulation() {
     engine.isRunning = false;
     cancelAnimationFrame(animFrameId);
     lastTimestamp = null;
-    dom.btnSimPlay.textContent = '▶ Continuar';
+    dom.btnSimPlay.textContent = 'Continuar';
     dom.btnSimPlay.classList.remove('success');
   } else {
     engine.isRunning = true;
     lastTimestamp = null;
-    dom.btnSimPlay.textContent = '⏸ Pausar';
+    dom.btnSimPlay.textContent = 'Pausar';
     dom.btnSimPlay.classList.add('success');
     animFrameId = requestAnimationFrame(animationLoop);
   }
@@ -153,7 +153,7 @@ function resetSimulation() {
   lastTimestamp = null;
   engine.isRunning = false;
   engine.reset();
-  dom.btnSimPlay.textContent = '▶ Iniciar órbita';
+  dom.btnSimPlay.textContent = 'Iniciar órbita';
   dom.btnSimPlay.classList.remove('success');
   dom.btnNextToPhase4.disabled = true;
   if (dom.orbitsCount) dom.orbitsCount.textContent = '0';
@@ -195,9 +195,9 @@ function populateReview() {
   if (dom.keplerCheck && keplerLog.length > 0) {
     const variation = Math.abs(avgRatio - k3Teo) / k3Teo * 100;
     dom.keplerCheck.textContent = variation < 2
-      ? `✅ a³/T² medido difiere ${variation.toFixed(2)}% de GM/4π². ¡Kepler III verificado!`
-      : `📊 a³/T² medido difiere ${variation.toFixed(2)}% de GM/4π² — revisa los parámetros o espera más órbitas.`;
-    dom.keplerCheck.style.color = variation < 2 ? '#10b981' : '#f59e0b';
+      ? `a³/T² medido difiere ${variation.toFixed(2)}% de GM/4π². ¡Kepler III verificado!`
+      : `a³/T² medido difiere ${variation.toFixed(2)}% de GM/4π² — revisa los parámetros o espera más órbitas.`;
+    dom.keplerCheck.style.color = variation < 2 ? 'var(--blue)' : 'var(--ochre)';
   }
 
   // Retroalimentación del tutor
@@ -242,9 +242,9 @@ dom.quizOptions.forEach(btn => {
     const correct = btn.dataset.correct === 'true';
     btn.classList.add(correct ? 'correct' : 'incorrect');
     dom.phase1Feedback.textContent = correct
-      ? '✅ ¡Correcto! La Tercera Ley de Kepler establece que T² ∝ a³, donde la constante de proporcionalidad depende solo de G y M (la masa central), no del planeta en órbita.'
-      : '❌ Incorrecto. El período depende del semileje mayor a y de la masa central M, pero NO de la masa del planeta en órbita.';
-    dom.phase1Feedback.style.color = correct ? '#10b981' : '#ef4444';
+      ? '¡Correcto! La Tercera Ley de Kepler establece que T² ∝ a³, donde la constante de proporcionalidad depende solo de G y M (la masa central), no del planeta en órbita.'
+      : 'Incorrecto. El período depende del semileje mayor a y de la masa central M, pero NO de la masa del planeta en órbita.';
+    dom.phase1Feedback.style.color = correct ? 'var(--blue)' : 'var(--red)';
     dom.btnNextToPhase2.disabled = !correct;
   });
 });

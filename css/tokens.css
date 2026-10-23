@@ -21,7 +21,8 @@
   /* Tintas con significado físico */
   --blue: #2B4C8C;   /* lapicero: velocidad, datos medidos */
   --red: #B83A26;    /* corrector: gravedad, fuerzas, errores */
-  --ochre: #8A5E0E;  /* predicción del estudiante */
+  --ochre: #8A5E0E;  /* predicción del estudiante, rozamiento, torque */
+  --green: #2F6B4F;  /* tinta verde: energía cinética, momento angular, Kepler */
 
   /* Alias semánticos que usan los controladores JS */
   --speed-color: var(--blue);

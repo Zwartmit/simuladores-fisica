@@ -34,70 +34,66 @@
   <link rel="icon" href="../assets/favicon.png" type="image/png">
   <link rel="apple-touch-icon" href="../assets/favicon.png">
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="../css/style.css">
 </head>
 
 <body>
-
-  <!-- Cabecera Principal -->
-  <header>
-    <div style="display: flex; align-items: center; gap: 15px;">
-      <a href="../index.html" class="tutor-badge"
-        style="background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.3); color: #60a5fa; text-decoration: none; cursor: pointer; font-weight: bold;">🏠
-        Menú Principal</a>
-    </div>
-    <h1>Laboratorio de física: <span>Plano inclinado y Leyes de Newton</span></h1>
-    <div style="display: flex; align-items: center; gap: 15px;">
-      <a href="guide_newton.html" class="tutor-badge"
-        style="background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.3); color: #c084fc; text-decoration: none; cursor: pointer;">Ver
-        Guía Didáctica 📖</a>
-      <div class="tutor-badge">Tutor Activo: Polya</div>
-    </div>
-  </header>
-
-  <!-- Contenedor Principal -->
   <div id="app-layout">
 
-    <!-- Área del Canvas (Visualizador e interactivo) -->
-    <div id="simulation-area">
-      <!-- Telemetría superpuesta de fuerzas en tiempo real -->
-      <div id="vector-telemetry">
-        <div class="telemetry-title">Telemetría de Fuerzas</div>
-        <div class="telemetry-grid">
-          <div>Gravedad (g)</div>
-          <div id="telemetry-g" class="value-display">9.81 m/s²</div>
+    <!-- Escenario: título, lienzo interactivo y lectura de datos -->
+    <main id="simulation-area">
+      <div class="masthead rise" style="--i: 0">
+        <a class="crumb" href="../index.html">← Índice de laboratorios</a>
+        <a class="crumb" href="guide_newton.html">Guía didáctica ↗</a>
+      </div>
+      <h1 class="stage-title rise" style="--i: 1">Plano inclinado <em>y leyes de Newton</em></h1>
+      <p class="stage-subtitle rise" style="--i: 2">Un bloque, una rampa y una pregunta: ¿se desliza o se queda quieto?</p>
 
-          <div>Peso (W)</div>
-          <div id="telemetry-w" class="value-display" style="color: #ef4444;">0.00 N</div>
-
-          <div>Normal (N)</div>
-          <div id="telemetry-n" class="value-display" style="color: #3b82f6;">0.00 N</div>
-
-          <div>Fricción (Ff)</div>
-          <div id="telemetry-ff" class="value-display" style="color: #f59e0b;">0.00 N</div>
-
-          <div>Aceleración (a)</div>
-          <div id="telemetry-a" class="value-display">0.00 m/s²</div>
-
-          <div>Estado</div>
-          <div id="telemetry-status" class="value-display"
-            style="font-family: var(--font-sans); font-size: 0.78rem; font-weight: 600;">Estático</div>
-        </div>
+      <!-- Lienzo de renderizado -->
+      <div class="canvas-wrap rise" style="--i: 3">
+        <canvas id="physics-canvas" aria-label="Plano inclinado con bloque y fuerzas"></canvas>
       </div>
 
-      <!-- Lienzo de simulación -->
-      <canvas id="physics-canvas"></canvas>
-    </div>
+      <!-- Lectura de datos en tiempo real -->
+      <dl id="vector-telemetry" class="readout rise" style="--i: 4">
+        <div>
+          <dt>Gravedad (g)</dt>
+          <dd id="telemetry-g">9.81 m/s²</dd>
+        </div>
+        <div>
+          <dt>Peso (W)</dt>
+          <dd id="telemetry-w">0.00 N</dd>
+        </div>
+        <div>
+          <dt>Normal (N)</dt>
+          <dd id="telemetry-n">0.00 N</dd>
+        </div>
+        <div>
+          <dt>Fricción (Ff)</dt>
+          <dd id="telemetry-ff">0.00 N</dd>
+        </div>
+        <div>
+          <dt>Aceleración (a)</dt>
+          <dd id="telemetry-a">0.00 m/s²</dd>
+        </div>
+        <div>
+          <dt>Estado</dt>
+          <dd id="telemetry-status">Estático</dd>
+        </div>
+      </dl>
+    </main>
 
-    <!-- Panel Lateral del Tutor (Polya) -->
+    <!-- Hoja de cuaderno: tutor de Polya -->
     <div id="tutor-panel">
       <!-- Barra de navegación de fases de Polya -->
-      <div id="polya-steps-bar">
-        <div id="tab-phase1" class="step-tab active">1. Comprender</div>
-        <div id="tab-phase2" class="step-tab">2. Planear</div>
-        <div id="tab-phase3" class="step-tab">3. Ejecutar</div>
-        <div id="tab-phase4" class="step-tab">4. Revisar</div>
-      </div>
+      <nav id="polya-steps-bar" class="rise" style="--i: 2" aria-label="Fases del método de Pólya">
+        <div id="tab-phase1" class="step-tab active">1 Comprender</div>
+        <div id="tab-phase2" class="step-tab">2 Planear</div>
+        <div id="tab-phase3" class="step-tab">3 Ejecutar</div>
+        <div id="tab-phase4" class="step-tab">4 Revisar</div>
+      </nav>
 
       <!-- Contenido de las Fases del Tutor -->
       <div class="panel-content-wrapper">
@@ -112,7 +108,7 @@
 
           <!-- Ajuste de Parámetros de Escenario -->
           <div class="card">
-            <div class="telemetry-title" style="margin-bottom: 12px;">Parámetros del Plano Inclinado</div>
+            <div class="telemetry-title">Parámetros del Plano Inclinado</div>
 
             <div class="control-group">
               <label for="input-angle">Inclinación de la Rampa (θ)</label>
@@ -166,7 +162,7 @@
               <button class="option-btn" data-correct="true">Perpendicular a la rampa hacia arriba</button>
               <button class="option-btn" data-correct="false">Paralela a la rampa hacia arriba</button>
             </div>
-            <div id="phase1-feedback" style="margin-top: 12px; font-size: 0.82rem; min-height: 20px;"></div>
+            <div id="phase1-feedback"></div>
           </div>
 
           <button id="btn-next-to-phase2" class="btn-action" disabled>
@@ -183,8 +179,8 @@
           </p>
 
           <!-- Vector Peso (W) -->
-          <div class="card" style="border-left: 3px solid #ef4444;">
-            <div class="telemetry-title" style="color: #ef4444; margin-bottom: 8px;">Fuerza 1: Peso (W)</div>
+          <div class="card edge-red">
+            <div class="telemetry-title c-red">Fuerza 1: Peso (W)</div>
 
             <div class="control-group">
               <label for="dcl-w-ang">Dirección angular (Polares)</label>
@@ -204,8 +200,8 @@
           </div>
 
           <!-- Vector Normal (N) -->
-          <div class="card" style="border-left: 3px solid #3b82f6;">
-            <div class="telemetry-title" style="color: #3b82f6; margin-bottom: 8px;">Fuerza 2: Normal (N)</div>
+          <div class="card edge-blue">
+            <div class="telemetry-title c-blue">Fuerza 2: Normal (N)</div>
 
             <div class="control-group">
               <label for="dcl-n-ang">Dirección angular (Polares)</label>
@@ -225,8 +221,8 @@
           </div>
 
           <!-- Vector Fricción (Ff) -->
-          <div class="card" style="border-left: 3px solid #f59e0b;">
-            <div class="telemetry-title" style="color: #f59e0b; margin-bottom: 8px;">Fuerza 3: Fricción (Ff)</div>
+          <div class="card edge-ochre">
+            <div class="telemetry-title c-ochre">Fuerza 3: Fricción (Ff)</div>
 
             <div class="control-group">
               <label for="dcl-ff-ang">Dirección angular (Polares)</label>
@@ -268,12 +264,12 @@
           </div>
 
           <!-- Información didáctica en vivo -->
-          <div class="card" style="background: rgba(59, 130, 246, 0.05); border-color: rgba(59, 130, 246, 0.15);">
-            <div class="telemetry-title" style="color: #60a5fa;">Ecuaciones en Ejecución:</div>
-            <p style="font-size: 0.84rem; line-height: 1.4; color: var(--text-secondary);">
-              El bloque se moverá solo si la fuerza gravitatoria paralela a la rampa ($W_x = W \sin\theta$) supera a la
-              fricción estática límite ($F_{fs\_max} = \mu_s N$). En caso contrario, se cumple la primera ley de Newton
-              ($\Sigma F = 0$).
+          <div class="card margin-note">
+            <div class="telemetry-title">Ecuaciones en Ejecución:</div>
+            <p>
+              El bloque se moverá solo si la fuerza gravitatoria paralela a la rampa (W<sub>x</sub> = W·sen θ) supera a la
+              fricción estática límite (F<sub>fs,máx</sub> = μ<sub>s</sub>·N). En caso contrario, se cumple la primera ley de Newton
+              (ΣF = 0).
             </p>
           </div>
 
@@ -305,19 +301,19 @@
             </thead>
             <tbody>
               <tr>
-                <td class="parameter-name" style="color: #ef4444;">Peso (W)</td>
+                <td class="parameter-name c-red">Peso (W)</td>
                 <td id="res-w-ang">0°</td>
                 <td id="res-w-ang-teo">270°</td>
                 <td id="res-w-mag-err">0%</td>
               </tr>
               <tr>
-                <td class="parameter-name" style="color: #3b82f6;">Normal (N)</td>
+                <td class="parameter-name c-blue">Normal (N)</td>
                 <td id="res-n-ang">0°</td>
                 <td id="res-n-ang-teo">0°</td>
                 <td id="res-n-mag-err">0%</td>
               </tr>
               <tr>
-                <td class="parameter-name" style="color: #f59e0b;">Fricción (Ff)</td>
+                <td class="parameter-name c-ochre">Fricción (Ff)</td>
                 <td id="res-ff-ang">0°</td>
                 <td id="res-ff-ang-teo">0°</td>
                 <td id="res-ff-mag-err">0%</td>
@@ -326,10 +322,9 @@
           </table>
 
           <!-- Puntuación General -->
-          <div class="card" style="text-align: center; padding: 14px 20px;">
+          <div class="card score-card">
             <div class="telemetry-title">Precisión del DCL</div>
-            <div id="val-dcl-score"
-              style="font-size: 2.2rem; font-weight: 800; color: var(--accent); text-shadow: var(--glow-accent);">100 /
+            <div id="val-dcl-score">100 /
               100</div>
           </div>
 
@@ -341,7 +336,7 @@
           </div>
 
           <button id="btn-restart-lab" class="btn-action">
-            Reiniciar laboratorio ↺
+            Reiniciar laboratorio
           </button>
         </div>
 

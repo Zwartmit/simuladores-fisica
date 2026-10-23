@@ -1,38 +1,54 @@
 /**
- * @fileoverview Renderizador Canvas para la simulación de Dinámica rotacional.
- * Dibuja el cuerpo rígido rotando, los vectores de torque, velocidad angular
- * y momento angular, junto con gráficas de ω(t) y L(t) en tiempo real.
+ * @fileoverview Renderizador Canvas para la simulación de Dinámica rotacional (estilo "cuaderno").
+ * Dibuja el cuerpo rígido girando como un esquema técnico, los vectores de torque (ocre),
+ * velocidad angular (azul), aceleración angular (rojo) y momento angular (verde), y debajo
+ * la gráfica de ω(t) y L(t). Los valores numéricos viven en la tira de datos de la página.
  */
 
 import { PhysicsEngineRotacion } from './physicsEngine.js';
+import { readInkPalette, FONTS, drawArrowHead } from '../shared/inkPalette.js';
 
 export class CanvasRendererRotacion {
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
+    this.palette = readInkPalette();
 
-    // Paleta de colores
-    this.COLOR_TORQUE = '#f59e0b'; // Naranja ámbar → torque τ
-    this.COLOR_OMEGA = '#10b981'; // Verde          → velocidad angular ω
-    this.COLOR_ALPHA = '#ef4444'; // Rojo           → aceleración angular α
-    this.COLOR_ANGULAR_M = '#a855f7'; // Púrpura        → momento angular L
-    this.COLOR_BODY = '#3b82f6'; // Azul           → cuerpo
-    this.COLOR_SPOKE = '#60a5fa'; // Azul claro     → radio/radio indicador
+    // Tintas por magnitud
+    this.COLOR_TORQUE = this.palette.ochre;
+    this.COLOR_OMEGA = this.palette.blue;
+    this.COLOR_ALPHA = this.palette.red;
+    this.COLOR_ANGULAR_M = this.palette.green;
 
+    this.W = 0;
+    this.H = 0;
+    this._dpr = 0;
     this._resize();
   }
 
   _resize() {
     const rect = this.canvas.parentElement.getBoundingClientRect();
-    this.canvas.width = rect.width || 800;
-    this.canvas.height = rect.height || 600;
-    this.W = this.canvas.width;
-    this.H = this.canvas.height;
-    // Centro del cuerpo en el canvas
-    this.cx = this.W * 0.42;
-    this.cy = this.H * 0.50;
-    // Radio visual del cuerpo (px)
-    this.R = Math.min(this.W, this.H) * 0.22;
+    const dpr = window.devicePixelRatio || 1;
+    const w = rect.width || 800;
+    const h = rect.height || 600;
+
+    if (w !== this.W || h !== this.H || dpr !== this._dpr) {
+      this.canvas.width = w * dpr;
+      this.canvas.height = h * dpr;
+      this._dpr = dpr;
+    }
+    this.ctx.setTransform(this._dpr, 0, 0, this._dpr, 0, 0);
+    this.W = w;
+    this.H = h;
+
+    // Gráfica abajo; el cuerpo ocupa la zona superior
+    this.chartH = Math.min(150, Math.max(100, this.H * 0.28));
+    this.chartY = this.H - this.chartH;
+    const bodyAreaH = this.chartY - 16;
+    this.cx = this.W * 0.40;
+    this.cy = bodyAreaH * 0.52;
+    // Radio visual: deja sitio al arco del torque y a las flechas de la derecha
+    this.R = Math.max(40, Math.min(this.W * 0.2, bodyAreaH * 0.3));
   }
 
   /**
@@ -48,128 +64,93 @@ export class CanvasRendererRotacion {
     this._drawBackground();
     this._drawBody(state, engine);
     this._drawVectors(state);
-    this._drawOmegaChart(engine.getHistory());
-    this._drawInfoPanel(state, engine);
+    this._drawChart(engine.getHistory());
   }
 
   // ─── Fondo ──────────────────────────────────────────────────────────────────
 
   _drawBackground() {
-    const { ctx, W, H } = this;
-    const grad = ctx.createLinearGradient(0, 0, 0, H);
-    grad.addColorStop(0, '#090f1a');
-    grad.addColorStop(1, '#0f172a');
-    ctx.fillStyle = grad;
+    const { ctx, W, H, palette } = this;
+    ctx.fillStyle = palette.paper;
     ctx.fillRect(0, 0, W, H);
 
-    // Grid sutil
-    ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+    // Papel milimetrado
     ctx.lineWidth = 1;
-    const step = 40;
-    for (let x = 0; x < W; x += step) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
-    for (let y = 0; y < H; y += step) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+    ctx.strokeStyle = palette.graphMinor;
+    const step = 24;
+    for (let x = 0; x < W; x += step) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, this.chartY - 8); ctx.stroke(); }
+    for (let y = 0; y < this.chartY - 8; y += step) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
   }
 
   // ─── Cuerpo rígido ──────────────────────────────────────────────────────────
 
   _drawBody(state, engine) {
-    const { ctx, cx, cy, R } = this;
+    const { ctx, cx, cy, palette } = this;
     const theta = state.theta;
-
-    // Eje de rotación (punto central)
-    ctx.shadowColor = 'rgba(59,130,246,0.6)';
-    ctx.shadowBlur = 20;
 
     switch (engine.bodyType) {
       case PhysicsEngineRotacion.BODIES.DISK:
-        this._drawDisk(theta, engine.radius);
+        this._drawDisk(theta);
         break;
       case PhysicsEngineRotacion.BODIES.RING:
-        this._drawRing(theta, engine.radius);
+        this._drawRing(theta);
         break;
       case PhysicsEngineRotacion.BODIES.ROD:
-        this._drawRod(theta, engine.radius);
+        this._drawRod(theta);
         break;
     }
 
-    ctx.shadowBlur = 0;
-
     // Eje central
     ctx.beginPath();
-    ctx.arc(cx, cy, 8, 0, Math.PI * 2);
-    ctx.fillStyle = '#f8fafc';
+    ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+    ctx.fillStyle = palette.ink;
     ctx.fill();
-    ctx.strokeStyle = '#334155';
-    ctx.lineWidth = 2;
-    ctx.stroke();
   }
 
-  _drawDisk(theta, radius) {
-    const { ctx, cx, cy, R } = this;
-    // Disco sólido con gradiente
-    const grad = ctx.createRadialGradient(cx - R * 0.3, cy - R * 0.3, R * 0.1, cx, cy, R);
-    grad.addColorStop(0, '#60a5fa');
-    grad.addColorStop(1, '#1d4ed8');
+  _drawDisk(theta) {
+    const { ctx, cx, cy, R, palette } = this;
     ctx.beginPath();
     ctx.arc(cx, cy, R, 0, Math.PI * 2);
-    ctx.fillStyle = grad;
+    ctx.fillStyle = 'rgba(27, 26, 23, 0.05)';
     ctx.fill();
-    ctx.strokeStyle = '#93c5fd';
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = palette.ink;
+    ctx.lineWidth = 2.5;
     ctx.stroke();
 
-    // Radios indicadores de rotación (cada 60°)
+    // Radios cada 60°: el primero, en rojo, marca la orientación
     for (let i = 0; i < 6; i++) {
       const a = theta + (i * Math.PI) / 3;
       ctx.beginPath();
       ctx.moveTo(cx, cy);
-      ctx.lineTo(cx + Math.cos(a) * R * 0.9, cy + Math.sin(a) * R * 0.9);
-      ctx.strokeStyle = i === 0 ? '#fbbf24' : 'rgba(147,197,253,0.35)';
+      ctx.lineTo(cx + Math.cos(a) * R * 0.95, cy + Math.sin(a) * R * 0.95);
+      ctx.strokeStyle = i === 0 ? palette.red : palette.rule;
       ctx.lineWidth = i === 0 ? 3 : 1.5;
       ctx.stroke();
     }
-    // Círculo interior hueco
-    ctx.beginPath();
-    ctx.arc(cx, cy, R * 0.15, 0, Math.PI * 2);
-    ctx.fillStyle = '#0f172a';
-    ctx.fill();
   }
 
-  _drawRing(theta, radius) {
-    const { ctx, cx, cy, R } = this;
-    // Aro
+  _drawRing(theta) {
+    const { ctx, cx, cy, R, palette } = this;
     ctx.beginPath();
     ctx.arc(cx, cy, R, 0, Math.PI * 2);
-    ctx.strokeStyle = '#60a5fa';
-    ctx.lineWidth = R * 0.25;
-    ctx.shadowColor = '#3b82f6';
-    ctx.shadowBlur = 15;
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-
-    // Radio indicador
-    const a = theta;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R);
-    ctx.strokeStyle = '#fbbf24';
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = palette.ink;
+    ctx.lineWidth = Math.max(8, R * 0.18);
     ctx.stroke();
 
-    // Radios estructurales (4 rayos)
+    // Rayos estructurales (4) y marca de orientación en rojo
     for (let i = 0; i < 4; i++) {
       const ang = theta + (i * Math.PI) / 2;
       ctx.beginPath();
       ctx.moveTo(cx, cy);
       ctx.lineTo(cx + Math.cos(ang) * R, cy + Math.sin(ang) * R);
-      ctx.strokeStyle = 'rgba(96,165,250,0.3)';
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = i === 0 ? palette.red : palette.rule;
+      ctx.lineWidth = i === 0 ? 3 : 1.5;
       ctx.stroke();
     }
   }
 
-  _drawRod(theta, radius) {
-    const { ctx, cx, cy, R } = this;
+  _drawRod(theta) {
+    const { ctx, cx, cy, R, palette } = this;
     const dx = Math.cos(theta) * R;
     const dy = Math.sin(theta) * R;
 
@@ -177,67 +158,51 @@ export class CanvasRendererRotacion {
     ctx.beginPath();
     ctx.moveTo(cx - dx, cy - dy);
     ctx.lineTo(cx + dx, cy + dy);
-    const grad = ctx.createLinearGradient(cx - dx, cy - dy, cx + dx, cy + dy);
-    grad.addColorStop(0, '#1d4ed8');
-    grad.addColorStop(0.5, '#60a5fa');
-    grad.addColorStop(1, '#1d4ed8');
-    ctx.strokeStyle = grad;
-    ctx.lineWidth = 18;
-    ctx.lineCap = 'round';
-    ctx.stroke();
+    ctx.strokeStyle = palette.ink;
+    ctx.lineWidth = 10;
     ctx.lineCap = 'butt';
-
-    // Borde luminoso
-    ctx.beginPath();
-    ctx.moveTo(cx - dx, cy - dy);
-    ctx.lineTo(cx + dx, cy + dy);
-    ctx.strokeStyle = 'rgba(147,197,253,0.5)';
-    ctx.lineWidth = 3;
     ctx.stroke();
 
-    // Masas en los extremos
-    [[-1, 1]].forEach(_ => {
-      [[cx - dx, cy - dy], [cx + dx, cy + dy]].forEach(([ex, ey]) => {
-        ctx.beginPath();
-        ctx.arc(ex, ey, 12, 0, Math.PI * 2);
-        ctx.fillStyle = '#fbbf24';
-        ctx.shadowColor = '#f59e0b';
-        ctx.shadowBlur = 12;
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      });
+    // Extremo de referencia en rojo y masas en los extremos
+    [[cx + dx, cy + dy, palette.red], [cx - dx, cy - dy, palette.ink]].forEach(([ex, ey, color]) => {
+      ctx.beginPath();
+      ctx.arc(ex, ey, 9, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
     });
   }
 
-  // ─── Vectores de torque, ω, L ───────────────────────────────────────────────
+  // ─── Vectores de torque, ω, α y L ───────────────────────────────────────────
 
   _drawVectors(state) {
-    const { ctx, cx, cy, R, W, H } = this;
+    const { ctx, cx, cy, R } = this;
     const { omega, alpha, tau, L } = state;
 
-    // Vector de torque τ (arco curvado alrededor del cuerpo)
+    // Torque τ: arco alrededor del cuerpo
     if (Math.abs(tau) > 0.01) {
-      this._drawCurvedArrow(cx, cy, R + 30, tau > 0 ? 1 : -1, this.COLOR_TORQUE, `τ = ${tau.toFixed(1)} N·m`);
+      this._drawCurvedArrow(cx, cy, R + 24, tau > 0 ? 1 : -1, this.COLOR_TORQUE, `τ = ${tau.toFixed(1)} N·m`);
     }
 
-    // Vector de velocidad angular ω (flecha derecha fuera del cuerpo)
-    const omegaLen = Math.min(Math.abs(omega) * 20, 140);
+    // Velocidad angular ω (flecha a la derecha del cuerpo)
+    const arrowX = cx + R + 36;
+    const room = Math.max(30, this.W - arrowX - 24);
+    const omegaLen = Math.min(Math.abs(omega) * 14, room * 0.7);
     if (omegaLen > 2) {
-      this._drawStraightArrow(cx + R + 40, cy, omegaLen, 0, this.COLOR_OMEGA, `ω = ${omega.toFixed(2)} rad/s`);
+      this._drawStraightArrow(arrowX, cy - 8, omegaLen, this.COLOR_OMEGA, 'ω');
     }
 
-    // Vector de aceleración angular α (abajo)
-    const alphaLen = Math.min(Math.abs(alpha) * 15, 100);
+    // Aceleración angular α
+    const alphaLen = Math.min(Math.abs(alpha) * 12, room * 0.7);
     if (alphaLen > 2) {
-      this._drawStraightArrow(cx + R + 40, cy + 50, alphaLen, 0, this.COLOR_ALPHA, `α = ${alpha.toFixed(2)} rad/s²`);
+      this._drawStraightArrow(arrowX, cy + 22, alphaLen, this.COLOR_ALPHA, 'α');
     }
 
-    // Momento angular L (icono del eje z, arriba del centro)
+    // Momento angular L: rótulo sobre el cuerpo
     ctx.fillStyle = this.COLOR_ANGULAR_M;
-    ctx.font = 'bold 13px Outfit, sans-serif';
+    ctx.font = `500 12px ${FONTS.mono}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`L = ${L.toFixed(2)} kg·m²/s`, cx, cy - R - 30);
+    ctx.fillText(`L = ${L.toFixed(2)} kg·m²/s`, cx, cy + R + 30);
   }
 
   /** Flecha curva (arco) para representar el torque */
@@ -249,107 +214,92 @@ export class CanvasRendererRotacion {
     ctx.beginPath();
     ctx.arc(cx, cy, r, startAngle, endAngle, direction < 0);
     ctx.strokeStyle = color;
-    ctx.lineWidth = 4;
-    ctx.shadowColor = color;
-    ctx.shadowBlur = 10;
+    ctx.lineWidth = 3;
     ctx.stroke();
-    ctx.shadowBlur = 0;
 
     // Punta de flecha en el extremo del arco
-    const tipAngle = direction > 0 ? endAngle : endAngle;
-    const tx = cx + Math.cos(tipAngle) * r;
-    const ty = cy + Math.sin(tipAngle) * r;
-    const arrowDir = (tipAngle + direction * Math.PI * 0.5);
-    ctx.beginPath();
-    ctx.moveTo(tx, ty);
-    ctx.lineTo(tx + 10 * Math.cos(arrowDir - 0.4), ty + 10 * Math.sin(arrowDir - 0.4));
-    ctx.lineTo(tx + 10 * Math.cos(arrowDir + 0.4), ty + 10 * Math.sin(arrowDir + 0.4));
-    ctx.closePath();
+    const tx = cx + Math.cos(endAngle) * r;
+    const ty = cy + Math.sin(endAngle) * r;
+    const arrowDir = endAngle + direction * Math.PI * 0.5;
     ctx.fillStyle = color;
-    ctx.fill();
+    drawArrowHead(ctx, tx, ty, arrowDir + Math.PI, 11);
 
-    // Etiqueta
-    ctx.fillStyle = color;
-    ctx.font = 'bold 12px JetBrains Mono, monospace';
-    ctx.textAlign = direction > 0 ? 'right' : 'left';
+    ctx.font = `500 12px ${FONTS.mono}`;
+    ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
     ctx.fillText(label, cx, cy - r - 8);
   }
 
-  /** Flecha recta horizontal para ω y α */
-  _drawStraightArrow(x, y, len, angle, color, label) {
+  /** Flecha recta horizontal para ω y α, rotulada con la letra de la magnitud */
+  _drawStraightArrow(x, y, len, color, label) {
     const { ctx } = this;
-    const ex = x + len * Math.cos(angle);
-    const ey = y + len * Math.sin(angle);
+    const ex = x + len;
 
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(x, y);
-    ctx.lineTo(ex, ey);
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 3;
-    ctx.shadowColor = color;
-    ctx.shadowBlur = 8;
+    ctx.lineTo(ex, y);
     ctx.stroke();
-    ctx.shadowBlur = 0;
+    drawArrowHead(ctx, ex, y, 0, 11);
 
-    // Punta
-    ctx.beginPath();
-    ctx.moveTo(ex, ey);
-    ctx.lineTo(ex - 10 * Math.cos(angle - 0.4), ey - 10 * Math.sin(angle - 0.4));
-    ctx.lineTo(ex - 10 * Math.cos(angle + 0.4), ey - 10 * Math.sin(angle + 0.4));
-    ctx.closePath();
-    ctx.fillStyle = color;
-    ctx.fill();
-
-    // Etiqueta
-    ctx.fillStyle = color;
-    ctx.font = 'bold 11px JetBrains Mono, monospace';
+    ctx.font = `italic 600 17px ${FONTS.display}`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(label, ex + 8, ey);
+    ctx.fillText(label, ex + 9, y);
   }
 
-  // ─── Gráfica temporal ω(t) ──────────────────────────────────────────────────
+  // ─── Gráfica temporal ω(t) y L(t) ───────────────────────────────────────────
 
-  _drawOmegaChart(history) {
-    if (history.length < 2) return;
-    const { ctx, W, H } = this;
+  _drawChart(history) {
+    const { ctx, W, palette } = this;
+    const x = 18;
+    const y = this.chartY;
+    const w = W - 36;
+    const h = this.chartH - 14;
 
-    const chartW = 210;
-    const chartH = 110;
-    const chartX = W - chartW - 20;
-    const chartY = 20;
-
-    // Fondo del panel
-    ctx.fillStyle = 'rgba(15,23,42,0.88)';
-    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-    ctx.lineWidth = 1;
+    // Recuadro con filete de tinta
+    ctx.fillStyle = palette.paper;
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = palette.ink;
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.roundRect(chartX, chartY, chartW, chartH, 12);
-    ctx.fill();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + w, y);
     ctx.stroke();
 
-    // Título
-    ctx.fillStyle = 'rgba(100,116,139,1)';
-    ctx.font = 'bold 10px Outfit, sans-serif';
+    ctx.fillStyle = palette.muted;
+    ctx.font = `500 10px ${FONTS.mono}`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.fillText('ω(t)  y  L(t)', chartX + 10, chartY + 8);
+    ctx.fillText('ω(t) Y L(t), NORMALIZADAS', x, y + 8);
 
-    const iX = chartX + 10;
-    const iY = chartY + 24;
-    const iW = chartW - 20;
-    const iH = chartH - 34;
+    if (history.length < 2) return;
 
+    const iX = x + 4;
+    const iY = y + 26;
+    const iW = w - 8;
+    const iH = h - 40;
     const maxT = Math.max(history[history.length - 1].t, 0.1);
     const maxOmega = Math.max(...history.map(p => Math.abs(p.omega)), 0.1);
+    const maxL = Math.max(...history.map(p => Math.abs(p.L)), 0.1);
+
+    // Ejes
+    ctx.strokeStyle = palette.ink;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(iX, iY);
+    ctx.lineTo(iX, iY + iH);
+    ctx.lineTo(iX + iW, iY + iH);
+    ctx.stroke();
 
     ctx.save();
     ctx.beginPath();
     ctx.rect(iX, iY, iW, iH);
     ctx.clip();
 
-    // Línea ω
+    // ω continua
     ctx.beginPath();
     ctx.strokeStyle = this.COLOR_OMEGA;
     ctx.lineWidth = 2;
@@ -360,12 +310,11 @@ export class CanvasRendererRotacion {
     });
     ctx.stroke();
 
-    // Línea L (normalizada al mismo espacio)
-    const maxL = Math.max(...history.map(p => Math.abs(p.L)), 0.1);
+    // L discontinua
     ctx.beginPath();
     ctx.strokeStyle = this.COLOR_ANGULAR_M;
-    ctx.lineWidth = 1.5;
-    ctx.setLineDash([4, 3]);
+    ctx.lineWidth = 1.8;
+    ctx.setLineDash([5, 4]);
     history.forEach((pt, i) => {
       const px = iX + (pt.t / maxT) * iW;
       const py = iY + iH - (Math.abs(pt.L) / maxL) * iH;
@@ -376,59 +325,11 @@ export class CanvasRendererRotacion {
     ctx.restore();
 
     // Leyenda
-    [[this.COLOR_OMEGA, '— ω'], [this.COLOR_ANGULAR_M, '-- L']].forEach(([c, label], i) => {
-      ctx.fillStyle = c;
-      ctx.font = 'bold 10px Outfit, sans-serif';
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(label, iX + i * 60, chartY + chartH - 6);
-    });
-  }
-
-  // ─── Panel de datos (esquina inferior izquierda) ─────────────────────────────
-
-  _drawInfoPanel(state, engine) {
-    const { ctx, H } = this;
-
-    const panelX = 20;
-    const panelY = H - 175;
-    const panelW = 200;
-    const panelH = 155;
-
-    ctx.fillStyle = 'rgba(15,23,42,0.88)';
-    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.roundRect(panelX, panelY, panelW, panelH, 12);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = 'rgba(100,116,139,1)';
-    ctx.font = 'bold 10px Outfit, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'top';
-    ctx.fillText('MAGNITUDES INSTANTÁNEAS', panelX + 10, panelY + 10);
-
-    const rows = [
-      { label: 'I (inercia)', value: `${state.I.toFixed(3)} kg·m²`, color: this.COLOR_BODY },
-      { label: 'τ (torque)', value: `${state.tau.toFixed(2)} N·m`, color: this.COLOR_TORQUE },
-      { label: 'α (aceler.)', value: `${state.alpha.toFixed(3)} rad/s²`, color: this.COLOR_ALPHA },
-      { label: 'ω (angular)', value: `${state.omega.toFixed(3)} rad/s`, color: this.COLOR_OMEGA },
-      { label: 'L (moment.)', value: `${state.L.toFixed(3)} kg·m²/s`, color: this.COLOR_ANGULAR_M },
-    ];
-
-    rows.forEach((row, i) => {
-      const y = panelY + 26 + i * 24;
-      ctx.fillStyle = 'rgba(148,163,184,0.7)';
-      ctx.font = '10px Outfit, sans-serif';
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(row.label, panelX + 10, y);
-
-      ctx.fillStyle = row.color;
-      ctx.font = 'bold 11px JetBrains Mono, monospace';
-      ctx.textAlign = 'right';
-      ctx.fillText(row.value, panelX + panelW - 10, y);
+    ctx.font = `italic 600 13px ${FONTS.display}`;
+    ctx.textBaseline = 'middle';
+    [[this.COLOR_OMEGA, '— ω'], [this.COLOR_ANGULAR_M, '- - L']].forEach(([color, label], i) => {
+      ctx.fillStyle = color;
+      ctx.fillText(label, x + w - 100 + i * 52, y + 14);
     });
   }
 }

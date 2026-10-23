@@ -143,7 +143,7 @@ function applyParameters() {
   if (dom.teoPeriodLabel) {
     if (engine.isOverdamped()) {
       dom.teoPeriodLabel.textContent =
-        `⚠️ Amortiguamiento crítico o superior (ζ = ${engine.getDampingRatio().toFixed(2)} ≥ 1): el sistema vuelve al equilibrio sin oscilar.`;
+        `Amortiguamiento crítico o superior (ζ = ${engine.getDampingRatio().toFixed(2)} ≥ 1): el sistema vuelve al equilibrio sin oscilar.`;
     } else {
       dom.teoPeriodLabel.textContent = `T teórico (sin amortiguamiento) ≈ ${Tteo.toFixed(2)} s`;
     }
@@ -198,12 +198,12 @@ function startSimulation() {
     engine.isRunning = false;
     cancelAnimationFrame(animFrameId);
     lastTimestamp = null;
-    dom.btnSimPlay.textContent = '▶ Continuar';
+    dom.btnSimPlay.textContent = 'Continuar';
     dom.btnSimPlay.classList.remove('success');
   } else {
     engine.isRunning = true;
     lastTimestamp = null;
-    dom.btnSimPlay.textContent = '⏸ Pausar';
+    dom.btnSimPlay.textContent = 'Pausar';
     dom.btnSimPlay.classList.add('success');
     animFrameId = requestAnimationFrame(animationLoop);
   }
@@ -214,7 +214,7 @@ function resetSimulation() {
   lastTimestamp = null;
   engine.isRunning = false;
   engine.reset();
-  dom.btnSimPlay.textContent = '▶  Iniciar oscilación';
+  dom.btnSimPlay.textContent = 'Iniciar oscilación';
   dom.btnSimPlay.classList.remove('success');
   dom.btnNextToPhase4.disabled = true;
   if (dom.cyclesCount) dom.cyclesCount.textContent = '0';
@@ -296,14 +296,14 @@ dom.quizOptions.forEach(btn => {
 
     if (currentSystem === PhysicsEngineOscilaciones.SYSTEMS.PENDULUM) {
       dom.phase1Feedback.textContent = correct
-        ? '✅ ¡Correcto! El período del péndulo T = 2π√(L/g) no depende de la masa, solo de su longitud L y gravedad.'
-        : '❌ Incorrecto. Revisa la fórmula del período del péndulo.';
+        ? '¡Correcto! El período del péndulo T = 2π√(L/g) no depende de la masa, solo de su longitud L y gravedad.'
+        : 'Incorrecto. Revisa la fórmula del período del péndulo.';
     } else {
       dom.phase1Feedback.textContent = correct
-        ? '✅ ¡Correcto! Un resorte más rígido (mayor k) acelera la masa más rápido, reduciendo el período y aumentando la frecuencia (f = 1/T).'
-        : '❌ Incorrecto. Revisa la fórmula T = 2π√(m/k).';
+        ? '¡Correcto! Un resorte más rígido (mayor k) acelera la masa más rápido, reduciendo el período y aumentando la frecuencia (f = 1/T).'
+        : 'Incorrecto. Revisa la fórmula T = 2π√(m/k).';
     }
-    dom.phase1Feedback.style.color = correct ? '#10b981' : '#ef4444';
+    dom.phase1Feedback.style.color = correct ? 'var(--blue)' : 'var(--red)';
   });
 });
 

@@ -6,7 +6,7 @@
 
 - **Core:** HTML5 semántico para la estructura y JavaScript moderno (ES6+) para la lógica y las simulaciones físicas.
 - **Estilo (CSS):** Vanilla CSS para máxima flexibilidad y control. No usar librerías o frameworks de CSS externos a menos que se solicite explícitamente.
-- **Estética Visual:** Diseños premium modernos con paletas de colores armoniosas (preferiblemente basadas en HSL), esquemas oscuros por defecto, tipografía moderna (ej: `Inter`, `Outfit` o `Roboto` importadas de Google Fonts) y micro-animaciones fluidas para interactividad.
+- **Estética Visual — "Cuaderno de laboratorio":** papel crema, tinta casi negra, lapicero azul (velocidad, datos) y tinta de corrector bermellón (fuerzas, errores), con ocre para predicciones y verde para energía cinética. Tipografía: *Fraunces* (titulares), *Newsreader* (cuerpo) e *IBM Plex Mono* (datos y ecuaciones). Formas rectas (radio 0), sin degradados de color, vidrio esmerilado, brillos ni emojis; entrada escalonada con `.rise` (respeta `prefers-reduced-motion`). Los tokens viven en `css/tokens.css` y los canvas los leen con `js/shared/inkPalette.js`: **no se escriben colores a mano en los renderizadores**. Si se cambia de dirección visual, se hace en esos dos archivos.
 
 ## Nombres y Nomenclatura
 
@@ -36,7 +36,7 @@ Cada página HTML debe ser semántica y contener optimización SEO base:
   <!-- Tipografía premium -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <!-- Las fuentes se importan desde css/tokens.css -->
   <!-- Estilos (archivo HTML vive en pages/, por eso ../) -->
   <link rel="stylesheet" href="../css/style.css">
 </head>
@@ -57,20 +57,20 @@ Cada página HTML debe ser semántica y contener optimización SEO base:
 ```
 
 ### 2. Estructura CSS
-El archivo CSS debe definir variables globales (CSS Variables) para mantener consistencia estética y un diseño de alta gama:
+Tres hojas, una por responsabilidad: `css/tokens.css` (variables y base tipográfica), `css/style.css` (simuladores: escenario + hoja de Pólya) y `css/index.css` (portada). Ejemplo de tokens:
 
 ```css
 :root {
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --accent-color: hsl(217.2, 91.2%, 59.8%);
-  --accent-glow: hsla(217.2, 91.2%, 59.8%, 0.15);
-  --text-primary: #f8fafc;
-  --text-muted: #94a3b8;
-  --font-family: 'Outfit', sans-serif;
-  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --paper: #F2ECDF;   --paper-2: #FBF8EF;
+  --ink: #1B1A17;     --ink-soft: #4A463E;   --muted: #6B6455;
+  --blue: #2B4C8C;    --red: #B83A26;        --ochre: #8A5E0E;   --green: #2F6B4F;
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Newsreader', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 }
 ```
+
+Los estilos en línea (`style="..."`) están prohibidos salvo `--i` (orden de la entrada escalonada) y `display:none` gestionado por JS; los colores con significado se expresan con clases (`c-blue`, `bg-red`, `edge-ochre`…).
 
 ### 3. Módulos JavaScript (ES6)
 Cada archivo JavaScript debe tener una única responsabilidad y exportar componentes de forma limpia:

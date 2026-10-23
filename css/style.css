@@ -210,7 +210,7 @@ a.tutor-badge:hover {
 #vector-telemetry.readout {
   position: static;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
   margin: 0 40px 28px 88px;
   background: none;
   border: 0;
@@ -241,9 +241,9 @@ a.tutor-badge:hover {
 
 .readout dd {
   margin-top: 2px;
-  font: 500 1.05rem/1.2 var(--font-mono);
+  font: 500 1rem/1.25 var(--font-mono);
   color: var(--ink);
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 /* ───────────────────────── Hoja de cuaderno (panel de Pólya) ───────────────────────── */
@@ -660,6 +660,230 @@ input[type='range']:disabled {
   font-weight: 600;
   font-style: normal;
   color: var(--ink);
+}
+
+/* ───────────────────────── Tintas con significado (sustituyen estilos en línea) ───────────────────────── */
+
+.c-blue { color: var(--blue); }
+.c-red { color: var(--red); }
+.c-ochre { color: var(--ochre); }
+.c-green { color: var(--green); }
+.c-ink { color: var(--ink); }
+.c-muted { color: var(--muted); }
+
+.bg-blue { background: var(--blue); }
+.bg-red { background: var(--red); }
+.bg-ochre { background: var(--ochre); }
+.bg-green { background: var(--green); }
+.bg-ink { background: var(--ink); }
+
+/* Tarjeta con canto de color (una fuerza, una magnitud) */
+.card[class*='edge-'] {
+  padding-left: 14px;
+  border-top: 0;
+  border-left: 3px solid currentColor;
+}
+
+.card.edge-red { color: var(--red); }
+.card.edge-blue { color: var(--blue); }
+.card.edge-ochre { color: var(--ochre); }
+.card.edge-green { color: var(--green); }
+
+.card[class*='edge-'] > * { color: var(--ink); }
+.card[class*='edge-'] > .telemetry-title { color: inherit; }
+
+.margin-note .telemetry-title { color: var(--red); }
+
+/* Colores de los indicadores de la lectura de datos y leyendas */
+.ke-dot { color: var(--green); }
+.pe-dot { color: var(--blue); }
+.thermal-dot { color: var(--red); }
+.torque-tag { color: var(--ochre); font-weight: 600; }
+.omega-tag { color: var(--blue); font-weight: 600; }
+.alpha-tag { color: var(--red); font-weight: 600; }
+.L-tag { color: var(--green); font-weight: 600; }
+.star-tag { color: var(--ochre); }
+.planet-tag { color: var(--ink); }
+.force-tag { color: var(--red); }
+.vel-tag { color: var(--blue); }
+.kepler-tag { color: var(--green); font-weight: 600; }
+
+/* Leyenda: muestra de color + texto */
+.vector-legend,
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.98rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+/* Texto corrido con la muestra de color flotando a la izquierda */
+.vector-legend-item {
+  position: relative;
+  padding-left: 26px;
+}
+
+.vector-legend-item .vector-dot {
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+}
+
+.vector-dot {
+  flex-shrink: 0;
+  display: inline-block;
+  width: 14px;
+  height: 3px;
+}
+
+.legend-item .vector-dot {
+  transform: translateY(-4px);
+}
+
+/* ───────────────────────── Selectores y medidores propios de cada laboratorio ───────────────────────── */
+
+.body-selector,
+.system-selector {
+  display: flex;
+  gap: 0;
+  margin-bottom: 18px;
+  border: 1px solid var(--ink);
+}
+
+.body-btn,
+.btn-sys {
+  flex: 1;
+  padding: 10px 8px;
+  background: none;
+  border: 0;
+  border-left: 1px solid var(--ink);
+  border-radius: 0;
+  font: 500 0.75rem/1.3 var(--font-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--ink);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.body-btn:first-child,
+.btn-sys:first-child {
+  border-left: 0;
+}
+
+.body-btn small {
+  display: block;
+  margin-top: 2px;
+  font: 400 0.7rem var(--font-mono);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--muted);
+}
+
+.body-btn:hover,
+.btn-sys:hover {
+  background: rgba(184, 58, 38, 0.07);
+}
+
+.body-btn.selected,
+.btn-sys.active {
+  background: var(--ink);
+  color: var(--paper-2);
+}
+
+.body-btn.selected small {
+  color: rgba(251, 248, 239, 0.7);
+}
+
+/* Barra de progreso del tiempo simulado */
+.time-progress-wrapper {
+  height: 6px;
+  margin-bottom: 6px;
+  border: 1px solid var(--ink);
+  overflow: hidden;
+}
+
+#time-progress {
+  height: 100%;
+  width: 0;
+  background: var(--blue);
+  transition: width 0.1s linear;
+}
+
+#time-label {
+  margin-bottom: 14px;
+  text-align: right;
+  font: 400 0.75rem var(--font-mono);
+  color: var(--muted);
+}
+
+/* Contadores (órbitas, ciclos) */
+.orbits-badge,
+.cycles-badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 6px 0;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--rule);
+  font: 500 0.72rem/1.2 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.orbits-badge span,
+.cycles-badge span {
+  font: 500 1.3rem/1 var(--font-mono);
+  letter-spacing: 0;
+  color: var(--blue);
+}
+
+/* Mensajes de verificación de la fase 4 */
+#conservation-msg,
+#kepler-check,
+#newton-check {
+  min-height: 1.4em;
+  margin: 14px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+#teo-kepler-label,
+#teo-period-label {
+  margin-top: 10px;
+  font: 500 0.78rem/1.4 var(--font-mono);
+  color: var(--blue);
+}
+
+/* Puntuación del diagrama de cuerpo libre */
+.score-card {
+  text-align: center;
+}
+
+#val-dcl-score {
+  font: italic 400 3rem/1 var(--font-display);
+  color: var(--red);
+  font-variation-settings: 'opsz' 144;
+}
+
+#btn-restart-lab {
+  margin-top: 16px;
+}
+
+/* Notas de ayuda bajo un control */
+.card p,
+.control-group p {
+  font-size: 0.95rem;
+  color: var(--ink-soft);
 }
 
 /* ───────────────────────── Adaptación a pantallas medianas y pequeñas ───────────────────────── */
