@@ -87,7 +87,8 @@ Abre `progress/` en tu editor mientras Gemini trabaja: cada informe aparece en c
     ├── energia.test.js     # Conservación de K+U+Q, fricción y altura inicial
     ├── rotacion.test.js    # τ = I·α, fricción viscosa, impulso–momento angular
     ├── gravitacion.test.js # Órbitas ligadas, Kepler III, energía y momento angular
-    └── oscilaciones.test.js # Período MAS/péndulo, amortiguamiento, estabilidad
+    ├── oscilaciones.test.js # Período MAS/péndulo, amortiguamiento, estabilidad
+    └── ui.test.js          # Interfaz estática: IDs, enlaces, estilos en línea, canvas sin colores fijos, guías
 ```
 
 ## Aprendizajes que ilustra este proyecto

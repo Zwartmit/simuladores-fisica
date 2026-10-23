@@ -100,6 +100,7 @@ function init() {
     engine,
     renderer,
     isRunning: () => isPlaying,
+    getPhase: () => getCurrentPhase(),
     getDrawPath: () => userDrawPath,
     getPredictedRange: () => predictedRange
   };

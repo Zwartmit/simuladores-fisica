@@ -97,5 +97,19 @@ export function runVectorTests() {
     throw err;
   }
 
+  // PRUEBA 6: Con alcance real 0 el error relativo no debe decir "0 %" si el alumno predijo otra cosa
+  try {
+    engine.setParameters(0, 20, 0, 10); // disparo rasante desde el suelo: alcance real = 0
+    assert.strictEqual(engine.getTheoreticalMaxRange(), 0);
+
+    assert.strictEqual(engine.evaluatePrediction(30).relativeErrorPercent, 100);
+    assert.strictEqual(engine.evaluatePrediction(0).relativeErrorPercent, 0);
+
+    console.log("  ✅ Prueba 6: Error relativo con alcance real nulo correcto.");
+  } catch (err) {
+    console.error("  ❌ Prueba 6 fallida:", err.message);
+    throw err;
+  }
+
   console.log("🎉 Todas las pruebas de física analítica han pasado exitosamente!");
 }

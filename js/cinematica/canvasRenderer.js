@@ -2,19 +2,10 @@
  * @fileoverview Renderizador dedicado para Canvas de HTML5 (estilo "cuaderno de laboratorio").
  * Traduce coordenadas físicas a coordenadas de píxeles y dibuja sobre papel milimetrado:
  * ejes con marcas, trayectoria a lápiz, vectores en tinta y la hipótesis del estudiante.
- * Los colores se leen de los tokens CSS (css/tokens.css) para mantener un único sistema.
+ * Los colores se leen de los tokens CSS (css/tokens.css) mediante js/shared/inkPalette.js.
  */
 
-const FALLBACK_PALETTE = {
-  paper: '#FBF8EF',
-  ink: '#1B1A17',
-  muted: '#6B6455',
-  blue: '#2B4C8C',
-  red: '#B83A26',
-  ochre: '#8A5E0E',
-  graphMinor: 'rgba(43, 76, 140, 0.08)',
-  graphMajor: 'rgba(43, 76, 140, 0.20)',
-};
+import { readInkPalette } from '../shared/inkPalette.js';
 
 export class CanvasRenderer {
   /**
@@ -31,24 +22,8 @@ export class CanvasRenderer {
     this.paddingTop = 24;
     this.paddingRight = 28;
 
-    this.palette = this._readPalette();
+    this.palette = readInkPalette();
     this.resize();
-  }
-
-  /** Lee los tokens de color del documento (con respaldo si el CSS no cargó). */
-  _readPalette() {
-    const css = getComputedStyle(document.documentElement);
-    const read = (name, fallback) => css.getPropertyValue(name).trim() || fallback;
-    return {
-      paper: read('--paper-2', FALLBACK_PALETTE.paper),
-      ink: read('--ink', FALLBACK_PALETTE.ink),
-      muted: read('--muted', FALLBACK_PALETTE.muted),
-      blue: read('--blue', FALLBACK_PALETTE.blue),
-      red: read('--red', FALLBACK_PALETTE.red),
-      ochre: read('--ochre', FALLBACK_PALETTE.ochre),
-      graphMinor: read('--graph-minor', FALLBACK_PALETTE.graphMinor),
-      graphMajor: read('--graph-major', FALLBACK_PALETTE.graphMajor),
-    };
   }
 
   /**

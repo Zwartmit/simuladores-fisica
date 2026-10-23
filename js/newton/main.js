@@ -122,8 +122,12 @@ function init() {
     engine,
     renderer,
     isPlaying: () => isPlaying,
+    isRunning: () => isPlaying,
+    getPhase: () => getCurrentPhase(),
     getUserForces: () => userForces
   };
+  // Nombre común a todos los simuladores (ver docs/conventions.md)
+  window.currentSimulation = window.newtonSimulation;
 }
 
 /**

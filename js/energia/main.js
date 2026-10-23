@@ -296,3 +296,11 @@ window.addEventListener('resize', () => {
 dom.valHeight.textContent = `${dom.inputHeight.value}% (${(dom.inputHeight.value / 100 * 2 * engine.rampAmplitude).toFixed(1)} m)`;
 applyParameters();
 showPhase(1);
+
+// Estado expuesto para pruebas y auditoría en el navegador (ver docs/conventions.md)
+window.currentSimulation = {
+  engine,
+  renderer,
+  isRunning: () => engine.isRunning,
+  getPhase: () => currentPhase,
+};

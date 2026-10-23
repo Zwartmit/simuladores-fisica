@@ -197,7 +197,15 @@ export class PhysicsEngine {
   evaluatePrediction(predictedRange) {
     const realRange = this.getTheoreticalMaxRange();
     const absoluteError = Math.abs(predictedRange - realRange);
-    const relativeErrorPercent = realRange > 0 ? (absoluteError / realRange) * 100 : 0;
+    // Si el alcance real es 0 (p. ej., y₀ = 0 y ángulo 0°) el error relativo no está definido:
+    // se acota a 100 % cuando el alumno predijo algo distinto de 0 (antes devolvía 0 %,
+    // que le decía que había acertado).
+    let relativeErrorPercent;
+    if (realRange > 0) {
+      relativeErrorPercent = (absoluteError / realRange) * 100;
+    } else {
+      relativeErrorPercent = absoluteError > 1e-9 ? 100 : 0;
+    }
     
     return {
       predictedRange,

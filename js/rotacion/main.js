@@ -320,3 +320,11 @@ window.addEventListener('resize', () => {
 // ─── Init ────────────────────────────────────────────────────────────────────
 applyParameters();
 showPhase(1);
+
+// Estado expuesto para pruebas y auditoría en el navegador (ver docs/conventions.md)
+window.currentSimulation = {
+  engine,
+  renderer,
+  isRunning: () => engine.isRunning,
+  getPhase: () => currentPhase,
+};

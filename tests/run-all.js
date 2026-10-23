@@ -8,6 +8,7 @@ import { runEnergiaTests } from './energia.test.js';
 import { runRotacionTests } from './rotacion.test.js';
 import { runGravitacionTests } from './gravitacion.test.js';
 import { runOscilacionesTests } from './oscilaciones.test.js';
+import { runUiTests } from './ui.test.js';
 
 const SUITES = [
   runVectorTests,       // Suite 1: Cinemática 2D
@@ -16,6 +17,7 @@ const SUITES = [
   runRotacionTests,     // Suite 4: Dinámica rotacional
   runGravitacionTests,  // Suite 5: Gravitación y Kepler
   runOscilacionesTests, // Suite 6: Oscilaciones mecánicas
+  runUiTests,           // Suite 7: Interfaz (HTML, CSS y controladores coherentes)
 ];
 
 try {

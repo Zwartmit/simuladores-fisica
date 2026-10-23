@@ -30,6 +30,9 @@ Comando sugerido de verificación de backend/lógica:
 node tests/run-all.js
 ```
 
+### Nivel 1b — Pruebas estáticas de interfaz (obligatorio para cambios en HTML, CSS o controladores)
+`tests/ui.test.js` se ejecuta junto al resto con `node tests/run-all.js` y comprueba, sin navegador, que cada ID que busca un `main.js` exista en su página, que no haya enlaces ni imágenes rotos, estilos en línea, emojis, LaTeX crudo ni colores fijos en los canvas, que cada slider tenga su `<label for>`, que cada simulador exponga `window.currentSimulation` y que las guías tengan sus capturas. No sustituye a la verificación visual de los niveles 2 y 3.
+
 ### Nivel 2 — Validación de integración e interactividad (obligatorio para cambios en UI)
 Para validar controles interactivos (botones, sliders) y el Canvas:
 1. Inspeccionar mediante herramientas del navegador o scripts de automatización que los elementos DOM interactivos posean IDs unívocos (ej: `#gravity-slider`, `#btn-reset`).
