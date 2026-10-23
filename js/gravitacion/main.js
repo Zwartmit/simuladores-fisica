@@ -81,16 +81,16 @@ function showPhase(n) {
 function applyParameters() {
   const G = parseFloat(dom.inputG?.value ?? 1000);
   const M = parseFloat(dom.inputM?.value ?? 1000);
-  const r0 = parseFloat(dom.inputR0?.value ?? 150);
+  const a = parseFloat(dom.inputR0?.value ?? 150); // semieje mayor
   const ecc = parseFloat(dom.inputEcc?.value ?? 0);
 
-  engine.setParameters(G, M, r0, ecc);
+  engine.setParameters(G, M, a, ecc);
 
-  // Actualizar etiqueta del período teórico en Fase 2
-  const a = r0; // Para órbita circular a = r0
-  const Tteo = engine.getTheoreticalPeriod(a);
+  // Actualizar etiqueta del período teórico en Fase 2 (no depende de e, solo de a, G y M)
+  const Tteo = engine.getTheoreticalPeriod();
   if (dom.teoKeplerLabel) {
-    dom.teoKeplerLabel.textContent = `T teórico (circular) ≈ ${Tteo.toFixed(1)} s`;
+    dom.teoKeplerLabel.textContent =
+      `T teórico = 2π√(a³/GM) ≈ ${Tteo.toFixed(1)} s · periapsis ${engine.getTheoreticalPeriapsis().toFixed(0)} u · apoapsis ${engine.getTheoreticalApoapsis().toFixed(0)} u`;
   }
 
   renderer.draw(engine.getState(), engine);
@@ -165,8 +165,9 @@ function resetSimulation() {
 function populateReview() {
   const predicted = parseFloat(dom.inputPredPeriod?.value ?? 0);
   const realT = engine.period > 0 ? engine.period : (engine.keplerLog[0]?.T ?? 0);
-  const a = engine.getState().a;
+  const a = engine.a;
   const teoT = engine.getTheoreticalPeriod(a);
+  const k3Teo = engine.getTheoreticalKeplerConstant();
 
   if (dom.tablePredPeriod) dom.tablePredPeriod.textContent = `${predicted.toFixed(1)} s`;
   if (dom.tableRealPeriod) dom.tableRealPeriod.textContent = `${realT.toFixed(1)} s`;
@@ -178,35 +179,34 @@ function populateReview() {
       (predError < 10 ? 'low' : predError < 30 ? 'medium' : 'high');
   }
 
-  // Kepler III: verificar T² ∝ a³
+  // Kepler III: a³/T² medido (a y T salen de la simulación) vs. la constante teórica GM/4π²
   const keplerLog = engine.getKeplerLog();
+  const avgRatio = keplerLog.length > 0
+    ? keplerLog.reduce((s, e) => s + e.ratio, 0) / keplerLog.length
+    : 0;
   if (keplerLog.length > 0 && dom.keplerRatioCell) {
-    const avgRatio = keplerLog.reduce((s, e) => s + e.ratio, 0) / keplerLog.length;
     dom.keplerRatioCell.textContent = `${avgRatio.toFixed(2)}`;
   }
   if (dom.tableTeoK3) {
-    const k3const = (a * a * a) / (teoT * teoT);
-    dom.tableTeoK3.textContent = `${k3const.toFixed(2)}`;
+    dom.tableTeoK3.textContent = `${k3Teo.toFixed(2)}`;
   }
 
-  // Verificación Kepler III
+  // Verificación Kepler III contra el valor teórico (independiente del integrador)
   if (dom.keplerCheck && keplerLog.length > 0) {
-    const firstRatio = keplerLog[0].ratio;
-    const lastRatio = keplerLog[keplerLog.length - 1].ratio;
-    const variation = Math.abs(firstRatio - lastRatio) / (Math.abs(firstRatio) + 0.001) * 100;
-    dom.keplerCheck.textContent = variation < 5
-      ? `✅ a³/T² = constante (variación < ${variation.toFixed(1)}%). ¡Kepler III verificado!`
-      : `📊 Variación del ${variation.toFixed(1)}% — espera más órbitas para mejor precisión.`;
-    dom.keplerCheck.style.color = variation < 5 ? '#10b981' : '#f59e0b';
+    const variation = Math.abs(avgRatio - k3Teo) / k3Teo * 100;
+    dom.keplerCheck.textContent = variation < 2
+      ? `✅ a³/T² medido difiere ${variation.toFixed(2)}% de GM/4π². ¡Kepler III verificado!`
+      : `📊 a³/T² medido difiere ${variation.toFixed(2)}% de GM/4π² — revisa los parámetros o espera más órbitas.`;
+    dom.keplerCheck.style.color = variation < 2 ? '#10b981' : '#f59e0b';
   }
 
   // Retroalimentación del tutor
   if (dom.tutorFeedback) {
     const fb = predError < 20
       ? `¡Excelente predicción! Tu estimación del período tuvo un error de solo ${predError.toFixed(1)}%. ` +
-      `La Tercera Ley de Kepler (T² ∝ a³) se verifica con la constante a³/T² = ${(a * a * a) / (realT * realT + 0.001).toFixed(1)} (depende solo de G y M, no del planeta).`
+      `La Tercera Ley de Kepler (T² ∝ a³) se verifica con la constante a³/T² = ${avgRatio.toFixed(1)} (depende solo de G y M, no del planeta ni de la excentricidad).`
       : `Tu estimación difirió un ${predError.toFixed(1)}% del período real (${realT.toFixed(1)} s). ` +
-      `Usa T = 2π·√(a³/GM) = ${teoT.toFixed(1)} s para calcular el período exacto de una órbita circular con r = ${a.toFixed(0)} u.`;
+      `Usa T = 2π·√(a³/GM) = ${teoT.toFixed(1)} s con el semieje mayor a = ${a.toFixed(0)} u (vale para cualquier excentricidad).`;
     dom.tutorFeedback.textContent = fb;
   }
 }

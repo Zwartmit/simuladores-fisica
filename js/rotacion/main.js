@@ -212,24 +212,31 @@ function populateReview() {
       (predError < 10 ? 'low' : predError < 30 ? 'medium' : 'high');
   }
 
-  // Verificación de la 2ª Ley de Newton rotacional: τ = I·α
-  const tau_check = state.tau_ext; // torque externo
+  // Verificación de la 2ª Ley rotacional con el torque NETO (τ_neto = τ_aplicado − b·ω):
+  //  (a) τ_neto = I·α en el instante final, y
+  //  (b) impulso–momento angular: ∫τ_neto·dt = ΔL = I·ω (comprobación independiente del integrador).
+  const tauNet = state.tau;
   const I_alpha = state.I * state.alpha;
-  const newtonOk = Math.abs(tau_check - I_alpha) / (Math.abs(tau_check) + 0.001) < 0.02;
+  const impulse = engine.getAngularImpulse();
+  const tol = (a, b) => Math.abs(a - b) <= 0.02 * Math.max(Math.abs(a), Math.abs(b), 0.01);
+  const newtonOk = tol(tauNet, I_alpha) && tol(impulse, state.L);
   if (dom.newtonCheck) {
     dom.newtonCheck.textContent = newtonOk
-      ? `✅ τ = I·α se cumple: ${tau_check.toFixed(2)} ≈ ${I_alpha.toFixed(2)} N·m`
-      : `⚠️ Pequeña discrepancia: τ=${tau_check.toFixed(2)}, I·α=${I_alpha.toFixed(2)} N·m`;
+      ? `✅ τ_neto = I·α se cumple (${tauNet.toFixed(2)} ≈ ${I_alpha.toFixed(2)} N·m) y ∫τ_neto·dt = ΔL (${impulse.toFixed(2)} ≈ ${state.L.toFixed(2)} kg·m²/s)`
+      : `⚠️ Discrepancia: τ_neto=${tauNet.toFixed(2)} vs I·α=${I_alpha.toFixed(2)} N·m; ∫τ_neto·dt=${impulse.toFixed(2)} vs ΔL=${state.L.toFixed(2)}`;
     dom.newtonCheck.style.color = newtonOk ? '#10b981' : '#f59e0b';
   }
 
   // Retroalimentación del tutor
   if (dom.tutorFeedback) {
+    const alpha0 = engine.torque / state.I;
+    const hint = engine.friction === 0
+      ? `α = τ/I = ${alpha0.toFixed(2)} rad/s², por tanto ω(${simTime.toFixed(0)} s) = α·t = ${teoOmega.toFixed(2)} rad/s.`
+      : `Con fricción viscosa b = ${engine.friction.toFixed(1)}, α₀ = τ/I = ${alpha0.toFixed(2)} rad/s² solo al inicio; luego baja y ω(t) = (τ/b)(1 − e^(−b·t/I)) = ${teoOmega.toFixed(2)} rad/s a los ${simTime.toFixed(0)} s (límite τ/b = ${engine.getSteadyStateOmega().toFixed(2)} rad/s).`;
     const fb = predError < 15
       ? `¡Predicción excelente! Tu estimación de ω tuvo un error de solo ${predError.toFixed(1)}%. ` +
       `Esto confirma que dominas la relación τ = I·α: a mayor torque o menor inercia, mayor aceleración angular.`
-      : `Tu predicción difirió un ${predError.toFixed(1)}% del valor real (${realOmega.toFixed(2)} rad/s). ` +
-      `Recuerda: α = τ/I = ${(engine.torque / state.I).toFixed(2)} rad/s², por tanto ω(${simTime.toFixed(0)}s) = α·t = ${teoOmega.toFixed(2)} rad/s (sin fricción).`;
+      : `Tu predicción difirió un ${predError.toFixed(1)}% del valor real (${realOmega.toFixed(2)} rad/s). Recuerda: ${hint}`;
     dom.tutorFeedback.textContent = fb;
   }
 }

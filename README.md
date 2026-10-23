@@ -80,7 +80,11 @@ Abre `progress/` en tu editor mientras Gemini trabaja: cada informe aparece en c
 └── tests/
     ├── run-all.js          # Ejecutor de pruebas automatizadas locales
     ├── vector.test.js      # Pruebas unitarias de js/cinematica/physicsEngine.js
-    └── newton.test.js      # Pruebas unitarias de js/newton/physicsEngine.js
+    ├── newton.test.js      # Pruebas unitarias de js/newton/physicsEngine.js
+    ├── energia.test.js     # Conservación de K+U+Q, fricción y altura inicial
+    ├── rotacion.test.js    # τ = I·α, fricción viscosa, impulso–momento angular
+    ├── gravitacion.test.js # Órbitas ligadas, Kepler III, energía y momento angular
+    └── oscilaciones.test.js # Período MAS/péndulo, amortiguamiento, estabilidad
 ```
 
 ## Aprendizajes que ilustra este proyecto

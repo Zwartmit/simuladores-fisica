@@ -1,5 +1,3 @@
-w
-
 # Bitácora de sesiones anteriores
 
 ## Sesión: 2026-05-26 — Implementación de Cinemática 2D (Feature 1)
@@ -89,3 +87,19 @@ w
 *   **Validación en navegador:** Sin errores de consola. Las animaciones y gráficas se renderizan fluidamente. Fase 4 desbloqueada tras completar 1 ciclo.
 *   **Menú Principal actualizado:** Tarjeta de Oscilaciones mecánicas desbloqueada en `index.html`.
 *   **Hito del Proyecto:** Con esta feature, se completan **todas** las funcionalidades planificadas en el `feature_list.json`. El desarrollo del proyecto base de Simuladores de Física ha concluido exitosamente.
+
+## Sesión: 2026-10-22 — Auditoría y corrección de bugs de física (Features 3, 4, 5 y 6)
+
+**Contexto:** Auditoría completa en navegador + motores en Node. No se abrió una feature nueva: se corrigieron errores de cálculo en los motores de Energía, Gravitación, Rotación y Oscilaciones, cada uno con su suite de tests.
+
+**Bugs corregidos:**
+
+* **Energía:** el motor omitía el término y''·ẋ² de la ecuación de Lagrange (K+U llegaba a +245% de E₀), la "energía térmica" se calculaba como E₀−(K+U) (conservación circular, siempre "verificada"), el bloque se frenaba en seco en θ=0.98π y el slider de altura estaba invertido (80% → 1.3 m). Ahora la pista es un cuenco y(x)=A(1−cos(πx/W)), Q se integra desde el trabajo real de la fricción (Coulomb con reposo), sub-pasos RK4 de 1/240 s. K_max = mgh₀ exacto.
+* **Gravitación:** v_periapsis = v_c·√((1+e)/(1−e)) superaba la velocidad de escape para e ≥ 1/3 (la órbita escapaba al infinito). Ahora vis-viva con el semieje mayor `a` como parámetro (T no depende de e). Período con interpolación del cruce (la primera vuelta ya cuenta; antes hacían falta 2), softening artificial eliminado, sub-pasos adaptativos, Kepler III comparado contra GM/4π² (antes: primera vs última órbita), texto del tutor sin float crudo.
+* **Rotación:** el check τ=I·α comparaba el torque aplicado con I·α (falso aviso con fricción); ahora usa τ_neto y el teorema impulso–momento angular. Texto del tutor ya no dice "sin fricción" con fricción. Torque 0 ya no se convierte en 10 N·m.
+* **Oscilaciones:** 0° se convertía en 30° y x₀=0 en 1 m; sin límite de dt (explotaba al volver de otra pestaña); período con interpolación; detección de sobreamortiguamiento (antes callejón sin salida en Fase 3→4); `getExpectedPeriod()` (AGM para amplitud finita y T_d amortiguado) para que el tutor explique la desviación respecto a 2π√(L/g).
+
+**Tests:** `tests/energia.test.js`, `rotacion.test.js`, `gravitacion.test.js`, `oscilaciones.test.js` (24 pruebas nuevas) integrados en `tests/run-all.js`; las 6 suites pasan. Verificación en navegador sin errores de consola.
+
+**Pendiente (siguiente sesión):** rediseño UI/UX con la skill `anti-slop-design`; responsive (no hay `@media`; el canvas mide 0 px en móvil), LaTeX crudo en newton/guías, guías sin capturas (energía, rotación, gravitación, oscilaciones), exponer `window.currentSimulation` en los 4 simuladores, Newton: estado "Equilibrio / Estático" en t=0 con a>0 y velocidad final perdida al llegar al fondo, cinemática: `evaluatePrediction` devuelve 0% de error si el alcance real es 0.
+

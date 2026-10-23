@@ -48,6 +48,9 @@ export class CanvasRendererGravitacion {
    */
   draw(state, engine) {
     this._resize();
+    // Escala para que toda la elipse quepa (el foco/estrella está a la izquierda del centro)
+    const halfExtent = Math.min(this.W * 0.47, this.H * 0.5) * 0.85;
+    this.scale = halfExtent / Math.max(engine.getTheoreticalApoapsis(), 100);
     const { ctx, W, H } = this;
     ctx.clearRect(0, 0, W, H);
 

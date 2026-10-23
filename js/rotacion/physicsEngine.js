@@ -76,10 +76,15 @@ export class PhysicsEngineRotacion {
    * @param {string} bodyType Tipo de cuerpo (BODIES enum)
    */
   setParameters(mass, radius, torque, friction, bodyType) {
-    this.mass = Math.max(0.1, parseFloat(mass) || 5.0);
-    this.radius = Math.max(0.1, parseFloat(radius) || 1.0);
-    this.torque = parseFloat(torque) || 10.0;
-    this.friction = Math.max(0, parseFloat(friction) || 0.0);
+    // Number.isFinite (y no "|| default") para que un torque o fricción de 0 sea válido
+    const toFinite = (value, fallback) => {
+      const n = parseFloat(value);
+      return Number.isFinite(n) ? n : fallback;
+    };
+    this.mass = Math.max(0.1, toFinite(mass, 5.0));
+    this.radius = Math.max(0.1, toFinite(radius, 1.0));
+    this.torque = toFinite(torque, 10.0);
+    this.friction = Math.max(0, toFinite(friction, 0.0));
     this.bodyType = bodyType || PhysicsEngineRotacion.BODIES.DISK;
     this._computeInertia();
     this.reset();
@@ -188,6 +193,22 @@ export class PhysicsEngineRotacion {
    */
   getSteadyStateOmega() {
     return this.friction > 0 ? this.torque / this.friction : null;
+  }
+
+  /**
+   * Impulso angular ∫τ_neto·dt desde t = 0 hasta ahora (regla del trapecio sobre el historial).
+   * Por el teorema impulso–momento angular debe igualar ΔL = I·ω (el cuerpo parte del reposo).
+   * @returns {number} Impulso angular (N·m·s)
+   */
+  getAngularImpulse() {
+    const points = [...this.history];
+    const now = this._snapshot();
+    if (now.t > points[points.length - 1].t) points.push(now);
+    let impulse = 0;
+    for (let i = 1; i < points.length; i++) {
+      impulse += 0.5 * (points[i].tau + points[i - 1].tau) * (points[i].t - points[i - 1].t);
+    }
+    return impulse;
   }
 
   /** Evalúa la predicción del estudiante contra el valor real actual. */

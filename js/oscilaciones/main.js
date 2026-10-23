@@ -141,7 +141,12 @@ function applyParameters() {
 
   const Tteo = engine.getTheoreticalPeriod();
   if (dom.teoPeriodLabel) {
-    dom.teoPeriodLabel.textContent = `T teórico (sin amortiguamiento) ≈ ${Tteo.toFixed(2)} s`;
+    if (engine.isOverdamped()) {
+      dom.teoPeriodLabel.textContent =
+        `⚠️ Amortiguamiento crítico o superior (ζ = ${engine.getDampingRatio().toFixed(2)} ≥ 1): el sistema vuelve al equilibrio sin oscilar.`;
+    } else {
+      dom.teoPeriodLabel.textContent = `T teórico (sin amortiguamiento) ≈ ${Tteo.toFixed(2)} s`;
+    }
   }
 
   renderer.draw(engine.getState(), engine);
@@ -175,7 +180,13 @@ function animationLoop(timestamp) {
 
   if (dom.cyclesCount) dom.cyclesCount.textContent = state.cycles;
 
-  if (state.cycles >= 1) {
+  // Se desbloquea tras 1 ciclo completo; un sistema sobreamortiguado nunca oscila,
+  // así que se desbloquea cuando vuelve prácticamente al equilibrio.
+  const initialAmplitude = Math.abs(
+    engine.systemType === PhysicsEngineOscilaciones.SYSTEMS.PENDULUM ? engine.theta0 : engine.x0
+  );
+  const settled = engine.isOverdamped() && Math.abs(state.q) < 0.02 * initialAmplitude;
+  if (state.cycles >= 1 || settled) {
     dom.btnNextToPhase4.disabled = false;
   }
 
@@ -226,10 +237,23 @@ function populateReview() {
   dom.badgePeriodError.className = 'error-badge ' + (error < 10 ? 'low' : error < 30 ? 'medium' : 'high');
 
   let feedback = '';
-  if (error < 10) {
+  if (realT <= 0) {
+    feedback = engine.isOverdamped()
+      ? `Con ζ = ${engine.getDampingRatio().toFixed(2)} ≥ 1 el sistema está sobreamortiguado: regresa al equilibrio sin oscilar, por eso no hay período que medir. Reduce b para ver oscilaciones. `
+      : 'Aún no se completó ningún ciclo, por lo que no hay período medido. ';
+  } else if (error < 10) {
     feedback = `¡Excelente predicción! (${error.toFixed(1)}% de error). `;
   } else {
-    feedback = `Predicción alejada (${error.toFixed(1)}% de error). Recuerda que T = ${Tteo.toFixed(2)} s teóricamente. `;
+    feedback = `Predicción alejada (${error.toFixed(1)}% de error). La fórmula de libro da T = ${Tteo.toFixed(2)} s. `;
+  }
+
+  // Explicar por qué el período real puede apartarse de la fórmula de libro
+  if (realT > 0 && Math.abs(realT - Tteo) / Tteo > 0.03) {
+    if (isP && Math.abs(engine.theta0) > 0.26 && engine.b === 0) {
+      feedback += `Ojo: con θ₀ = ${(engine.theta0 * 180 / Math.PI).toFixed(0)}° el período real (${realT.toFixed(2)} s) es mayor que 2π√(L/g) porque esa fórmula solo vale para ángulos pequeños (< 15°). `;
+    } else if (engine.b > 0) {
+      feedback += `El amortiguamiento alarga el período: T_d = T/√(1−ζ²) con ζ = ${engine.getDampingRatio().toFixed(2)}. `;
+    }
   }
 
   if (engine.b > 0) {

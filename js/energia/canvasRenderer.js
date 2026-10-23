@@ -116,9 +116,9 @@ export class CanvasRendererEnergia {
       i === 0 ? ctx.moveTo(cx, cy) : ctx.lineTo(cx, cy);
     }
 
-    // Rellenar la pared interior de la rampa hacia abajo
-    const { cx: rightX, cy: rightY } = this.worldToCanvas(engine.getRampX(-Math.PI), 0);
-    const { cx: leftX,  cy: leftY  } = this.worldToCanvas(engine.getRampX( Math.PI), 0);
+    // Rellenar el cuerpo de la pista hacia abajo (la curva termina en el borde derecho)
+    const { cx: rightX } = this.worldToCanvas(engine.getRampX( Math.PI), 0);
+    const { cx: leftX  } = this.worldToCanvas(engine.getRampX(-Math.PI), 0);
     ctx.lineTo(rightX, this.originY + 20);
     ctx.lineTo(leftX,  this.originY + 20);
     ctx.closePath();
@@ -175,11 +175,11 @@ export class CanvasRendererEnergia {
     const { ctx } = this;
     const { cx, cy } = this.worldToCanvas(state.x, state.h);
 
-    // Dirección tangencial a la rampa (dX/dθ, dY/dθ) normalizados
-    const dxda = engine.rampWidth      * Math.cos(state.angle);
-    const dyda = -engine.rampAmplitude * Math.sin(state.angle);
+    // Dirección tangencial a la pista: (1, dy/dx) normalizada, en el sentido del movimiento
+    const dxda = 1;
+    const dyda = engine.getSlope(state.x);
     const len  = Math.sqrt(dxda*dxda + dyda*dyda);
-    const sign = engine.omega < 0 ? -1 : 1;
+    const sign = engine.vx < 0 ? -1 : 1;
 
     const arrowLen = Math.min(state.v * 8, 80);
     const ex = cx + sign * (dxda / len) * arrowLen;

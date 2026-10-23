@@ -1,28 +1,40 @@
 /**
  * @fileoverview Motor de física desacoplado del DOM para simulación de
- * Conservación de la Energía en una rampa de perfil senoidal (skatepark).
- * Implementa integración numérica Runge-Kutta de 4° orden para máxima precisión.
+ * Conservación de la Energía sobre una pista curva tipo "skatepark" (cuenco cosenoidal).
+ * Integra con Runge-Kutta de 4° orden y calcula la energía térmica integrando el
+ * trabajo real de la fricción, de modo que K + U + Q = E₀ se verifica de forma
+ * independiente (no se fuerza por construcción).
  */
+
+const MAX_SUBSTEP = 1 / 240; // s — paso interno del integrador (estabilidad y precisión)
+const REST_VELOCITY = 1e-3;  // m/s — umbral para considerar al bloque detenido
+
+const toFinite = (value, fallback) => {
+  const n = parseFloat(value);
+  return Number.isFinite(n) ? n : fallback;
+};
 
 export class PhysicsEngineEnergia {
   constructor() {
     // Parámetros configurables por el usuario
-    this.mass     = 5.0;    // Masa del bloque (kg)
-    this.gravity  = 9.81;   // Aceleración gravitacional (m/s²)
-    this.friction = 0.0;    // Coeficiente de fricción cinética (μk)
-    this.startAngle = Math.PI * 0.25; // Posición inicial en la rampa (rad)
+    this.mass = 5.0;           // Masa del bloque (kg)
+    this.gravity = 9.81;       // Aceleración gravitacional (m/s²)
+    this.friction = 0.0;       // Coeficiente de fricción cinética (μk)
+    this.heightFraction = 0.8; // Altura inicial como fracción de la altura máxima (0-1)
 
-    // Geometría de la rampa senoidal
-    this.rampAmplitude = 4.0;   // Semialtura de la rampa (m)
-    this.rampWidth     = 10.0;  // Semianchura de la rampa (m)
+    // Geometría de la pista: y(x) = A·(1 − cos(π·x/W)), fondo en x = 0 (y = 0)
+    this.rampAmplitude = 4.0;  // Semialtura A (m); la altura máxima es 2A
+    this.rampWidth = 10.0;     // Semianchura W (m)
 
     // Estado dinámico
-    this.angle   = this.startAngle;
-    this.omega   = 0;
-    this.t       = 0;
+    this.x = 0;                // Posición horizontal (m)
+    this.vx = 0;               // Velocidad horizontal (m/s)
+    this.angle = 0;            // Parámetro de la curva θ = π·x/W (rad), usado por el renderizador
+    this.t = 0;
     this._thermalEnergy = 0;
-    this._E0     = 0;
+    this._E0 = 0;
     this.isRunning = false;
+    this.isAtRest = false;
     this.energyHistory = [];
 
     this.reset();
@@ -30,109 +42,148 @@ export class PhysicsEngineEnergia {
 
   /**
    * Configura los parámetros del escenario.
+   * @param {number} mass Masa (kg)
+   * @param {number} friction Coeficiente de fricción cinética μk
+   * @param {number} gravity Gravedad (m/s²)
+   * @param {number} heightFraction Altura inicial como fracción de 2A (0.05-1)
    */
-  setParameters(mass, friction, gravity, startAngle) {
-    this.mass       = Math.max(0.1, parseFloat(mass)       || 5.0);
-    this.friction   = Math.max(0,   parseFloat(friction)   || 0.0);
-    this.gravity    = Math.max(0.1, parseFloat(gravity)    || 9.81);
-    this.startAngle = parseFloat(startAngle) !== undefined
-      ? parseFloat(startAngle) : Math.PI * 0.25;
+  setParameters(mass, friction, gravity, heightFraction) {
+    this.mass = Math.max(0.1, toFinite(mass, 5.0));
+    this.friction = Math.max(0, toFinite(friction, 0.0));
+    this.gravity = Math.max(0.1, toFinite(gravity, 9.81));
+    this.heightFraction = Math.min(1, Math.max(0.05, toFinite(heightFraction, 0.8)));
     this.reset();
   }
 
-  /**
-   * Altura de la rampa: y = A*(1 + cos(θ)), rango [0, 2A].
-   * θ=0 → cima derecha (y=2A), θ=π → fondo (y=0), θ=-π → fondo.
-   */
+  /** Altura de la pista para el parámetro θ: y = A·(1 − cos θ), rango [0, 2A]. */
   getRampHeight(angle) {
-    return this.rampAmplitude * (1 + Math.cos(angle));
+    return this.rampAmplitude * (1 - Math.cos(angle));
   }
 
-  /** Posición horizontal sobre la rampa. */
+  /** Posición horizontal para el parámetro θ: x = W·θ/π. */
   getRampX(angle) {
-    return this.rampWidth * Math.sin(angle);
+    return (this.rampWidth * angle) / Math.PI;
   }
 
-  /** Reinicia la simulación. */
-  reset() {
-    this.angle  = this.startAngle;
-    this.omega  = 0;
-    this.t      = 0;
-    this.isRunning      = false;
-    this._thermalEnergy = 0;
-    this.energyHistory  = [];
+  /** Pendiente dy/dx de la pista en la posición x. */
+  getSlope(x) {
+    const k = Math.PI / this.rampWidth;
+    return this.rampAmplitude * k * Math.sin(k * x);
+  }
 
-    const h0 = this.getRampHeight(this.angle);
-    this._E0  = this.mass * this.gravity * h0;
+  /** Altura inicial del bloque (m). */
+  getInitialHeight() {
+    return this.heightFraction * 2 * this.rampAmplitude;
+  }
+
+  /** Reinicia la simulación al estado de reposo en la altura inicial (lado derecho). */
+  reset() {
+    const A = this.rampAmplitude;
+    const cosTheta0 = Math.min(1, Math.max(-1, 1 - this.getInitialHeight() / A));
+    const theta0 = Math.acos(cosTheta0);
+
+    this.x = this.getRampX(theta0);
+    this.vx = 0;
+    this.angle = theta0;
+    this.t = 0;
+    this.isRunning = false;
+    this._thermalEnergy = 0;
+    this.energyHistory = [];
+
+    this._E0 = this.mass * this.gravity * this.getRampHeight(theta0);
+
+    // Si la pendiente inicial no supera la fricción, el bloque no arranca.
+    this.isAtRest = this.friction > 0 && Math.abs(this.getSlope(this.x)) <= this.friction;
 
     this.energyHistory.push(this._snapshot());
   }
 
   /** Estado energético y cinemático instantáneo. */
   _snapshot() {
-    const h   = this.getRampHeight(this.angle);
-    const x   = this.getRampX(this.angle);
-    const dxda = this.rampWidth     * Math.cos(this.angle);
-    const dyda = -this.rampAmplitude * Math.sin(this.angle);
-    const Reff = Math.sqrt(dxda * dxda + dyda * dyda);
-    const v    = Math.abs(this.omega) * Reff;
-    const KE   = 0.5 * this.mass * v * v;
-    const PE   = this.mass * this.gravity * h;
-    const Q    = this._thermalEnergy;
-    const E    = KE + PE + Q;
-    return { t: this.t, angle: this.angle, x, h, v, KE, PE, Q, E };
+    const slope = this.getSlope(this.x);
+    const h = this.getRampHeight(this.angle);
+    const v = Math.abs(this.vx) * Math.sqrt(1 + slope * slope); // velocidad a lo largo de la pista
+    const KE = 0.5 * this.mass * v * v;
+    const PE = this.mass * this.gravity * h;
+    const Q = this._thermalEnergy;
+    return { t: this.t, angle: this.angle, x: this.x, h, v, KE, PE, Q, E: KE + PE + Q };
   }
 
-  /** Aceleración angular según la ecuación de Lagrange sobre la rampa curva. */
-  _alpha(angle, omega) {
-    const A  = this.rampAmplitude;
-    const W  = this.rampWidth;
-    const g  = this.gravity;
-    const mu = this.friction;
+  /**
+   * Derivadas del sistema [x, vx, Q] para una partícula restringida a y(x).
+   *
+   * Lagrange para una cuenta sobre la curva y(x), con g_ef = g + y''·ẋ²:
+   *   (1 + y'²)·ẍ = −g_ef·(y' + μ·sgn(ẋ))
+   * El término y''·ẋ² (que la versión anterior omitía) es lo que hace que K + U
+   * se conserve cuando μ = 0. La normal es N = m·g_ef/√(1+y'²), y la potencia
+   * disipada por fricción μ·N·|v_pista| = μ·m·g_ef·|ẋ| alimenta Q.
+   */
+  _derivatives(x, vx) {
+    const k = Math.PI / this.rampWidth;
+    const A = this.rampAmplitude;
+    const slope = A * k * Math.sin(k * x);
+    const curvature = A * k * k * Math.cos(k * x);
+    const gEff = this.gravity + curvature * vx * vx;
+    const normalFactor = Math.max(0, gEff);
 
-    const dxda  = W  * Math.cos(angle);
-    const dyda  = -A * Math.sin(angle);
-    const Reff2 = dxda * dxda + dyda * dyda;
+    // Sentido en que la fricción se opone: al movimiento (o al movimiento inminente)
+    let dir = 0;
+    if (vx !== 0) dir = Math.sign(vx);
+    else if (slope !== 0) dir = -Math.sign(slope);
 
-    // Componente gravitacional proyectada sobre la tangente
-    const gravTerm = -g * dyda;
-
-    // Fricción: fuerza normal ≈ m*g*cos(pendiente)
-    const slope        = Math.atan2(Math.abs(dyda), Math.abs(dxda));
-    const normalFactor = Math.cos(slope);
-    const sign         = omega !== 0 ? -Math.sign(omega) : 0;
-    const frictionTerm = mu * g * normalFactor * sign * Math.sqrt(Reff2);
-
-    return (gravTerm + frictionTerm) / Reff2;
+    const ax = -(gEff * slope + this.friction * dir * normalFactor) / (1 + slope * slope);
+    const dQ = this.friction * this.mass * normalFactor * Math.abs(vx);
+    return { ax, dQ };
   }
 
-  /** Paso de integración RK4. */
+  /** Un paso RK4 de duración h (s). */
+  _rk4Step(h) {
+    const f = (x, vx) => this._derivatives(x, vx);
+    const x0 = this.x, v0 = this.vx;
+
+    const k1 = f(x0, v0);
+    const k2 = f(x0 + 0.5 * h * v0, v0 + 0.5 * h * k1.ax);
+    const k3 = f(x0 + 0.5 * h * (v0 + 0.5 * h * k1.ax), v0 + 0.5 * h * k2.ax);
+    const k4 = f(x0 + h * (v0 + 0.5 * h * k2.ax), v0 + h * k3.ax);
+
+    const vMid1 = v0;
+    const vMid2 = v0 + 0.5 * h * k1.ax;
+    const vMid3 = v0 + 0.5 * h * k2.ax;
+    const vMid4 = v0 + h * k3.ax;
+
+    this.x += (h / 6) * (vMid1 + 2 * vMid2 + 2 * vMid3 + vMid4);
+    this.vx += (h / 6) * (k1.ax + 2 * k2.ax + 2 * k3.ax + k4.ax);
+    this._thermalEnergy += (h / 6) * (k1.dQ + 2 * k2.dQ + 2 * k3.dQ + k4.dQ);
+    this.t += h;
+    this.angle = (Math.PI * this.x) / this.rampWidth;
+
+    // Contener el bloque dentro de los extremos de la pista (no ocurre con E ≤ E₀)
+    if (Math.abs(this.x) > this.rampWidth) {
+      this.x = Math.sign(this.x) * this.rampWidth;
+      this.angle = Math.sign(this.x) * Math.PI;
+      this.vx = 0;
+    }
+
+    // Fricción de Coulomb: si el bloque invierte su velocidad en un punto donde la
+    // pendiente no vence a la fricción, queda en reposo (no oscila indefinidamente).
+    if (this.friction > 0) {
+      const crossed = v0 * this.vx < 0 || Math.abs(this.vx) < REST_VELOCITY;
+      if (crossed && Math.abs(this.getSlope(this.x)) <= this.friction) {
+        this.vx = 0;
+        this.isAtRest = true;
+      }
+    }
+  }
+
+  /** Avanza la simulación dt segundos (subdividido en pasos internos pequeños). */
   update(dt) {
-    if (!this.isRunning) return;
-    dt = Math.min(0.033, Math.max(0, parseFloat(dt) || 0));
+    if (!this.isRunning || this.isAtRest) return;
+    dt = Math.min(0.1, Math.max(0, toFinite(dt, 0)));
     if (dt === 0) return;
 
-    // RK4
-    const f = (a, w) => ({ da: w, dw: this._alpha(a, w) });
-
-    const s  = { a: this.angle, w: this.omega };
-    const k1 = f(s.a,                   s.w);
-    const k2 = f(s.a + 0.5*dt*k1.da,   s.w + 0.5*dt*k1.dw);
-    const k3 = f(s.a + 0.5*dt*k2.da,   s.w + 0.5*dt*k2.dw);
-    const k4 = f(s.a +    dt*k3.da,    s.w +    dt*k3.dw);
-
-    this.angle += (dt/6)*(k1.da + 2*k2.da + 2*k3.da + k4.da);
-    this.omega += (dt/6)*(k1.dw + 2*k2.dw + 2*k3.dw + k4.dw);
-    this.t     += dt;
-
-    // Contener el bloque dentro de los extremos de la rampa
-    const LIMIT = Math.PI * 0.98;
-    if (this.angle >  LIMIT) { this.angle =  LIMIT; this.omega = 0; }
-    if (this.angle < -LIMIT) { this.angle = -LIMIT; this.omega = 0; }
-
-    // Energía térmica acumulada
-    const snap = this._snapshot();
-    this._thermalEnergy = Math.max(0, this._E0 - (snap.KE + snap.PE));
+    const steps = Math.ceil(dt / MAX_SUBSTEP);
+    const h = dt / steps;
+    for (let i = 0; i < steps && !this.isAtRest; i++) this._rk4Step(h);
 
     // Historial sub-muestreado (~30 fps)
     const last = this.energyHistory[this.energyHistory.length - 1];
@@ -144,11 +195,14 @@ export class PhysicsEngineEnergia {
   /** Estado actual completo. */
   getState() { return this._snapshot(); }
 
-  /** ¿La energía mecánica se conserva (error < 2%)? */
+  /**
+   * ¿Se cumple K + U + Q = E₀ (error < 2%)? Q proviene del trabajo de la fricción,
+   * por lo que esta comprobación es una verificación real del integrador.
+   */
   isEnergyConserved() {
     if (this._E0 === 0) return true;
-    const { KE, PE, Q } = this._snapshot();
-    return Math.abs((KE + PE + Q) - this._E0) / this._E0 < 0.02;
+    const { E } = this._snapshot();
+    return Math.abs(E - this._E0) / this._E0 < 0.02;
   }
 
   /** Historial de energía para la gráfica temporal. */

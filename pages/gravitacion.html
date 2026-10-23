@@ -210,15 +210,15 @@
         <div id="phase2-container" class="polya-phase-container">
           <h2><span class="phase-number">2</span> Concebir un plan</h2>
           <p class="phase-intro">
-            Configura la órbita del planeta. La velocidad orbital circular es <strong>v = √(G·M/r)</strong> y el período
-            según Kepler III: <strong>T = 2π·√(a³/G·M)</strong>.
+            Configura la órbita del planeta. El planeta parte siempre del periapsis (el punto más cercano). Según Kepler III, el período
+            depende solo del semieje mayor: <strong>T = 2π·√(a³/G·M)</strong>.
           </p>
 
           <div class="card">
             <div class="control-group">
-              <label for="input-r0">Radio Inicial de Órbita (r₀)</label>
+              <label for="input-r0">Semieje mayor de la órbita (a)</label>
               <div class="slider-container">
-                <input type="range" id="input-r0" min="60" max="220" step="10" value="150">
+                <input type="range" id="input-r0" min="100" max="220" step="10" value="150">
                 <div id="val-r0" class="value-display">150 u</div>
               </div>
             </div>
@@ -226,7 +226,7 @@
             <div class="control-group">
               <label for="input-ecc">Excentricidad (e)</label>
               <div class="slider-container">
-                <input type="range" id="input-ecc" min="0" max="0.85" step="0.05" value="0">
+                <input type="range" id="input-ecc" min="0" max="0.7" step="0.05" value="0">
                 <div id="val-ecc" class="value-display">e = 0.00</div>
               </div>
               <p style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">e = 0 → circular &nbsp;|&nbsp; 0 &lt;
@@ -238,7 +238,7 @@
 
           <div class="card prediction-instructions">
             <strong>Tu hipótesis:</strong><br>
-            Usando T = 2π·√(r₀³/G·M), calcula el período orbital y escríbelo abajo.
+            Usando T = 2π·√(a³/G·M), calcula el período orbital y escríbelo abajo.
           </div>
 
           <div class="card">

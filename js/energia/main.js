@@ -86,11 +86,8 @@ function applyParameters() {
   const heightFrac = parseFloat(dom.inputHeight.value) / 100; // 0-100 → fracción
   const friction = parseFloat(dom.inputFriction?.value ?? 0);
 
-  // Convertir fracción de altura a ángulo de inicio [0 a ~0.95π]
-  // 100% → θ = 0.9π (cima), 0% → θ = 0 (fondo)
-  const startAngle = heightFrac * Math.PI * 0.92;
-
-  engine.setParameters(mass, friction, gravity, startAngle);
+  // El motor convierte la fracción en altura inicial (100% = cima de la pista, 2A)
+  engine.setParameters(mass, friction, gravity, heightFrac);
   renderer.draw(engine.getState(), engine);
   updateTelemetry(engine.getState());
 }
@@ -207,7 +204,9 @@ function populateReview() {
       ? `¡Excelente predicción! Tu estimación de la energía cinética máxima fue de ${predicted.toFixed(1)} J y la real es ${realKE.toFixed(1)} J (error: ${keError.toFixed(1)}%). ` +
       `Esto confirma que comprendes cómo se transforma la energía potencial (U = mgh) en cinética (K = ½mv²).`
       : `Tu predicción (${predicted.toFixed(1)} J) difirió un ${keError.toFixed(1)}% de la energía cinética real (${realKE.toFixed(1)} J). ` +
-      `Recuerda: sin fricción, E₀ = mgh₀ = ${engine._E0.toFixed(1)} J se convierte íntegramente en cinética al llegar al fondo.`;
+      (friction === 0
+        ? `Recuerda: sin fricción, E₀ = mgh₀ = ${engine._E0.toFixed(1)} J se convierte íntegramente en cinética al llegar al fondo.`
+        : `Recuerda: con fricción, parte de E₀ = mgh₀ = ${engine._E0.toFixed(1)} J se disipa como calor en el camino, así que la cinética en el fondo es menor que E₀.`);
     dom.tutorFeedback.textContent = feedback;
   }
 }
@@ -218,7 +217,7 @@ function populateReview() {
 [
   [dom.inputMass, dom.valMass, v => `${v} kg`],
   [dom.inputGravity, dom.valGravity, v => `${v} m/s²`],
-  [dom.inputHeight, dom.valHeight, v => `${v}%`],
+  [dom.inputHeight, dom.valHeight, v => `${v}% (${(v / 100 * 2 * engine.rampAmplitude).toFixed(1)} m)`],
 ].forEach(([input, display, fmt]) => {
   if (!input) return;
   input.addEventListener('input', () => {
@@ -294,5 +293,6 @@ window.addEventListener('resize', () => {
 });
 
 // ─── Arranque inicial ────────────────────────────────────────────────────────
+dom.valHeight.textContent = `${dom.inputHeight.value}% (${(dom.inputHeight.value / 100 * 2 * engine.rampAmplitude).toFixed(1)} m)`;
 applyParameters();
 showPhase(1);

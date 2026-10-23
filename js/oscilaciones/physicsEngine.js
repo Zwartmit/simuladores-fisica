@@ -4,6 +4,21 @@
  * Utiliza integración RK4 para máxima estabilidad, permitiendo grandes amplitudes en el péndulo.
  */
 
+const MAX_SUBSTEP = 1 / 240; // s — paso interno del integrador
+
+const toFinite = (value, fallback) => {
+  const n = parseFloat(value);
+  return Number.isFinite(n) ? n : fallback;
+};
+
+/** Media aritmético-geométrica (para el período exacto del péndulo a gran amplitud). */
+function agm(a, b) {
+  while (Math.abs(a - b) > 1e-14) {
+    [a, b] = [(a + b) / 2, Math.sqrt(a * b)];
+  }
+  return a;
+}
+
 export class PhysicsEngineOscilaciones {
   static SYSTEMS = {
     PENDULUM: 'pendulum',
@@ -50,19 +65,19 @@ export class PhysicsEngineOscilaciones {
 
   setPendulumParams(L, m, theta0_deg, b) {
     this.systemType = PhysicsEngineOscilaciones.SYSTEMS.PENDULUM;
-    this.L = Math.max(0.1, parseFloat(L) || 2.0);
-    this.m_pend = Math.max(0.1, parseFloat(m) || 1.0);
-    this.theta0 = (parseFloat(theta0_deg) || 30) * Math.PI / 180;
-    this.b = Math.max(0, parseFloat(b) || 0);
+    this.L = Math.max(0.1, toFinite(L, 2.0));
+    this.m_pend = Math.max(0.1, toFinite(m, 1.0));
+    this.theta0 = toFinite(theta0_deg, 30) * Math.PI / 180;
+    this.b = Math.max(0, toFinite(b, 0));
     this.reset();
   }
 
   setSpringParams(k, m, x0, b) {
     this.systemType = PhysicsEngineOscilaciones.SYSTEMS.SPRING;
-    this.k = Math.max(1, parseFloat(k) || 50);
-    this.m_spring = Math.max(0.1, parseFloat(m) || 2.0);
-    this.x0 = parseFloat(x0) || 1.0;
-    this.b = Math.max(0, parseFloat(b) || 0);
+    this.k = Math.max(1, toFinite(k, 50));
+    this.m_spring = Math.max(0.1, toFinite(m, 2.0));
+    this.x0 = toFinite(x0, 1.0);
+    this.b = Math.max(0, toFinite(b, 0));
     this.reset();
   }
 
@@ -100,31 +115,43 @@ export class PhysicsEngineOscilaciones {
     return { dq: v, dv: accel };
   }
 
-  update(dt) {
-    if (!this.isRunning) return;
-    if (dt <= 0) return;
-
-    // RK4 integration
+  /** Un paso RK4 de duración h; detecta cruces por cero con interpolación lineal. */
+  _rk4Step(h) {
     const f = (q, v) => this._derivatives(q, v);
+    const prevQ = this.q;
+    const prevT = this.t;
 
     const k1 = f(this.q, this.v);
-    const k2 = f(this.q + 0.5 * dt * k1.dq, this.v + 0.5 * dt * k1.dv);
-    const k3 = f(this.q + 0.5 * dt * k2.dq, this.v + 0.5 * dt * k2.dv);
-    const k4 = f(this.q + dt * k3.dq, this.v + dt * k3.dv);
+    const k2 = f(this.q + 0.5 * h * k1.dq, this.v + 0.5 * h * k1.dv);
+    const k3 = f(this.q + 0.5 * h * k2.dq, this.v + 0.5 * h * k2.dv);
+    const k4 = f(this.q + h * k3.dq, this.v + h * k3.dv);
 
-    this.q += (dt / 6) * (k1.dq + 2 * k2.dq + 2 * k3.dq + k4.dq);
-    this.v += (dt / 6) * (k1.dv + 2 * k2.dv + 2 * k3.dv + k4.dv);
-    this.t += dt;
+    this.q += (h / 6) * (k1.dq + 2 * k2.dq + 2 * k3.dq + k4.dq);
+    this.v += (h / 6) * (k1.dv + 2 * k2.dv + 2 * k3.dv + k4.dv);
+    this.t += h;
 
-    // ─── Detección de período (cruces por cero desde positivo hacia negativo)
-    if (this.lastQ > 0 && this.q <= 0) {
+    // Período = tiempo entre cruces consecutivos por cero de positivo a negativo.
+    // El instante exacto se interpola dentro del paso (error de T << h).
+    if (prevQ > 0 && this.q <= 0) {
+      const tCross = prevT + (prevQ / (prevQ - this.q)) * h;
       if (this.lastCrossTime !== null) {
-        this.period = this.t - this.lastCrossTime;
+        this.period = tCross - this.lastCrossTime;
         this.completedCycles++;
       }
-      this.lastCrossTime = this.t;
+      this.lastCrossTime = tCross;
     }
     this.lastQ = this.q;
+  }
+
+  update(dt) {
+    if (!this.isRunning) return;
+    // Límite de dt: evita saltos enormes al volver de una pestaña en segundo plano
+    dt = Math.min(0.1, Math.max(0, toFinite(dt, 0)));
+    if (dt === 0) return;
+
+    const steps = Math.ceil(dt / MAX_SUBSTEP);
+    const h = dt / steps;
+    for (let i = 0; i < steps; i++) this._rk4Step(h);
 
     // Guardar historial para gráficas (aprox 30 FPS)
     if (this.history.length === 0 || (this.t - this.history[this.history.length - 1].t > 0.033)) {
@@ -174,6 +201,9 @@ export class PhysicsEngineOscilaciones {
     };
   }
 
+  /**
+   * Período "de libro": sin amortiguamiento y, en el péndulo, para ángulos pequeños.
+   */
   getTheoreticalPeriod() {
     if (this.systemType === PhysicsEngineOscilaciones.SYSTEMS.PENDULUM) {
       // Para ángulos pequeños, T = 2π√(L/g)
@@ -182,6 +212,41 @@ export class PhysicsEngineOscilaciones {
       // T = 2π√(m/k)
       return 2 * Math.PI * Math.sqrt(this.m_spring / this.k);
     }
+  }
+
+  /**
+   * Razón de amortiguamiento ζ = γ / (2·ω₀) (con el péndulo linealizado para ángulos pequeños).
+   * ζ < 1 oscila (subamortiguado), ζ ≥ 1 no completa ni un ciclo.
+   */
+  getDampingRatio() {
+    if (this.systemType === PhysicsEngineOscilaciones.SYSTEMS.PENDULUM) {
+      return (this.b / this.m_pend) / (2 * Math.sqrt(this.g / this.L));
+    }
+    return this.b / (2 * Math.sqrt(this.k * this.m_spring));
+  }
+
+  /** ¿El sistema está críticamente o sobreamortiguado (no oscila)? */
+  isOverdamped() {
+    return this.getDampingRatio() >= 1;
+  }
+
+  /**
+   * Período esperado teniendo en cuenta lo que la fórmula de libro ignora:
+   *  - Péndulo: la amplitud finita (exacto con la media aritmético-geométrica,
+   *    T = T₀ / AGM(1, cos(θ₀/2)), de T = 4√(L/g)·K(sin(θ₀/2)))).
+   *  - Con amortiguamiento (ζ < 1): T_d = T / √(1 − ζ²) (exacto en el resorte,
+   *    aproximado en el péndulo). Con ζ ≥ 1 devuelve Infinity.
+   * @returns {number} Período esperado (s)
+   */
+  getExpectedPeriod() {
+    let T = this.getTheoreticalPeriod();
+    if (this.systemType === PhysicsEngineOscilaciones.SYSTEMS.PENDULUM) {
+      const amplitude = Math.min(Math.abs(this.theta0), Math.PI - 1e-6);
+      T /= agm(1, Math.cos(amplitude / 2));
+    }
+    const zeta = this.getDampingRatio();
+    if (zeta >= 1) return Infinity;
+    return T / Math.sqrt(1 - zeta * zeta);
   }
 
   getHistory() {
