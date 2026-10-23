@@ -109,7 +109,7 @@ export class Vector2D {
 
 ## Guías Didácticas e Imágenes del Estudiante
 
-- **Guía Interactiva HTML:** Cada característica u objetivo de física completado debe acompañarse obligatoriamente de una guía didáctica interactiva en formato HTML dentro de `pages/` (por ejemplo, `pages/guide_cinematica.html` para la Feature 1, o `pages/guide_<simulador>.html` para las demás) explicando detalladamente los conceptos físicos clásicos y el flujo heurístico de Pólya. Las capturas de pantalla que use la guía van en `assets/guides/`.
-- **Portabilidad de Pantallazos:** Cualquier captura de pantalla o mockup interactivo generado para ilustrar las fases en la guía debe **copiarse físicamente al directorio del proyecto** (por ejemplo, a la raíz o a una carpeta `images/` del repositorio).
-- **Rutas Relativas:** Queda estrictamente prohibido utilizar rutas absolutas locales del Conversation ID (como `C:\Users\Usuario\...`) en los archivos HTML o Markdown, ya que estas causan imágenes rotas en el navegador del estudiante. Toda imagen debe referenciarse usando **rutas relativas portables**.
-
+- **Guía interactiva HTML:** cada laboratorio tiene una guía en `pages/guide_<simulador>.html` con la estructura: marco teórico, las cuatro fases de Pólya (cada una con su captura del simulador y una hoja de trabajo para rellenar a mano) y conclusiones con una pregunta de reflexión final. Usa `css/guide.css`; no lleva estilos en línea (salvo `--i`), ni emojis, ni LaTeX o Markdown crudos: las ecuaciones se escriben con `<sub>`/`<sup>` dentro de `.eq`.
+- **Capturas:** van en `assets/guides/` con el nombre `<simulador>_fase<n>.jpg` (n = 1, 2, 3 o 4). Deben tomarse del simulador real con el diseño vigente (800 × 600 aprox.), en el estado que ilustra el pie de figura, y **copiarse físicamente al repositorio**. Al rediseñar la UI hay que rehacerlas.
+- **Rutas relativas:** queda prohibido usar rutas absolutas locales (como `C:\Users...`) en HTML o Markdown. Toda imagen se referencia con **rutas relativas portables** (`../assets/guides/...`).
+- **Coherencia con el simulador:** los pies de figura y las instrucciones deben describir lo que se ve (colores, controles, etiquetas). Si cambia la física o la interfaz, se actualiza la guía en la misma sesión.

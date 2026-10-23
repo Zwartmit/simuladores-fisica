@@ -4,604 +4,176 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description"
-    content="Guía Didáctica — Gravitación universal y Leyes de Kepler. Laboratorio virtual de física, metodología de Polya.">
-  <title>Guía Didáctica — Gravitación universal</title>
+  <meta name="description" content="Guía didáctica de gravitación universal y las leyes de Kepler con el simulador orbital, siguiendo las fases de Pólya.">
+  <title>Guía didáctica — Kepler y gravitación</title>
 
-  <!-- SEO & Meta Tags -->
-  <meta name="description"
-    content="Laboratorio virtual de física. Simuladores interactivos con metodología de Polya. Conservación de la energía, cinemática, fuerzas, rotación, gravitación y oscilaciones.">
   <meta name="keywords"
-    content="física, simulador, virtual, polya, cinemática, dinámica, energía, gravitación, péndulo, masa-resorte, educación, UNIR">
+    content="física, simulador, virtual, polya, gravitación, Kepler, órbitas, excentricidad, educación, UNIR">
   <meta name="author" content="Zwartmit">
 
   <!-- Open Graph / Social Media -->
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Laboratorio virtual de física">
-  <meta property="og:description"
-    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Guía didáctica — Kepler y gravitación">
+  <meta property="og:description" content="Guía didáctica de gravitación universal y las leyes de Kepler con el simulador orbital, siguiendo las fases de Pólya.">
   <meta property="og:image" content="https://steam-unir.netlify.app/assets/og-image.png">
   <meta property="og:url" content="https://steam-unir.netlify.app/">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Laboratorio virtual de física">
-  <meta name="twitter:description"
-    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta name="twitter:title" content="Guía didáctica — Kepler y gravitación">
+  <meta name="twitter:description" content="Guía didáctica de gravitación universal y las leyes de Kepler con el simulador orbital, siguiendo las fases de Pólya.">
   <meta name="twitter:image" content="https://steam-unir.netlify.app/assets/og-image.png">
 
   <!-- Favicons -->
   <link rel="icon" href="../assets/favicon.png" type="image/png">
   <link rel="apple-touch-icon" href="../assets/favicon.png">
 
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
-
-    :root {
-      --bg-primary: #090f1a;
-      --bg-secondary: #0f172a;
-      --panel-border: rgba(255, 255, 255, 0.08);
-      --text-primary: #f8fafc;
-      --text-secondary: #cbd5e1;
-      --text-muted: #64748b;
-      --accent: #3b82f6;
-      --star-color: #fbbf24;
-      --planet-color: #3b82f6;
-      --force-color: #ef4444;
-      --vel-color: #10b981;
-      --kepler-color: #a855f7;
-      --font-sans: 'Outfit', sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-      --br-lg: 16px;
-      --br-md: 10px;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: var(--font-sans);
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      line-height: 1.7;
-      padding: 40px 20px;
-      display: flex;
-      justify-content: center;
-    }
-
-    .guide-container {
-      max-width: 900px;
-      width: 100%;
-      background: var(--bg-secondary);
-      border: 1px solid var(--panel-border);
-      border-radius: var(--br-lg);
-      padding: 40px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-    }
-
-    header {
-      border-bottom: 1px solid var(--panel-border);
-      padding-bottom: 24px;
-      margin-bottom: 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .guide-title {
-      font-size: 1.5rem;
-      font-weight: 800;
-    }
-
-    .guide-subtitle {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    .back-btn {
-      background: rgba(59, 130, 246, 0.15);
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      color: #60a5fa;
-      padding: 8px 16px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-
-    .back-btn:hover {
-      background: rgba(59, 130, 246, 0.25);
-    }
-
-    .polya-section {
-      margin-bottom: 36px;
-    }
-
-    .polya-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .phase-badge {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 0.9rem;
-      flex-shrink: 0;
-    }
-
-    .phase-badge.teoria {
-      background: rgba(59, 130, 246, 0.1);
-      color: #93c5fd;
-    }
-
-    .phase-badge.comprende {
-      background: rgba(59, 130, 246, 0.2);
-      color: #60a5fa;
-    }
-
-    .phase-badge.planear {
-      background: rgba(168, 85, 247, 0.2);
-      color: #c084fc;
-    }
-
-    .phase-badge.ejecutar {
-      background: rgba(16, 185, 129, 0.2);
-      color: #34d399;
-    }
-
-    .phase-badge.revisar {
-      background: rgba(245, 158, 11, 0.2);
-      color: #fbbf24;
-    }
-
-    .polya-header h2 {
-      font-size: 1.2rem;
-      font-weight: 700;
-    }
-
-    .guide-text {
-      color: var(--text-secondary);
-      margin-bottom: 14px;
-    }
-
-    .equation-box {
-      background: rgba(15, 23, 42, 0.7);
-      border: 1px solid rgba(59, 130, 246, 0.2);
-      border-radius: var(--br-md);
-      padding: 18px 24px;
-      margin: 16px 0;
-      font-family: var(--font-mono);
-      font-size: 0.95rem;
-      line-height: 2.4;
-      color: #93c5fd;
-      text-align: center;
-    }
-
-    .equation-box .eq-label {
-      font-family: var(--font-sans);
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      display: block;
-      margin-bottom: 4px;
-      text-align: left;
-    }
-
-    .obs-card {
-      background: rgba(30, 41, 59, 0.5);
-      border: 1px solid var(--panel-border);
-      border-radius: var(--br-md);
-      padding: 16px 20px;
-      margin: 14px 0;
-    }
-
-    .obs-card h4 {
-      font-size: 0.85rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-    }
-
-    .obs-card p {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-    }
-
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 16px 0;
-      font-size: 0.88rem;
-    }
-
-    .data-table th {
-      text-align: left;
-      padding: 10px 12px;
-      border-bottom: 1.5px solid var(--panel-border);
-      color: var(--text-muted);
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-
-    .data-table td {
-      padding: 12px;
-      border-bottom: 1px solid var(--panel-border);
-      color: var(--text-secondary);
-    }
-
-    .fill-in {
-      font-family: var(--font-mono);
-      background: rgba(15, 23, 42, 0.6);
-      border-bottom: 2px dashed rgba(59, 130, 246, 0.4);
-      color: #60a5fa;
-      min-width: 80px;
-      display: inline-block;
-      padding: 0 4px;
-    }
-
-    .interactive-box {
-      background: rgba(168, 85, 247, 0.06);
-      border: 1px dashed rgba(168, 85, 247, 0.3);
-      border-radius: var(--br-md);
-      padding: 16px 20px;
-      margin: 14px 0;
-      color: #e9d5ff;
-      font-size: 0.88rem;
-    }
-
-    .interactive-box strong {
-      color: #c084fc;
-    }
-
-    .conclusion-box {
-      background: rgba(16, 185, 129, 0.05);
-      border: 1px solid rgba(16, 185, 129, 0.2);
-      border-radius: var(--br-md);
-      padding: 20px 24px;
-      margin: 16px 0;
-      color: var(--text-secondary);
-    }
-
-    .conclusion-box h3 {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #34d399;
-      margin-bottom: 10px;
-    }
-
-    .conclusion-box ul {
-      padding-left: 20px;
-    }
-
-    .conclusion-box li {
-      margin-bottom: 6px;
-      font-size: 0.9rem;
-    }
-
-    .phase-divider {
-      border: none;
-      border-top: 1px solid var(--panel-border);
-      margin: 36px 0;
-    }
-
-    .kepler-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 16px 0;
-      font-size: 0.88rem;
-      background: rgba(15, 23, 42, 0.5);
-      border-radius: var(--br-md);
-      overflow: hidden;
-    }
-
-    .kepler-table th {
-      background: rgba(168, 85, 247, 0.12);
-      padding: 10px 14px;
-      text-align: left;
-      color: #c084fc;
-      font-size: 0.8rem;
-      font-weight: 700;
-      border-bottom: 1px solid rgba(168, 85, 247, 0.2);
-    }
-
-    .kepler-table td {
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--panel-border);
-      color: var(--text-secondary);
-    }
-
-    .kepler-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    .star-tag {
-      color: var(--star-color);
-      font-weight: 700;
-    }
-
-    .planet-tag {
-      color: var(--planet-color);
-      font-weight: 700;
-    }
-
-    .force-tag {
-      color: var(--force-color);
-      font-weight: 700;
-    }
-
-    .vel-tag {
-      color: var(--vel-color);
-      font-weight: 700;
-    }
-
-    .kepler-tag {
-      color: var(--kepler-color);
-      font-weight: 700;
-    }
-  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="../css/guide.css">
 </head>
 
 <body>
-  <div class="guide-container">
-    <header>
-      <div>
-        <div class="guide-title">🪐 Gravitación universal y Leyes de Kepler</div>
-        <div class="guide-subtitle">Guía Didáctica del Estudiante · Metodología de Polya · Física — UNIR</div>
-      </div>
-      <a href="gravitacion.html" class="back-btn">← Volver al simulador</a>
-    </header>
+  <main class="guide">
 
-    <!-- MARCO TEÓRICO -->
-    <div class="polya-section">
-      <div class="polya-header">
-        <div class="phase-badge teoria">★</div>
-        <h2>Marco Teórico: Gravitación universal y Leyes de Kepler</h2>
-      </div>
-      <p class="guide-text">
-        La <strong>Ley de Gravitación universal</strong> de Newton establece que dos masas se atraen con una fuerza
-        proporcional al producto de sus masas e inversamente proporcional al cuadrado de la distancia:
-      </p>
-      <div class="equation-box">
-        <span class="eq-label">Ley de Gravitación universal</span>
-        F = G · M · m / r²<br>
-        <small style="color:var(--text-muted);font-family:sans-serif;">Fuerza (N) = Constante · Masa central · Masa
-          planeta / distancia²</small>
-      </div>
-      <p class="guide-text">Las <strong>Leyes de Kepler</strong> describen el movimiento orbital:</p>
-      <div class="obs-card">
-        <h4>🌕 Las Tres Leyes de Kepler</h4>
-        <p><strong>1ª Ley (Elipses):</strong> Los planetas orbitan en elipses con la estrella en uno de los focos.<br>
-          <strong>2ª Ley (Áreas):</strong> El radio vector barre áreas iguales en tiempos iguales (conservación del
-          momento angular).<br>
-          <strong>3ª Ley (Períodos):</strong> T² ∝ a³. La constante es universal para todos los planetas del mismo
-          sistema.
-        </p>
-      </div>
-      <div class="equation-box">
-        <span class="eq-label">Tercera Ley de Kepler + Newton</span>
-        T² / a³ = 4π² / (G·M)<br>
-        T = 2π · √(a³ / G·M)<br>
-        <small style="color:var(--text-muted);font-family:sans-serif;">a = semileje mayor · G = constante gravitacional
-          · M = masa central</small>
-      </div>
+    <div class="guide-bar rise" style="--i: 0">
+      <a class="crumb" href="gravitacion.html">← Volver al simulador</a>
+      <a class="crumb" href="../index.html">Índice de laboratorios</a>
     </div>
 
-    <hr class="phase-divider">
+    <h1 class="guide-title rise" style="--i: 1">Gravitación <em>universal</em></h1>
+    <p class="guide-sub rise" style="--i: 2">Guía didáctica del estudiante · método de Pólya · Física — UNIR</p>
+    <p class="lead rise" style="--i: 3">Una estrella, un planeta y una ley: ¿cuánto tarda en dar la vuelta? Con esta guía vas a medir órbitas circulares y elípticas y a comprobar que la tercera ley de Kepler sale de la simulación.</p>
 
-    <!-- FASE 1 -->
-    <div class="polya-section">
-      <div class="polya-header">
-        <div class="phase-badge comprende">1</div>
-        <h2>Fase 1 — Comprender el problema</h2>
-      </div>
-      <p class="guide-text">Identifica las variables del sistema antes de simular.</p>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Variable</th>
-            <th>Símbolo</th>
-            <th>Unidad</th>
-            <th>Tu Valor</th>
-          </tr>
-        </thead>
+    <ol class="toc rise" style="--i: 4">
+      <li><a href="#teoria">Marco teórico</a></li>
+      <li><a href="#fase1">1 Comprender</a></li>
+      <li><a href="#fase2">2 Planear</a></li>
+      <li><a href="#fase3">3 Ejecutar</a></li>
+      <li><a href="#fase4">4 Revisar</a></li>
+    </ol>
+
+    <section id="teoria">
+      <span class="kicker">Marco teórico</span>
+      <h2>Gravitación universal y leyes de Kepler</h2>
+    <p>La ley de gravitación de Newton dice que dos masas se atraen con una fuerza proporcional al producto de
+      sus masas e inversamente proporcional al cuadrado de la distancia que las separa.</p>
+    <div class="eq"><small>Ley de gravitación universal</small>F = G·M·m / r²<span class="note">fuerza = constante × masa central × masa del planeta / distancia²</span></div>
+    <h3>Las tres leyes de Kepler</h3>
+    <ul>
+      <li><strong>1.ª ley (elipses):</strong> los planetas orbitan en elipses con la estrella en uno de los focos.</li>
+      <li><strong>2.ª ley (áreas):</strong> el radio vector barre áreas iguales en tiempos iguales; equivale a la conservación del momento angular, así que el planeta va más rápido cerca de la estrella.</li>
+      <li><strong>3.ª ley (períodos):</strong> T² ∝ a³, con a el semieje mayor. La constante depende solo de G y M.</li>
+    </ul>
+    <div class="eq"><small>Tercera ley de Kepler</small>T² / a³ = 4π² / (G·M)<br>T = 2π·√( a³ / (G·M) )</div>
+    <p>Con a el semieje mayor, G la constante gravitacional y M la masa central. Fíjate en que <strong>T no
+      depende de la excentricidad</strong>: dos órbitas con el mismo a tienen el mismo período, aunque una sea
+      casi circular y la otra muy alargada.</p>
+    </section>
+
+    <section id="fase1">
+      <span class="phase-no">1</span>
+      <span class="kicker">Fase 1 · Comprender</span>
+      <h2>Comprender el problema</h2>
+      <p>Identifica las variables del sistema antes de simular: la constante G y la masa M de la estrella fijan cuánta atracción hay.</p>
+    <figure>
+      <img src="../assets/guides/gravitacion_fase1.jpg" alt="Fase 1 del simulador de gravitación: estrella y planeta" loading="lazy">
+      <figcaption><b>Figura 1</b> · Fase 1. El planeta en el periapsis, con su velocidad v (azul) y la fuerza gravitatoria F (roja); a la derecha, los sliders de G y de la masa de la estrella.</figcaption>
+    </figure>
+    <div class="worksheet">
+      <h4>En tu cuaderno · variables</h4>
+      <table>
+        <thead><tr><th>Variable</th><th>Símbolo</th><th>Unidad</th><th>Tu valor</th></tr></thead>
         <tbody>
-          <tr>
-            <td>Constante gravitacional</td>
-            <td style="font-family:var(--font-mono);">G</td>
-            <td>u·m³/kg·s²</td>
-            <td><span class="fill-in">_______</span></td>
-          </tr>
-          <tr>
-            <td>Masa de la estrella</td>
-            <td style="font-family:var(--font-mono);">M</td>
-            <td>u·kg</td>
-            <td><span class="fill-in">_______</span></td>
-          </tr>
-          <tr>
-            <td>G × M (producto)</td>
-            <td style="font-family:var(--font-mono);">G·M</td>
-            <td>u³/s²</td>
-            <td><span class="fill-in">_______</span></td>
-          </tr>
+          <tr><td>Constante gravitacional</td><td class="sym">G</td><td>u (escalada)</td><td><span class="blank"></span></td></tr>
+          <tr><td>Masa de la estrella</td><td class="sym">M</td><td>u (escalada)</td><td><span class="blank"></span></td></tr>
+          <tr><td>Producto G × M</td><td class="sym">G·M</td><td>u</td><td><span class="blank"></span></td></tr>
         </tbody>
       </table>
-      <div class="interactive-box">
-        <strong>✎ Pregunta de comprensión:</strong><br>
-        Si duplicas M (masa de la estrella) sin cambiar r₀, ¿qué le pasa a la velocidad orbital circular? ¿Y al período
-        orbital? Razónalo antes de probarlo con los sliders.
-      </div>
     </div>
-
-    <hr class="phase-divider">
-
-    <!-- FASE 2 -->
-    <div class="polya-section">
-      <div class="polya-header">
-        <div class="phase-badge planear">2</div>
-        <h2>Fase 2 — Concebir un plan</h2>
-      </div>
-      <p class="guide-text">Calcula manualmente el período orbital usando Kepler III.</p>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Paso</th>
-            <th>Fórmula</th>
-            <th>Tu Cálculo</th>
-          </tr>
-        </thead>
+    <div class="question"><p>Si duplicas M sin cambiar la órbita, ¿qué le pasa a la velocidad orbital circular? ¿Y al período? Razónalo antes de probarlo con los sliders.</p></div>
+    </section>
+    <section id="fase2">
+      <span class="phase-no">2</span>
+      <span class="kicker">Fase 2 · Planear</span>
+      <h2>Concebir un plan</h2>
+      <p>Fija la órbita con el <strong>semieje mayor a</strong> y la <strong>excentricidad e</strong>. El planeta parte siempre del periapsis, el punto más cercano, con la velocidad que da la ecuación de vis-viva. Calcula el período con Kepler III:</p>
+    <div class="eq"><small>Órbita elíptica</small>periapsis = a·(1 − e) &nbsp;&nbsp; apoapsis = a·(1 + e)<br>v<sub>periapsis</sub> = √( G·M/a · (1 + e)/(1 − e) )<br>T = 2π·√( a³ / (G·M) )</div>
+    <div class="worksheet">
+      <h4>En tu cuaderno · predicción</h4>
+      <table>
+        <thead><tr><th>Paso</th><th>Fórmula</th><th>Tu cálculo</th></tr></thead>
         <tbody>
-          <tr>
-            <td>Radio inicial r₀</td>
-            <td style="font-family:var(--font-mono);">r₀</td>
-            <td><span class="fill-in">___ u</span></td>
-          </tr>
-          <tr>
-            <td>Velocidad circular</td>
-            <td style="font-family:var(--font-mono);">v = √(G·M/r₀)</td>
-            <td><span class="fill-in">___ u/s</span></td>
-          </tr>
-          <tr>
-            <td>Período orbital</td>
-            <td style="font-family:var(--font-mono);">T = 2π·√(r₀³/G·M)</td>
-            <td><span class="fill-in">___ s</span></td>
-          </tr>
+          <tr><td>Semieje mayor a</td><td class="sym">a</td><td><span class="blank"></span> u</td></tr>
+          <tr><td>Periapsis y apoapsis</td><td class="sym">a(1 − e), a(1 + e)</td><td><span class="blank"></span> u</td></tr>
+          <tr><td>Período orbital</td><td class="sym">T = 2π·√(a³/G·M)</td><td><span class="blank"></span> s</td></tr>
         </tbody>
       </table>
-      <div class="interactive-box">
-        <strong>✎ Hipótesis con excentricidad:</strong><br>
-        Si introduces excentricidad e = 0.5, ¿cambia el período orbital? Recuerda que en la 3ª Ley de Kepler, <em>a</em>
-        es el semileje mayor, no el radio inicial. Para e = 0.5, el apoapsis = r₀ · (1+e)/(1-e) y a = (periapsis +
-        apoapsis)/2.
-      </div>
     </div>
-
-    <hr class="phase-divider">
-
-    <!-- FASE 3 -->
-    <div class="polya-section">
-      <div class="polya-header">
-        <div class="phase-badge ejecutar">3</div>
-        <h2>Fase 3 — Ejecutar y Observar</h2>
-      </div>
-      <p class="guide-text">Registra valores de la telemetría en distintos puntos de la órbita para verificar la 2ª Ley
-        de Kepler (áreas iguales = velocidades distintas).</p>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Posición</th>
-            <th>r (dist.)</th>
-            <th>v (vel.)</th>
-            <th>F_g</th>
-          </tr>
-        </thead>
+    <div class="question"><p>Si introduces e = 0.5, ¿cambia el período? Piensa qué significa a: el semieje mayor, no el radio inicial. Verifica tu respuesta con el simulador.</p></div>
+    </section>
+    <section id="fase3">
+      <span class="phase-no">3</span>
+      <span class="kicker">Fase 3 · Ejecutar</span>
+      <h2>Ejecutar el plan</h2>
+      <p>Inicia la simulación y registra la telemetría en distintos puntos para verificar la segunda ley: el planeta va más rápido en el periapsis y más lento en el apoapsis.</p>
+    <figure>
+      <img src="../assets/guides/gravitacion_fase3.jpg" alt="Fase 3 del simulador de gravitación: órbita elíptica en curso" loading="lazy">
+      <figcaption><b>Figura 2</b> · Fase 3. La estrella (ocre) en el foco, la elipse teórica punteada, la trayectoria recorrida a lápiz y el planeta con sus vectores. Arriba a la derecha aparece la tabla de Kepler III al completar órbitas.</figcaption>
+    </figure>
+    <div class="worksheet">
+      <h4>En tu cuaderno · puntos de la órbita</h4>
+      <table>
+        <thead><tr><th>Posición</th><th>r (distancia)</th><th>v (velocidad)</th><th>F<sub>g</sub></th></tr></thead>
         <tbody>
-          <tr>
-            <td>Periapsis (más cercano)</td>
-            <td><span class="fill-in">___</span></td>
-            <td><span class="fill-in">___</span></td>
-            <td><span class="fill-in">___</span></td>
-          </tr>
-          <tr>
-            <td>Apoapsis (más lejano)</td>
-            <td><span class="fill-in">___</span></td>
-            <td><span class="fill-in">___</span></td>
-            <td><span class="fill-in">___</span></td>
-          </tr>
-          <tr>
-            <td>¿Relación r·v = cte?</td>
-            <td colspan="3"><span class="fill-in">________________________________</span></td>
-          </tr>
+          <tr><td>Periapsis (más cercano)</td><td><span class="blank"></span></td><td><span class="blank"></span></td><td><span class="blank"></span></td></tr>
+          <tr><td>Apoapsis (más lejano)</td><td><span class="blank"></span></td><td><span class="blank"></span></td><td><span class="blank"></span></td></tr>
+          <tr><td>¿Es r·v constante?</td><td><span class="blank wide"></span></td><td></td><td></td></tr>
         </tbody>
       </table>
-      <div class="interactive-box">
-        <strong>✎ Observación:</strong><br>
-        ¿Aumenta o disminuye la velocidad cuando el planeta se acerca a la estrella? Verifica si el producto r·v se
-        mantiene constante en periapsis y apoapsis (esto confirma la conservación del momento angular L = m·r·v).
-      </div>
     </div>
-
-    <hr class="phase-divider">
-
-    <!-- FASE 4 -->
-    <div class="polya-section">
-      <div class="polya-header">
-        <div class="phase-badge revisar">4</div>
-        <h2>Fase 4 — Examinar la solución</h2>
-      </div>
-      <table class="kepler-table">
-        <thead>
-          <tr>
-            <th>Órbita #</th>
-            <th>Semileje a</th>
-            <th>Período T</th>
-            <th>T² (s²)</th>
-            <th>a³/T² (cte.)</th>
-          </tr>
-        </thead>
+    <div class="question"><p>¿Aumenta o disminuye la velocidad cuando el planeta se acerca a la estrella? Comprueba que el producto r·v es igual en periapsis y apoapsis: confirma la conservación de L = m·r·v.</p></div>
+    </section>
+    <section id="fase4">
+      <span class="phase-no">4</span>
+      <span class="kicker">Fase 4 · Revisar</span>
+      <h2>Examinar la solución</h2>
+      <p>La Fase 4 se desbloquea al completar una órbita. El simulador mide el semieje mayor y el período de cada vuelta y los compara con la constante teórica G·M/4π².</p>
+    <figure>
+      <img src="../assets/guides/gravitacion_fase4.jpg" alt="Fase 4 del simulador de gravitación: verificación de Kepler III" loading="lazy">
+      <figcaption><b>Figura 3</b> · Fase 4. Tu predicción del período frente al medido, la constante a³/T² de la simulación junto a la teórica G·M/4π² y el veredicto de la verificación.</figcaption>
+    </figure>
+    <div class="worksheet">
+      <h4>En tu cuaderno · órbitas medidas</h4>
+      <table>
+        <thead><tr><th>Órbita</th><th>Semieje a</th><th>Período T</th><th>T² (s²)</th><th>a³/T²</th></tr></thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td><span class="fill-in">___</span></td>
-            <td><span class="fill-in">___</span></td>
-            <td><span class="fill-in">___</span></td>
-            <td><span class="fill-in">___</span></td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td><span class="fill-in">___</span></td>
-            <td><span class="fill-in">___</span></td>
-            <td><span class="fill-in">___</span></td>
-            <td><span class="fill-in">___</span></td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td><span class="fill-in">___</span></td>
-            <td><span class="fill-in">___</span></td>
-            <td><span class="fill-in">___</span></td>
-            <td><span class="fill-in">___</span></td>
-          </tr>
+          <tr><td>1</td><td><span class="blank"></span></td><td><span class="blank"></span></td><td><span class="blank"></span></td><td><span class="blank"></span></td></tr>
+          <tr><td>2</td><td><span class="blank"></span></td><td><span class="blank"></span></td><td><span class="blank"></span></td><td><span class="blank"></span></td></tr>
+          <tr><td>3</td><td><span class="blank"></span></td><td><span class="blank"></span></td><td><span class="blank"></span></td><td><span class="blank"></span></td></tr>
         </tbody>
       </table>
-      <div class="conclusion-box">
-        <h3>✅ Conclusiones Esperadas</h3>
-        <ul>
-          <li>La constante a³/T² es igual para todas las órbitas del sistema (varía con G·M, no con e ni con m del
-            planeta).</li>
-          <li>Al doble de distancia, el período es ×2√2 ≈ 2.83 veces mayor (raíz cúbica de 8 = 2 → T ∝ a^(3/2)).</li>
-          <li>La velocidad en el periapsis es máxima y en el apoapsis es mínima (2ª Ley de Kepler).</li>
-          <li>La energía total E = KE + PE se mantiene constante durante toda la órbita (sistema conservativo).</li>
-        </ul>
-      </div>
-      <div class="interactive-box">
-        <strong>✎ Reflexión Final:</strong><br>
-        Si la constante G·M del sistema es 10⁶ u³/s², calcula el período de un planeta que orbita a a = 100 u. ¿Cómo
-        cambia el período si duplicas solo G? ¿Y si duplicas solo M? ¿Importa la masa del planeta?
-      </div>
     </div>
+    </section>
+    <section id="cierre">
+      <div class="conclusions">
+        <h3>Conclusiones esperadas</h3>
+    <ul>
+      <li>La constante a³/T² es la misma para todas las órbitas del sistema: depende de G·M, no de e ni de la masa del planeta.</li>
+      <li>Al doble de semieje, el período es 2√2 ≈ 2.83 veces mayor (T ∝ a<sup>3/2</sup>).</li>
+      <li>La velocidad es máxima en el periapsis y mínima en el apoapsis (segunda ley de Kepler).</li>
+      <li>La energía total K + U es constante durante toda la órbita: el sistema es conservativo.</li>
+    </ul>
+      </div>
+    <div class="question"><p>Si G·M = 10⁶ u³/s², calcula el período de un planeta con a = 100 u. ¿Cómo cambia si duplicas solo G? ¿Y si duplicas solo M? ¿Importa la masa del planeta?</p></div>
+    </section>
 
-    <div
-      style="border-top:1px solid var(--panel-border);padding-top:20px;margin-top:10px;text-align:center;font-size:0.8rem;color:var(--text-muted);">
-      Laboratorio virtual de física — UNIR · Metodología de Resolución de Problemas de G. Polya · Basado en la
-      investigación de Marcos Chacón Castro
-    </div>
-  </div>
+    <footer class="guide-foot">
+      Laboratorio virtual de física · UNIR · método de resolución de problemas de G. Pólya, a partir de la
+      investigación de Marcos Chacón Castro. <a href="gravitacion.html">Volver al simulador</a>.
+    </footer>
+
+  </main>
 </body>
 
 </html>

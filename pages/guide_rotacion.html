@@ -4,680 +4,186 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description"
-    content="Guía didáctica del estudiante — Dinámica rotacional. Laboratorio virtual de física, metodología de Polya.">
-  <title>Guía Didáctica — Dinámica rotacional</title>
+  <meta name="description" content="Guía didáctica de dinámica rotacional: torque, momento de inercia y momento angular, siguiendo las fases de Pólya.">
+  <title>Guía didáctica — Dinámica rotacional</title>
 
-  <!-- SEO & Meta Tags -->
-  <meta name="description"
-    content="Laboratorio virtual de física. Simuladores interactivos con metodología de Polya. Conservación de la energía, cinemática, fuerzas, rotación, gravitación y oscilaciones.">
   <meta name="keywords"
-    content="física, simulador, virtual, polya, cinemática, dinámica, energía, gravitación, péndulo, masa-resorte, educación, UNIR">
+    content="física, simulador, virtual, polya, rotación, torque, momento de inercia, momento angular, educación, UNIR">
   <meta name="author" content="Zwartmit">
 
   <!-- Open Graph / Social Media -->
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Laboratorio virtual de física">
-  <meta property="og:description"
-    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Guía didáctica — Dinámica rotacional">
+  <meta property="og:description" content="Guía didáctica de dinámica rotacional: torque, momento de inercia y momento angular, siguiendo las fases de Pólya.">
   <meta property="og:image" content="https://steam-unir.netlify.app/assets/og-image.png">
   <meta property="og:url" content="https://steam-unir.netlify.app/">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Laboratorio virtual de física">
-  <meta name="twitter:description"
-    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+  <meta name="twitter:title" content="Guía didáctica — Dinámica rotacional">
+  <meta name="twitter:description" content="Guía didáctica de dinámica rotacional: torque, momento de inercia y momento angular, siguiendo las fases de Pólya.">
   <meta name="twitter:image" content="https://steam-unir.netlify.app/assets/og-image.png">
 
   <!-- Favicons -->
   <link rel="icon" href="../assets/favicon.png" type="image/png">
   <link rel="apple-touch-icon" href="../assets/favicon.png">
 
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
-
-    :root {
-      --bg-primary: #090f1a;
-      --bg-secondary: #0f172a;
-      --panel-border: rgba(255, 255, 255, 0.08);
-      --text-primary: #f8fafc;
-      --text-secondary: #cbd5e1;
-      --text-muted: #64748b;
-      --accent: #3b82f6;
-      --torque-color: #f59e0b;
-      --omega-color: #10b981;
-      --alpha-color: #ef4444;
-      --L-color: #a855f7;
-      --font-sans: 'Outfit', sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-      --border-radius-lg: 16px;
-      --border-radius-md: 10px;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: var(--font-sans);
-      background-color: var(--bg-primary);
-      color: var(--text-primary);
-      line-height: 1.7;
-      padding: 40px 20px;
-      display: flex;
-      justify-content: center;
-    }
-
-    .guide-container {
-      max-width: 900px;
-      width: 100%;
-      background: var(--bg-secondary);
-      border: 1px solid var(--panel-border);
-      border-radius: var(--border-radius-lg);
-      padding: 40px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-    }
-
-    header {
-      border-bottom: 1px solid var(--panel-border);
-      padding-bottom: 24px;
-      margin-bottom: 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .guide-title {
-      font-size: 1.5rem;
-      font-weight: 800;
-    }
-
-    .guide-subtitle {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    .back-btn {
-      background: rgba(59, 130, 246, 0.15);
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      color: #60a5fa;
-      padding: 8px 16px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 600;
-      transition: all 0.2s ease;
-    }
-
-    .back-btn:hover {
-      background: rgba(59, 130, 246, 0.25);
-    }
-
-    .polya-section {
-      margin-bottom: 36px;
-    }
-
-    .polya-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .phase-badge {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 0.9rem;
-      flex-shrink: 0;
-    }
-
-    .phase-badge.comprende {
-      background: rgba(59, 130, 246, 0.2);
-      color: #60a5fa;
-    }
-
-    .phase-badge.planear {
-      background: rgba(168, 85, 247, 0.2);
-      color: #c084fc;
-    }
-
-    .phase-badge.ejecutar {
-      background: rgba(16, 185, 129, 0.2);
-      color: #34d399;
-    }
-
-    .phase-badge.revisar {
-      background: rgba(245, 158, 11, 0.2);
-      color: #fbbf24;
-    }
-
-    .phase-badge.teoria {
-      background: rgba(59, 130, 246, 0.1);
-      color: #93c5fd;
-    }
-
-    .polya-header h2 {
-      font-size: 1.2rem;
-      font-weight: 700;
-    }
-
-    .guide-text {
-      color: var(--text-secondary);
-      margin-bottom: 14px;
-    }
-
-    .equation-box {
-      background: rgba(15, 23, 42, 0.7);
-      border: 1px solid rgba(59, 130, 246, 0.2);
-      border-radius: var(--border-radius-md);
-      padding: 18px 24px;
-      margin: 16px 0;
-      font-family: var(--font-mono);
-      font-size: 1rem;
-      line-height: 2.2;
-      color: #93c5fd;
-      text-align: center;
-    }
-
-    .equation-box .eq-label {
-      font-family: var(--font-sans);
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      display: block;
-      margin-bottom: 4px;
-      text-align: left;
-    }
-
-    .obs-card {
-      background: rgba(30, 41, 59, 0.5);
-      border: 1px solid var(--panel-border);
-      border-radius: var(--border-radius-md);
-      padding: 16px 20px;
-      margin: 14px 0;
-    }
-
-    .obs-card h4 {
-      font-size: 0.85rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-
-    .obs-card p {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-    }
-
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 16px 0;
-      font-size: 0.88rem;
-    }
-
-    .data-table th {
-      text-align: left;
-      padding: 10px 12px;
-      border-bottom: 1.5px solid var(--panel-border);
-      color: var(--text-muted);
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-
-    .data-table td {
-      padding: 12px;
-      border-bottom: 1px solid var(--panel-border);
-      color: var(--text-secondary);
-    }
-
-    .fill-in {
-      font-family: var(--font-mono);
-      background: rgba(15, 23, 42, 0.6);
-      border-bottom: 2px dashed rgba(59, 130, 246, 0.4);
-      color: #60a5fa;
-      min-width: 80px;
-      display: inline-block;
-      padding: 0 4px;
-    }
-
-    .interactive-box {
-      background: rgba(168, 85, 247, 0.06);
-      border: 1px dashed rgba(168, 85, 247, 0.3);
-      border-radius: var(--border-radius-md);
-      padding: 16px 20px;
-      margin: 14px 0;
-      color: #e9d5ff;
-      font-size: 0.88rem;
-    }
-
-    .interactive-box strong {
-      color: #c084fc;
-    }
-
-    .conclusion-box {
-      background: rgba(16, 185, 129, 0.05);
-      border: 1px solid rgba(16, 185, 129, 0.2);
-      border-radius: var(--border-radius-md);
-      padding: 20px 24px;
-      margin: 16px 0;
-      color: var(--text-secondary);
-    }
-
-    .conclusion-box h3 {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #34d399;
-      margin-bottom: 10px;
-    }
-
-    .conclusion-box ul {
-      padding-left: 20px;
-    }
-
-    .conclusion-box li {
-      margin-bottom: 6px;
-      font-size: 0.9rem;
-    }
-
-    .phase-divider {
-      border: none;
-      border-top: 1px solid var(--panel-border);
-      margin: 36px 0;
-    }
-
-    /* Tabla de momentos de inercia */
-    .inertia-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 16px 0;
-      font-size: 0.88rem;
-      background: rgba(15, 23, 42, 0.5);
-      border-radius: var(--border-radius-md);
-      overflow: hidden;
-    }
-
-    .inertia-table th {
-      background: rgba(59, 130, 246, 0.1);
-      padding: 10px 14px;
-      text-align: left;
-      color: #60a5fa;
-      font-size: 0.8rem;
-      font-weight: 700;
-      border-bottom: 1px solid rgba(59, 130, 246, 0.2);
-    }
-
-    .inertia-table td {
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--panel-border);
-      color: var(--text-secondary);
-    }
-
-    .inertia-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    .tau-tag {
-      color: var(--torque-color);
-      font-weight: 700;
-    }
-
-    .omega-tag {
-      color: var(--omega-color);
-      font-weight: 700;
-    }
-
-    .alpha-tag {
-      color: var(--alpha-color);
-      font-weight: 700;
-    }
-
-    .L-tag {
-      color: var(--L-color);
-      font-weight: 700;
-    }
-  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="../css/guide.css">
 </head>
 
 <body>
-  <div class="guide-container">
+  <main class="guide">
 
-    <header>
-      <div>
-        <div class="guide-title">🌀 Dinámica rotacional</div>
-        <div class="guide-subtitle">Guía Didáctica del Estudiante · Metodología de Polya · Física — UNIR</div>
-      </div>
-      <a href="rotacion.html" class="back-btn">← Volver al simulador</a>
-    </header>
+    <div class="guide-bar rise" style="--i: 0">
+      <a class="crumb" href="rotacion.html">← Volver al simulador</a>
+      <a class="crumb" href="../index.html">Índice de laboratorios</a>
+    </div>
 
-    <!-- MARCO TEÓRICO -->
-    <div class="polya-section">
-      <div class="polya-header">
-        <div class="phase-badge teoria">★</div>
-        <h2>Marco Teórico: La Segunda Ley de Newton para Rotación</h2>
-      </div>
+    <h1 class="guide-title rise" style="--i: 1">Dinámica <em>rotacional</em></h1>
+    <p class="guide-sub rise" style="--i: 2">Guía didáctica del estudiante · método de Pólya · Física — UNIR</p>
+    <p class="lead rise" style="--i: 3">Un torque, un cuerpo rígido y una ley: τ = I·α. Con esta guía vas a explorar cómo la forma de un cuerpo cambia su resistencia a girar y a comprobar la segunda ley de Newton para la rotación.</p>
 
-      <p class="guide-text">
-        Al igual que la Segunda Ley de Newton lineal (F = m·a) describe el movimiento traslacional, existe su análogo
-        rotacional. Cuando un <span class="tau-tag">torque τ</span> actúa sobre un cuerpo rígido con momento de inercia
-        <em>I</em>, se produce una <span class="alpha-tag">aceleración angular α</span>:
-      </p>
+    <ol class="toc rise" style="--i: 4">
+      <li><a href="#teoria">Marco teórico</a></li>
+      <li><a href="#fase1">1 Comprender</a></li>
+      <li><a href="#fase2">2 Planear</a></li>
+      <li><a href="#fase3">3 Ejecutar</a></li>
+      <li><a href="#fase4">4 Revisar</a></li>
+    </ol>
 
-      <div class="equation-box">
-        <span class="eq-label">Segunda Ley de Newton para Rotación</span>
-        τ = I · α<br>
-        <small style="color:var(--text-muted);font-family:sans-serif;">Torque = Momento de Inercia × Aceleración
-          Angular</small>
-      </div>
-
-      <p class="guide-text">El <strong>Momento Angular</strong> L es la versión rotacional del impulso lineal (p = m·v):
-      </p>
-
-      <div class="equation-box">
-        <span class="eq-label">Momento Angular</span>
-        L = I · ω<br>
-        <small style="color:var(--text-muted);font-family:sans-serif;">Momento Angular = Momento de Inercia × Velocidad
-          Angular</small>
-      </div>
-
-      <div class="obs-card">
-        <h4>📐 Momentos de Inercia de los Cuerpos Disponibles</h4>
-        <p>El momento de inercia determina la resistencia de un cuerpo a cambiar su rotación (análogo a la masa para
-          traslación):</p>
-      </div>
-
-      <table class="inertia-table">
-        <thead>
-          <tr>
-            <th>Cuerpo</th>
-            <th>Fórmula de I</th>
-            <th>Observación</th>
-          </tr>
-        </thead>
+    <section id="teoria">
+      <span class="kicker">Marco teórico</span>
+      <h2>La segunda ley de Newton para la rotación</h2>
+    <p>Igual que F = m·a describe el movimiento de traslación, existe un análogo rotacional: un torque τ aplicado a
+      un cuerpo rígido con momento de inercia I produce una aceleración angular α.</p>
+    <div class="eq"><small>Segunda ley de Newton para la rotación</small>τ = I·α<span class="note">torque = momento de inercia × aceleración angular</span></div>
+    <p>El momento angular L es la versión rotacional del momento lineal (p = m·v):</p>
+    <div class="eq"><small>Momento angular</small>L = I·ω<span class="note">momento angular = momento de inercia × velocidad angular</span></div>
+    <h3>Momentos de inercia de los cuerpos del simulador</h3>
+    <p>El momento de inercia mide la resistencia de un cuerpo a cambiar su rotación, igual que la masa en la
+      traslación.</p>
+    <div class="worksheet">
+      <h4>Cuerpos disponibles</h4>
+      <table>
+        <thead><tr><th>Cuerpo</th><th>Fórmula de I</th><th>Observación</th></tr></thead>
         <tbody>
-          <tr>
-            <td>💿 Disco sólido</td>
-            <td style="font-family:var(--font-mono);">I = ½·m·r²</td>
-            <td>Masa distribuida hasta el borde. Menor I que el aro.</td>
-          </tr>
-          <tr>
-            <td>⭕ Aro / Cilindro hueco</td>
-            <td style="font-family:var(--font-mono);">I = m·r²</td>
-            <td>Toda la masa en el borde exterior. Mayor I que el disco.</td>
-          </tr>
-          <tr>
-            <td>📏 Barra (eje en centro)</td>
-            <td style="font-family:var(--font-mono);">I = (1/12)·m·L²</td>
-            <td>L es la longitud total (L = 2r en el simulador).</td>
-          </tr>
+          <tr><td>Disco sólido</td><td class="sym">I = ½·m·r²</td><td>Masa distribuida hasta el borde. Menor I que el aro.</td></tr>
+          <tr><td>Aro o cilindro hueco</td><td class="sym">I = m·r²</td><td>Toda la masa en el borde. Mayor I que el disco.</td></tr>
+          <tr><td>Barra con eje en el centro</td><td class="sym">I = (1/12)·m·L²</td><td>L es la longitud total (L = 2r en el simulador).</td></tr>
         </tbody>
       </table>
     </div>
+    </section>
 
-    <hr class="phase-divider">
-
-    <!-- FASE 1: COMPRENDER -->
-    <div class="polya-section">
-      <div class="polya-header">
-        <div class="phase-badge comprende">1</div>
-        <h2>Fase 1 — Comprender el problema</h2>
-      </div>
-
-      <p class="guide-text">
-        Antes de simular, selecciona el cuerpo rígido y anota sus características. Identifica las variables del sistema.
-      </p>
-
-      <div class="obs-card">
-        <h4>📌 Identificación de Variables</h4>
-        <p>Completa esta tabla con los valores que configuraste en el simulador:</p>
-      </div>
-
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Variable</th>
-            <th>Símbolo</th>
-            <th>Unidad</th>
-            <th>Tu Valor</th>
-          </tr>
-        </thead>
+    <section id="fase1">
+      <span class="phase-no">1</span>
+      <span class="kicker">Fase 1 · Comprender</span>
+      <h2>Comprender el problema</h2>
+      <p>Antes de simular, elige el cuerpo rígido y anota sus características.</p>
+    <figure>
+      <img src="../assets/guides/rotacion_fase1.jpg" alt="Fase 1 del simulador de rotación: disco en reposo" loading="lazy">
+      <figcaption><b>Figura 1</b> · Fase 1. El cuerpo en reposo con su radio rojo de referencia; a la derecha, el selector de cuerpo (disco, aro, barra), los sliders de masa y radio y la pregunta de comprensión.</figcaption>
+    </figure>
+    <div class="worksheet">
+      <h4>En tu cuaderno · variables</h4>
+      <table>
+        <thead><tr><th>Variable</th><th>Símbolo</th><th>Unidad</th><th>Tu valor</th></tr></thead>
         <tbody>
-          <tr>
-            <td>Masa</td>
-            <td style="font-family:var(--font-mono);">m</td>
-            <td>kg</td>
-            <td><span class="fill-in">_______</span></td>
-          </tr>
-          <tr>
-            <td>Radio / Semilongitud</td>
-            <td style="font-family:var(--font-mono);">r</td>
-            <td>m</td>
-            <td><span class="fill-in">_______</span></td>
-          </tr>
-          <tr>
-            <td>Tipo de cuerpo</td>
-            <td style="font-family:var(--font-mono);">—</td>
-            <td>—</td>
-            <td><span class="fill-in">_______</span></td>
-          </tr>
-          <tr>
-            <td>Momento de Inercia calculado</td>
-            <td style="font-family:var(--font-mono);">I</td>
-            <td>kg·m²</td>
-            <td><span class="fill-in">_______</span></td>
-          </tr>
+          <tr><td>Masa</td><td class="sym">m</td><td>kg</td><td><span class="blank"></span></td></tr>
+          <tr><td>Radio o semilongitud</td><td class="sym">r</td><td>m</td><td><span class="blank"></span></td></tr>
+          <tr><td>Tipo de cuerpo</td><td>—</td><td>—</td><td><span class="blank"></span></td></tr>
+          <tr><td>Momento de inercia calculado</td><td class="sym">I</td><td>kg·m²</td><td><span class="blank"></span></td></tr>
         </tbody>
       </table>
-
-      <div class="interactive-box">
-        <strong>✎ Pregunta de comprensión:</strong><br>
-        Si cambias del disco al aro con los mismos m y r, ¿qué cuerpo girará más rápido bajo el mismo torque? ¿Por qué?
-        Razona antes de probarlo.
-      </div>
     </div>
-
-    <hr class="phase-divider">
-
-    <!-- FASE 2: PLANEAR -->
-    <div class="polya-section">
-      <div class="polya-header">
-        <div class="phase-badge planear">2</div>
-        <h2>Fase 2 — Concebir un plan (Hipótesis)</h2>
-      </div>
-
-      <p class="guide-text">
-        Antes de iniciar la simulación, calcula manualmente la aceleración angular y la velocidad angular esperada al
-        final del tiempo configurado.
-      </p>
-
-      <div class="equation-box">
-        <span class="eq-label">Cálculo sin fricción</span>
-        α = τ / I<br>
-        ω(t) = α · t = (τ / I) · t
-      </div>
-
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Cálculo</th>
-            <th>Fórmula</th>
-            <th>Tu Resultado</th>
-          </tr>
-        </thead>
+    <div class="question"><p>Si cambias del disco al aro con los mismos m y r, ¿qué cuerpo girará más rápido bajo el mismo torque? ¿Por qué? Razónalo antes de probarlo.</p></div>
+    </section>
+    <section id="fase2">
+      <span class="phase-no">2</span>
+      <span class="kicker">Fase 2 · Planear</span>
+      <h2>Concebir un plan</h2>
+      <p>Antes de simular, calcula la aceleración angular y la velocidad angular que esperas al final del tiempo configurado.</p>
+    <div class="eq"><small>Cálculo sin fricción</small>α = τ / I<br>ω(t) = α·t = (τ / I)·t</div>
+    <div class="worksheet">
+      <h4>En tu cuaderno · predicción</h4>
+      <table>
+        <thead><tr><th>Cálculo</th><th>Fórmula</th><th>Tu resultado</th></tr></thead>
         <tbody>
-          <tr>
-            <td>Torque aplicado</td>
-            <td style="font-family:var(--font-mono);">τ</td>
-            <td><span class="fill-in">_______ N·m</span></td>
-          </tr>
-          <tr>
-            <td>Aceleración angular</td>
-            <td style="font-family:var(--font-mono);">α = τ/I</td>
-            <td><span class="fill-in">_______ rad/s²</span></td>
-          </tr>
-          <tr>
-            <td>Velocidad angular al final</td>
-            <td style="font-family:var(--font-mono);">ω = α·t</td>
-            <td><span class="fill-in">_______ rad/s</span></td>
-          </tr>
-          <tr>
-            <td>Momento angular al final</td>
-            <td style="font-family:var(--font-mono);">L = I·ω</td>
-            <td><span class="fill-in">_______ kg·m²/s</span></td>
-          </tr>
+          <tr><td>Torque aplicado</td><td class="sym">τ</td><td><span class="blank"></span> N·m</td></tr>
+          <tr><td>Aceleración angular</td><td class="sym">α = τ/I</td><td><span class="blank"></span> rad/s²</td></tr>
+          <tr><td>Velocidad angular final</td><td class="sym">ω = α·t</td><td><span class="blank"></span> rad/s</td></tr>
+          <tr><td>Momento angular final</td><td class="sym">L = I·ω</td><td><span class="blank"></span> kg·m²/s</td></tr>
         </tbody>
       </table>
-
-      <div class="interactive-box">
-        <strong>✎ Hipótesis con fricción:</strong><br>
-        Si activas la fricción angular (b &gt; 0), la ecuación cambia: ω(t) = (τ/b)·(1 − e<sup>−bt/I</sup>). ¿Cuál será
-        el valor límite de ω cuando t → ∞? ¿Por qué el sistema deja de acelerar?
-      </div>
     </div>
-
-    <hr class="phase-divider">
-
-    <!-- FASE 3: EJECUTAR -->
-    <div class="polya-section">
-      <div class="polya-header">
-        <div class="phase-badge ejecutar">3</div>
-        <h2>Fase 3 — Ejecutar el plan (Observar)</h2>
-      </div>
-
-      <p class="guide-text">
-        Inicia la simulación. Pausa en distintos instantes y registra los valores de la telemetría para verificar tu
-        hipótesis en tiempo real.
-      </p>
-
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Tiempo t (s)</th>
-            <th>ω (rad/s)</th>
-            <th>α (rad/s²)</th>
-            <th>L (kg·m²/s)</th>
-          </tr>
-        </thead>
+    <div class="question"><p>Con fricción viscosa (b > 0) la ecuación cambia: ω(t) = (τ/b)·(1 − e<sup>−b·t/I</sup>). ¿Cuánto vale ω cuando t → ∞? ¿Por qué el sistema deja de acelerar?</p></div>
+    </section>
+    <section id="fase3">
+      <span class="phase-no">3</span>
+      <span class="kicker">Fase 3 · Ejecutar</span>
+      <h2>Ejecutar el plan</h2>
+      <p>Inicia la simulación. Pausa en distintos instantes y anota la telemetría para verificar tu hipótesis. La barra de progreso indica el tiempo simulado.</p>
+    <figure>
+      <img src="../assets/guides/rotacion_fase3.jpg" alt="Fase 3 del simulador de rotación: cuerpo girando con vectores" loading="lazy">
+      <figcaption><b>Figura 2</b> · Fase 3. El cuerpo girando bajo el torque (arco ocre), con la velocidad angular ω (azul) y la aceleración angular α (rojo) como flechas, el momento angular L en verde y la gráfica de ω(t) y L(t) debajo.</figcaption>
+    </figure>
+    <div class="worksheet">
+      <h4>En tu cuaderno · lecturas</h4>
+      <table>
+        <thead><tr><th>Tiempo t (s)</th><th>ω (rad/s)</th><th>α (rad/s²)</th><th>L (kg·m²/s)</th></tr></thead>
         <tbody>
-          <tr>
-            <td>t = 0</td>
-            <td>0</td>
-            <td><span class="fill-in">___</span></td>
-            <td>0</td>
-          </tr>
-          <tr>
-            <td>t = 1 s</td>
-            <td><span class="fill-in">___</span></td>
-            <td><span class="fill-in">___</span></td>
-            <td><span class="fill-in">___</span></td>
-          </tr>
-          <tr>
-            <td>t = 2 s</td>
-            <td><span class="fill-in">___</span></td>
-            <td><span class="fill-in">___</span></td>
-            <td><span class="fill-in">___</span></td>
-          </tr>
-          <tr>
-            <td>t final</td>
-            <td><span class="fill-in">___</span></td>
-            <td><span class="fill-in">___</span></td>
-            <td><span class="fill-in">___</span></td>
-          </tr>
+          <tr><td>0</td><td>0</td><td><span class="blank"></span></td><td>0</td></tr>
+          <tr><td>1</td><td><span class="blank"></span></td><td><span class="blank"></span></td><td><span class="blank"></span></td></tr>
+          <tr><td>2</td><td><span class="blank"></span></td><td><span class="blank"></span></td><td><span class="blank"></span></td></tr>
+          <tr><td>Final</td><td><span class="blank"></span></td><td><span class="blank"></span></td><td><span class="blank"></span></td></tr>
         </tbody>
       </table>
-
-      <div class="interactive-box">
-        <strong>✎ Análisis:</strong><br>
-        Sin fricción: ¿es α constante en todos los instantes? ¿Crece ω de forma lineal? Verifica si la relación L = I·ω
-        se cumple en cada fila de tu tabla.
-      </div>
     </div>
-
-    <hr class="phase-divider">
-
-    <!-- FASE 4: REVISAR -->
-    <div class="polya-section">
-      <div class="polya-header">
-        <div class="phase-badge revisar">4</div>
-        <h2>Fase 4 — Examinar la solución (Revisar)</h2>
-      </div>
-
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Magnitud</th>
-            <th>Predicción</th>
-            <th>Simulación</th>
-            <th>Error (%)</th>
-          </tr>
-        </thead>
+    <div class="question"><p>Sin fricción, ¿es α constante en todos los instantes? ¿Crece ω de forma lineal? Comprueba que L = I·ω se cumple en cada fila de tu tabla.</p></div>
+    </section>
+    <section id="fase4">
+      <span class="phase-no">4</span>
+      <span class="kicker">Fase 4 · Revisar</span>
+      <h2>Examinar la solución</h2>
+      <p>El simulador compara tu predicción con la simulación y con el valor teórico, y verifica la segunda ley con el torque neto: τ<sub>neto</sub> = I·α, y el impulso angular acumulado ∫τ<sub>neto</sub>·dt igual al cambio de momento angular ΔL.</p>
+    <figure>
+      <img src="../assets/guides/rotacion_fase4.jpg" alt="Fase 4 del simulador de rotación: comparación de ω y verificación de τ = Iα" loading="lazy">
+      <figcaption><b>Figura 3</b> · Fase 4. La tabla con tu predicción de ω, el valor simulado y el teórico, el momento de inercia, el momento angular y la verificación de la segunda ley.</figcaption>
+    </figure>
+    <div class="worksheet">
+      <h4>En tu cuaderno · conclusiones</h4>
+      <table>
+        <thead><tr><th>Magnitud</th><th>Predicción</th><th>Simulación</th><th>Error (%)</th></tr></thead>
         <tbody>
-          <tr>
-            <td>ω final (sin fricción)</td>
-            <td><span class="fill-in">_______</span></td>
-            <td><span class="fill-in">_______</span></td>
-            <td><span class="fill-in">_______</span></td>
-          </tr>
-          <tr>
-            <td>ω final (con fricción)</td>
-            <td><span class="fill-in">_______</span></td>
-            <td><span class="fill-in">_______</span></td>
-            <td><span class="fill-in">_______</span></td>
-          </tr>
-          <tr>
-            <td>Verificación τ = I·α</td>
-            <td>—</td>
-            <td><span class="fill-in">_______</span></td>
-            <td>—</td>
-          </tr>
+          <tr><td>ω final (sin fricción)</td><td><span class="blank"></span></td><td><span class="blank"></span></td><td><span class="blank"></span></td></tr>
+          <tr><td>ω final (con fricción)</td><td><span class="blank"></span></td><td><span class="blank"></span></td><td><span class="blank"></span></td></tr>
+          <tr><td>Verificación τ = I·α</td><td>—</td><td><span class="blank"></span></td><td>—</td></tr>
         </tbody>
       </table>
-
-      <div class="conclusion-box">
-        <h3>✅ Conclusiones Esperadas</h3>
-        <ul>
-          <li>Sin fricción: <span class="alpha-tag">α</span> es constante y <span class="omega-tag">ω</span> crece
-            linealmente con t. El cuerpo sigue acelerando indefinidamente.</li>
-          <li>Con fricción viscosa: el sistema alcanza una velocidad de estado estacionario ω<sub>ss</sub> = <span
-              class="tau-tag">τ</span> / b donde α → 0.</li>
-          <li>El aro tiene mayor I que el disco (con igual m y r), por tanto acelerará más lento bajo el mismo torque.
-          </li>
-          <li><span class="L-tag">L = I·ω</span> crece linealmente con t (sin fricción), análogo a p = mv en traslación.
-          </li>
-          <li>La Segunda Ley τ = I·α se verifica numéricamente en la Fase 4 del simulador con error &lt; 2% (error del
-            integrador numérico).</li>
-        </ul>
-      </div>
-
-      <div class="interactive-box">
-        <strong>✎ Reflexión Final:</strong><br>
-        ¿Por qué los patinadores sobre hielo se giran más rápido cuando recogen los brazos? Relaciona este fenómeno con
-        el Momento de Inercia y la conservación del Momento Angular (L = constante cuando τ_externo = 0).
-      </div>
     </div>
+    </section>
+    <section id="cierre">
+      <div class="conclusions">
+        <h3>Conclusiones esperadas</h3>
+    <ul>
+      <li>Sin fricción, α es constante y ω crece linealmente con el tiempo.</li>
+      <li>Con fricción viscosa se alcanza una velocidad de estado estacionario ω<sub>ss</sub> = τ/b, donde α → 0.</li>
+      <li>El aro tiene mayor I que el disco (con igual m y r), así que acelera más despacio bajo el mismo torque.</li>
+      <li>Con fricción, la segunda ley se verifica con el torque neto (el aplicado menos el de fricción), no con el aplicado.</li>
+      <li>L = I·ω crece con el tiempo, igual que p = m·v en la traslación.</li>
+    </ul>
+      </div>
+    <div class="question"><p>¿Por qué los patinadores sobre hielo giran más rápido cuando recogen los brazos? Relaciónalo con el momento de inercia y con la conservación del momento angular (L constante cuando el torque externo es cero).</p></div>
+    </section>
 
-    <div
-      style="border-top:1px solid var(--panel-border);padding-top:20px;margin-top:10px;text-align:center;font-size:0.8rem;color:var(--text-muted);">
-      Laboratorio virtual de física — UNIR · Metodología de Resolución de Problemas de G. Polya · Basado en la
-      investigación de Marcos Chacón Castro
-    </div>
+    <footer class="guide-foot">
+      Laboratorio virtual de física · UNIR · método de resolución de problemas de G. Pólya, a partir de la
+      investigación de Marcos Chacón Castro. <a href="rotacion.html">Volver al simulador</a>.
+    </footer>
 
-  </div>
+  </main>
 </body>
 
 </html>

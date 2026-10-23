@@ -70,7 +70,8 @@ Abre `progress/` en tu editor mientras Gemini trabaja: cada informe aparece en c
 ├── css/
 │   ├── tokens.css          # Tokens de diseño "Cuaderno de laboratorio" (color, tipografía, forma)
 │   ├── style.css           # Interfaz de los simuladores (escenario + hoja de Pólya), responsive
-│   └── index.css           # Portada: índice editorial y método de Pólya
+│   ├── index.css           # Portada: índice editorial y método de Pólya
+│   └── guide.css           # Guías didácticas: hoja de cuaderno, figuras y hojas de trabajo
 ├── js/
 │   └── <simulador>/        # Una carpeta por feature (cinematica, newton, energia, rotacion, gravitacion, oscilaciones)
 │       ├── main.js             # Controlador, eventos y bucle requestAnimationFrame
@@ -78,7 +79,7 @@ Abre `progress/` en tu editor mientras Gemini trabaja: cada informe aparece en c
 │       └── canvasRenderer.js   # Lógica de dibujo/pintado sobre lienzo Canvas
 ├── assets/
 │   ├── favicon.png, og-image.png
-│   └── guides/              # Capturas de pantalla usadas por las guías didácticas
+│   └── guides/              # Capturas del simulador (<simulador>_fase<n>.jpg) usadas por las guías
 └── tests/
     ├── run-all.js          # Ejecutor de pruebas automatizadas locales
     ├── vector.test.js      # Pruebas unitarias de js/cinematica/physicsEngine.js
