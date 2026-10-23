@@ -1,0 +1,97 @@
+/*
+ * css/tokens.css
+ * Sistema de diseño "Cuaderno de laboratorio": papel crema, tinta casi negra,
+ * lapicero azul y tinta de corrector bermellón. Tokens + base tipográfica
+ * compartidos por la portada (index.css) y los simuladores (style.css).
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap');
+
+:root {
+  /* Papel y tinta */
+  --paper: #F2ECDF;
+  --paper-2: #FBF8EF;
+  --ink: #1B1A17;
+  --ink-soft: #4A463E;
+  --muted: #6B6455;
+  --rule: rgba(27, 26, 23, 0.16);
+  --graph-minor: rgba(43, 76, 140, 0.08);
+  --graph-major: rgba(43, 76, 140, 0.20);
+
+  /* Tintas con significado físico */
+  --blue: #2B4C8C;   /* lapicero: velocidad, datos medidos */
+  --red: #B83A26;    /* corrector: gravedad, fuerzas, errores */
+  --ochre: #8A5E0E;  /* predicción del estudiante */
+
+  /* Alias semánticos que usan los controladores JS */
+  --speed-color: var(--blue);
+  --accel-color: var(--red);
+  --predict-color: var(--ochre);
+  --warning-color: var(--ochre);
+  --accent: var(--red);
+  --text-primary: var(--ink);
+  --text-secondary: var(--ink-soft);
+  --text-muted: var(--muted);
+
+  /* Tipografía */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Newsreader', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* Forma: casi todo recto; solo los controles táctiles se suavizan 2px */
+  --radius: 0;
+  --radius-sm: 2px;
+
+  /* Movimiento */
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --transition-smooth: all 0.25s var(--ease-out);
+
+  --bar-h: 0px; /* alto de la barra superior legada (ver style.css) */
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
+/* Entrada escalonada (el orden lo marca --i en cada elemento) */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+.rise {
+  animation: rise 0.7s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 90ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise,
+  .polya-phase-container {
+    animation: none !important;
+  }
+}

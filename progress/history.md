@@ -103,3 +103,17 @@
 
 **Pendiente (siguiente sesión):** rediseño UI/UX con la skill `anti-slop-design`; responsive (no hay `@media`; el canvas mide 0 px en móvil), LaTeX crudo en newton/guías, guías sin capturas (energía, rotación, gravitación, oscilaciones), exponer `window.currentSimulation` en los 4 simuladores, Newton: estado "Equilibrio / Estático" en t=0 con a>0 y velocidad final perdida al llegar al fondo, cinemática: `evaluatePrediction` devuelve 0% de error si el alcance real es 0.
 
+## Sesión: 2026-10-22 — Rediseño UI/UX "Cuaderno de laboratorio" (fase 1: base, portada y Cinemática)
+
+**Contexto:** Se instaló la skill `anti-slop-design` y se eligió la dirección "Cuaderno de laboratorio" (papel crema, tinta, lapicero azul y corrector bermellón; Fraunces + Newsreader + IBM Plex Mono) frente a "Instrumento de laboratorio". Se retiró el tema oscuro neón (degradados, vidrio esmerilado, brillos, emojis, tarjetas idénticas).
+
+**Hecho:**
+
+* `css/tokens.css` (nuevo): tokens de color/tipografía/forma, base y entrada escalonada (`.rise`, respeta `prefers-reduced-motion`).
+* `css/style.css` reescrito: escenario a la izquierda (lienzo fijo con `position: sticky`) y hoja de cuaderno a la derecha con las 4 fases de Pólya; responsive (`@media` a 1180 px y 960 px; antes no había ninguno, el lienzo medía 0 px en móvil). Mantiene compatibilidad con el marcado anterior (`<header>` + telemetría superpuesta) de los otros cinco simuladores mientras migran.
+* `css/index.css` + `index.html`: portada como índice editorial con enlaces reales (`<a>`, no `onclick` en `div`) y método de Pólya en pasos escalonados.
+* `pages/cinematica.html` + `js/cinematica/canvasRenderer.js`: plantilla nueva (título en el escenario, tira de datos, notas al margen). El lienzo dibuja papel milimetrado alineado a metros, escala automática (`fitView`: el alcance de 53 m ya no se sale de pantalla), hipótesis en ocre y vectores en tinta; colores leídos de los tokens. `resize()` usa `setTransform` (antes acumulaba escalas).
+* `js/cinematica/main.js`: ajuste de vista, hipótesis del alumno guardada en metros (sobrevive a cambios de escala), botón "Lanzamiento completo" al aterrizar y texto del tutor sin "amortiguadas" (no hay rozamiento).
+
+**Pendiente:** migrar a la plantilla nueva Newton, Energía, Rotación, Gravitación y Oscilaciones (+ sus canvas en paleta de tinta), las 6 guías (`guide_*.html`, estilos en línea, fuente Inter, LaTeX crudo, 4 sin capturas) y exponer `window.currentSimulation` en los 4 simuladores que no lo tienen.
+

@@ -80,6 +80,7 @@ function init() {
   // Escuchar redimensionamientos de pantalla de forma responsiva
   window.addEventListener('resize', () => {
     renderer.resize();
+    fitScene();
     renderScene();
   });
 
@@ -91,6 +92,7 @@ function init() {
 
   // Forzar sincronización y renderizado inicial
   syncEngineParameters();
+  fitScene();
   renderScene();
 
   // Exponer estado global para testing y auditoría de la IA
@@ -110,7 +112,10 @@ function renderScene() {
   renderer.clear();
   renderer.drawGrid();
   
-  // Rastro e hipótesis
+  // Rastro e hipótesis (se reconvierte desde metros por si cambió la escala de la vista)
+  if (userDrawWorldPoints.length > 0) {
+    userDrawPath = userDrawWorldPoints.map(p => renderer.worldToCanvas(p.x, p.y));
+  }
   if (userDrawPath.length > 0) {
     renderer.drawUserPredictionPath(userDrawPath);
   }
@@ -133,6 +138,17 @@ function renderScene() {
   }
 
   renderer.drawGround();
+}
+
+/**
+ * Ajusta la escala del lienzo para que toda la trayectoria (y la predicción) quede a la vista.
+ */
+function fitScene() {
+  const range = engine.getTheoreticalMaxRange();
+  const apex = engine.y0 + (engine.vy0 > 0 ? (engine.vy0 * engine.vy0) / (2 * engine.gravity) : 0);
+  // La predicción solo amplía la vista hasta 2.5 veces el alcance real, para no aplastar la trayectoria
+  const maxX = Math.max(range, Math.min(predictedRange, range * 2.5)) * 1.06;
+  renderer.fitView(maxX, apex * 1.15);
 }
 
 /**
@@ -206,6 +222,7 @@ function switchPhase(phaseNum) {
   if (phaseNum === 2) {
     // Inicializar predicción
     predictedRange = parseFloat(inputPredictedRange.value);
+    fitScene();
     renderScene();
   }
 
@@ -248,6 +265,7 @@ function setupEventsF1() {
     input.addEventListener('input', () => {
       syncEngineParameters();
       engine.reset();
+      fitScene();
       renderScene();
     });
   });
@@ -288,6 +306,7 @@ function setupEventsF2() {
   inputPredictedRange.addEventListener('input', () => {
     predictedRange = parseFloat(inputPredictedRange.value);
     valPredictedRange.textContent = `${predictedRange} m`;
+    fitScene();
     renderScene();
   });
 
@@ -395,6 +414,7 @@ function animationLoop(timestamp) {
     pauseSimulation();
     btnNextToPhase4.disabled = false;
     btnSimPlay.disabled = true; // Forzar reinicio para repetir
+    btnSimPlay.textContent = 'Lanzamiento completo';
   } else {
     animationFrameId = requestAnimationFrame(animationLoop);
   }
@@ -446,6 +466,7 @@ function setupEventsF4() {
     predictedRange = 50;
     inputPredictedRange.value = 50;
     valPredictedRange.textContent = '50 m';
+    fitScene();
     
     // Limpiar cuestionario Fase 1
     optionButtons.forEach(btn => {
@@ -495,7 +516,7 @@ function populateF4Results() {
     badgeRangeError.classList.add('high');
     tutorFeedbackText.innerHTML = `<strong>Tutor Polya: Análisis requerido</strong>
     Tu predicción horizontal de <strong>${predictedRange} m</strong> tuvo una desviación considerable respecto al alcance físico real de <strong>${evaluation.realRange.toFixed(2)} m</strong> (error del ${evaluation.relativeErrorPercent}%). 
-    Esto suele ocurrir al estimar curvas lineales en lugar de trayectorias parabólicas amortiguadas por el campo de la gravedad constante. Te sugiero reiniciar el experimento, trazar una nueva curva elíptica y validar los coeficientes.`;
+    Esto suele ocurrir al estimar la trayectoria como una recta en lugar de una parábola: con gravedad constante, la altura cae con t² mientras que x crece linealmente con t. Te sugiero reiniciar el experimento, trazar una nueva curva y repasar las ecuaciones x(t) e y(t).`;
   }
 }
 

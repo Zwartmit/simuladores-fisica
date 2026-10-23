@@ -1,8 +1,20 @@
 /**
- * @fileoverview Renderizador premium dedicado para Canvas de HTML5.
- * Traduce coordenadas físicas a coordenadas de píxeles y dibuja
- * proyectiles, rejillas métricas, vectores luminiscentes y trazas de predicción.
+ * @fileoverview Renderizador dedicado para Canvas de HTML5 (estilo "cuaderno de laboratorio").
+ * Traduce coordenadas físicas a coordenadas de píxeles y dibuja sobre papel milimetrado:
+ * ejes con marcas, trayectoria a lápiz, vectores en tinta y la hipótesis del estudiante.
+ * Los colores se leen de los tokens CSS (css/tokens.css) para mantener un único sistema.
  */
+
+const FALLBACK_PALETTE = {
+  paper: '#FBF8EF',
+  ink: '#1B1A17',
+  muted: '#6B6455',
+  blue: '#2B4C8C',
+  red: '#B83A26',
+  ochre: '#8A5E0E',
+  graphMinor: 'rgba(43, 76, 140, 0.08)',
+  graphMajor: 'rgba(43, 76, 140, 0.20)',
+};
 
 export class CanvasRenderer {
   /**
@@ -11,13 +23,32 @@ export class CanvasRenderer {
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
-    
-    // Factores de escala y márgenes
-    this.scale = 15;        // Píxeles por cada metro
-    this.paddingBottom = 40; // Margen inferior en píxeles para el suelo
-    this.paddingLeft = 60;   // Margen izquierdo para el origen
 
+    // Escala (px por metro) y márgenes; la escala se recalcula con fitView()
+    this.scale = 15;
+    this.paddingBottom = 44;  // Margen inferior en píxeles para el suelo y sus marcas
+    this.paddingLeft = 56;    // Margen izquierdo para el eje vertical
+    this.paddingTop = 24;
+    this.paddingRight = 28;
+
+    this.palette = this._readPalette();
     this.resize();
+  }
+
+  /** Lee los tokens de color del documento (con respaldo si el CSS no cargó). */
+  _readPalette() {
+    const css = getComputedStyle(document.documentElement);
+    const read = (name, fallback) => css.getPropertyValue(name).trim() || fallback;
+    return {
+      paper: read('--paper-2', FALLBACK_PALETTE.paper),
+      ink: read('--ink', FALLBACK_PALETTE.ink),
+      muted: read('--muted', FALLBACK_PALETTE.muted),
+      blue: read('--blue', FALLBACK_PALETTE.blue),
+      red: read('--red', FALLBACK_PALETTE.red),
+      ochre: read('--ochre', FALLBACK_PALETTE.ochre),
+      graphMinor: read('--graph-minor', FALLBACK_PALETTE.graphMinor),
+      graphMajor: read('--graph-major', FALLBACK_PALETTE.graphMajor),
+    };
   }
 
   /**
@@ -26,15 +57,31 @@ export class CanvasRenderer {
   resize() {
     const rect = this.canvas.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
-    
+
     this.canvas.width = rect.width * dpr;
     this.canvas.height = rect.height * dpr;
-    
-    this.ctx.scale(dpr, dpr);
-    
+
+    // setTransform evita acumular escalas en redimensionamientos sucesivos
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
     // Dimensiones en coordenadas css lógicas
     this.logicalWidth = rect.width;
     this.logicalHeight = rect.height;
+  }
+
+  /**
+   * Elige la escala para que quepa toda la escena (alcance y altura máximos) en el lienzo.
+   * @param {number} maxX Mayor distancia horizontal a mostrar (m)
+   * @param {number} maxY Mayor altura a mostrar (m)
+   */
+  fitView(maxX, maxY) {
+    const availableW = this.logicalWidth - this.paddingLeft - this.paddingRight;
+    const availableH = this.logicalHeight - this.paddingBottom - this.paddingTop;
+    if (availableW <= 0 || availableH <= 0) return;
+
+    const scaleX = availableW / Math.max(maxX, 10);
+    const scaleY = availableH / Math.max(maxY, 10);
+    this.scale = Math.max(2, Math.min(scaleX, scaleY));
   }
 
   /**
@@ -63,194 +110,216 @@ export class CanvasRenderer {
   }
 
   /**
-   * Limpia el lienzo con un fondo translúcido premium azul noche.
+   * Limpia el lienzo con el color del papel.
    */
   clear() {
-    this.ctx.fillStyle = '#0b0f19';
+    this.ctx.fillStyle = this.palette.paper;
     this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
   }
 
   /**
-   * Dibuja la rejilla de fondo en metros con etiquetas de dimensiones sutiles.
+   * Paso de rejilla en metros que mantiene las líneas separadas al menos ~12 px.
+   */
+  _gridStep() {
+    const steps = [1, 2, 5, 10, 20, 50];
+    return steps.find(s => s * this.scale >= 12) ?? 50;
+  }
+
+  /**
+   * Dibuja el papel milimetrado alineado con los metros, con ejes graduados.
    */
   drawGrid() {
-    this.ctx.save();
-    
-    const metersWidth = this.logicalWidth / this.scale;
-    const metersHeight = this.logicalHeight / this.scale;
-    
-    this.ctx.lineWidth = 1;
-    this.ctx.font = '10px "Outfit", sans-serif';
-    this.ctx.fillStyle = '#475569';
-    
-    // Dibujar líneas verticales cada 5 metros
-    for (let x = 0; x < metersWidth; x += 5) {
-      const pos = this.worldToCanvas(x, 0);
-      
-      this.ctx.strokeStyle = x % 10 === 0 ? 'rgba(71, 85, 105, 0.25)' : 'rgba(71, 85, 105, 0.1)';
-      this.ctx.beginPath();
-      this.ctx.moveTo(pos.x, 0);
-      this.ctx.lineTo(pos.x, this.logicalHeight - this.paddingBottom);
-      this.ctx.stroke();
+    const { ctx, palette } = this;
+    const groundY = this.logicalHeight - this.paddingBottom;
+    const metersWidth = (this.logicalWidth - this.paddingLeft) / this.scale;
+    const metersHeight = (groundY - this.paddingTop) / this.scale;
+    const minor = this._gridStep();
+    const major = minor * 5;
 
-      // Etiqueta numérica
-      if (x > 0) {
-        this.ctx.fillText(`${x}m`, pos.x - 10, this.logicalHeight - this.paddingBottom + 18);
+    ctx.save();
+    ctx.lineWidth = 1;
+    ctx.font = '11px "IBM Plex Mono", monospace';
+    ctx.fillStyle = palette.muted;
+
+    // Líneas verticales (distancia)
+    for (let x = 0; x <= metersWidth; x += minor) {
+      const px = this.worldToCanvas(x, 0).x;
+      const isMajor = x % major === 0;
+      ctx.strokeStyle = isMajor ? palette.graphMajor : palette.graphMinor;
+      ctx.beginPath();
+      ctx.moveTo(px, this.paddingTop);
+      ctx.lineTo(px, groundY);
+      ctx.stroke();
+
+      if (isMajor && x > 0) {
+        ctx.textAlign = 'center';
+        ctx.fillText(`${x} m`, px, groundY + 36);
       }
     }
 
-    // Dibujar líneas horizontales cada 5 metros
-    for (let y = 0; y < metersHeight; y += 5) {
-      const pos = this.worldToCanvas(0, y);
-      
-      this.ctx.strokeStyle = y % 10 === 0 ? 'rgba(71, 85, 105, 0.25)' : 'rgba(71, 85, 105, 0.1)';
-      this.ctx.beginPath();
-      this.ctx.moveTo(this.paddingLeft, pos.y);
-      this.ctx.lineTo(this.logicalWidth, pos.y);
-      this.ctx.stroke();
+    // Líneas horizontales (altura)
+    for (let y = 0; y <= metersHeight; y += minor) {
+      const py = this.worldToCanvas(0, y).y;
+      const isMajor = y % major === 0;
+      ctx.strokeStyle = isMajor ? palette.graphMajor : palette.graphMinor;
+      ctx.beginPath();
+      ctx.moveTo(this.paddingLeft, py);
+      ctx.lineTo(this.logicalWidth - this.paddingRight / 2, py);
+      ctx.stroke();
 
-      // Etiqueta numérica
-      if (y > 0) {
-        this.ctx.fillText(`${y}m`, this.paddingLeft - 30, pos.y + 4);
+      if (isMajor && y > 0) {
+        ctx.textAlign = 'right';
+        ctx.fillText(`${y} m`, this.paddingLeft - 10, py + 4);
       }
     }
 
-    this.ctx.restore();
+    // Eje vertical en tinta
+    ctx.strokeStyle = palette.ink;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(this.paddingLeft, this.paddingTop);
+    ctx.lineTo(this.paddingLeft, groundY);
+    ctx.stroke();
+
+    ctx.restore();
   }
 
   /**
-   * Dibuja el suelo físico del escenario como una línea de luz degradada.
+   * Dibuja el suelo como línea de tinta con rayado diagonal (símbolo técnico de apoyo).
    */
   drawGround() {
-    this.ctx.save();
-    
-    // Suelo sólido oscuro
-    this.ctx.fillStyle = '#070a12';
-    this.ctx.fillRect(0, this.logicalHeight - this.paddingBottom, this.logicalWidth, this.paddingBottom);
+    const { ctx, palette } = this;
+    const groundY = this.logicalHeight - this.paddingBottom;
 
-    // Línea luminiscente del suelo
-    const grad = this.ctx.createLinearGradient(this.paddingLeft, 0, this.logicalWidth, 0);
-    grad.addColorStop(0, 'hsl(217.2, 91.2%, 59.8%)');
-    grad.addColorStop(0.5, 'hsl(250, 91.2%, 59.8%)');
-    grad.addColorStop(1, 'hsl(217.2, 91.2%, 59.8%)');
+    ctx.save();
+    ctx.strokeStyle = palette.ink;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(this.paddingLeft, groundY);
+    ctx.lineTo(this.logicalWidth - this.paddingRight / 2, groundY);
+    ctx.stroke();
 
-    this.ctx.strokeStyle = grad;
-    this.ctx.lineWidth = 3;
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.paddingLeft, this.logicalHeight - this.paddingBottom);
-    this.ctx.lineTo(this.logicalWidth, this.logicalHeight - this.paddingBottom);
-    this.ctx.stroke();
-    
-    this.ctx.restore();
+    // Rayado bajo el suelo
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = palette.muted;
+    ctx.beginPath();
+    for (let x = this.paddingLeft; x < this.logicalWidth - this.paddingRight / 2; x += 9) {
+      ctx.moveTo(x, groundY);
+      ctx.lineTo(x - 7, groundY + 8);
+    }
+    ctx.stroke();
+
+    ctx.restore();
   }
 
   /**
-   * Dibuja la trayectoria real recorrida por el proyectil.
+   * Dibuja la trayectoria real recorrida por el proyectil, a lápiz (trazo discontinuo).
    * @param {Array} points Lista de coordenadas de la trayectoria {x, y}
    */
   drawTrajectory(points) {
     if (points.length < 2) return;
 
-    this.ctx.save();
-    this.ctx.strokeStyle = 'hsla(217.2, 91.2%, 59.8%, 0.55)';
-    this.ctx.lineWidth = 2.5;
-    this.ctx.setLineDash([4, 4]); // Estilo de rastro sutil
-    
-    this.ctx.beginPath();
+    const { ctx, palette } = this;
+    ctx.save();
+    ctx.strokeStyle = palette.blue;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([7, 5]);
+
+    ctx.beginPath();
     const start = this.worldToCanvas(points[0].x, points[0].y);
-    this.ctx.moveTo(start.x, start.y);
+    ctx.moveTo(start.x, start.y);
 
     for (let i = 1; i < points.length; i++) {
       const pos = this.worldToCanvas(points[i].x, points[i].y);
-      this.ctx.lineTo(pos.x, pos.y);
+      ctx.lineTo(pos.x, pos.y);
     }
-    
-    this.ctx.stroke();
-    this.ctx.restore();
+
+    ctx.stroke();
+    ctx.restore();
   }
 
   /**
-   * Dibuja la partícula/proyectil en su posición actual.
+   * Dibuja el proyectil: punto de tinta con aro (sin brillos).
    * @param {number} x Posición X física (m)
    * @param {number} y Posición Y física (m)
    */
   drawProjectile(x, y) {
+    const { ctx, palette } = this;
     const pos = this.worldToCanvas(x, y);
-    const radius = 8;
 
-    this.ctx.save();
-    
-    // Brillo difuso exterior
-    this.ctx.shadowBlur = 15;
-    this.ctx.shadowColor = 'hsl(217.2, 91.2%, 59.8%)';
-    
-    // Degradado radial premium para simular volumen
-    const grad = this.ctx.createRadialGradient(pos.x - 2, pos.y - 2, 1, pos.x, pos.y, radius);
-    grad.addColorStop(0, '#ffffff');
-    grad.addColorStop(0.3, 'hsl(217.2, 91.2%, 70%)');
-    grad.addColorStop(1, 'hsl(217.2, 91.2%, 50%)');
+    ctx.save();
+    ctx.fillStyle = palette.ink;
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, 6, 0, Math.PI * 2);
+    ctx.fill();
 
-    this.ctx.fillStyle = grad;
-    this.ctx.beginPath();
-    this.ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
-    this.ctx.fill();
-
-    this.ctx.restore();
+    ctx.strokeStyle = palette.ink;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, 10, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
   }
 
   /**
-   * Dibuja una flecha estilizada en el lienzo representando un vector físico.
+   * Dibuja una flecha en tinta que representa un vector físico, con su rótulo en cursiva.
    * @param {number} fromX Origen en X (m)
    * @param {number} fromY Origen en Y (m)
    * @param {number} vecX Componente vectorial X
    * @param {number} vecY Componente vectorial Y
-   * @param {string} color Código de color HSL o hexadecimal
+   * @param {string} color Color de la tinta
    * @param {number} scaleMultiplier Multiplicador de escala visual para hacer la flecha visible
+   * @param {string} label Rótulo junto a la punta (opcional)
    */
-  drawVectorArrow(fromX, fromY, vecX, vecY, color, scaleMultiplier = 2) {
+  drawVectorArrow(fromX, fromY, vecX, vecY, color, scaleMultiplier = 2, label = '') {
     // Evitar dibujo si el vector es prácticamente nulo
-    const magnitude = Math.sqrt(Math.pow(vecX, 2) + Math.pow(vecY, 2));
+    const magnitude = Math.hypot(vecX, vecY);
     if (magnitude < 0.05) return;
 
     const start = this.worldToCanvas(fromX, fromY);
-    // Extremo de la flecha
     const end = this.worldToCanvas(fromX + vecX * scaleMultiplier, fromY + vecY * scaleMultiplier);
-    
+
     const angle = Math.atan2(end.y - start.y, end.x - start.x);
-    const headLength = 10; // Longitud de la punta de la flecha en píxeles
+    const headLength = 11;
+    const { ctx } = this;
 
-    this.ctx.save();
-    this.ctx.strokeStyle = color;
-    this.ctx.fillStyle = color;
-    this.ctx.lineWidth = 3;
-    this.ctx.shadowBlur = 8;
-    this.ctx.shadowColor = color;
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 2.5;
 
-    // Dibujar línea principal (cuerpo de la flecha)
-    this.ctx.beginPath();
-    this.ctx.moveTo(start.x, start.y);
-    this.ctx.lineTo(end.x, end.y);
-    this.ctx.stroke();
+    // Cuerpo de la flecha
+    ctx.beginPath();
+    ctx.moveTo(start.x, start.y);
+    ctx.lineTo(end.x, end.y);
+    ctx.stroke();
 
-    // Dibujar punta de la flecha (triángulo)
-    this.ctx.beginPath();
-    this.ctx.moveTo(end.x, end.y);
-    this.ctx.lineTo(
-      end.x - headLength * Math.cos(angle - Math.PI / 6),
-      end.y - headLength * Math.sin(angle - Math.PI / 6)
+    // Punta de la flecha
+    ctx.beginPath();
+    ctx.moveTo(end.x, end.y);
+    ctx.lineTo(
+      end.x - headLength * Math.cos(angle - Math.PI / 7),
+      end.y - headLength * Math.sin(angle - Math.PI / 7)
     );
-    this.ctx.lineTo(
-      end.x - headLength * Math.cos(angle + Math.PI / 6),
-      end.y - headLength * Math.sin(angle + Math.PI / 6)
+    ctx.lineTo(
+      end.x - headLength * Math.cos(angle + Math.PI / 7),
+      end.y - headLength * Math.sin(angle + Math.PI / 7)
     );
-    this.ctx.closePath();
-    this.ctx.fill();
+    ctx.closePath();
+    ctx.fill();
 
-    this.ctx.restore();
+    if (label) {
+      ctx.font = 'italic 600 17px "Fraunces", Georgia, serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, end.x + 9 * Math.cos(angle) + 4, end.y + 9 * Math.sin(angle));
+    }
+
+    ctx.restore();
   }
 
   /**
-   * Dibuja los vectores de velocidad (verde) y aceleración (rojo) en tiempo real.
+   * Dibuja los vectores de velocidad (azul) y aceleración (rojo) en tiempo real.
    * @param {number} x Posición X física (m)
    * @param {number} y Posición Y física (m)
    * @param {number} vx Componente X de la velocidad (m/s)
@@ -258,11 +327,11 @@ export class CanvasRenderer {
    * @param {number} gravity Valor de aceleración gravitatoria (m/s^2)
    */
   drawVectors(x, y, vx, vy, gravity) {
-    // Vector de velocidad (escala visual: 1 m/s = 0.5 unidades del mundo)
-    this.drawVectorArrow(x, y, vx, vy, '#10b981', 0.5);
+    // Escala visual: la flecha mide ~0.5 m de pantalla por cada m/s (o m/s²)
+    this.drawVectorArrow(x, y, vx, vy, this.palette.blue, 0.5, 'v');
 
     // Vector de aceleración (siempre verticalmente hacia abajo, aceleración = gravity)
-    this.drawVectorArrow(x, y, 0, -gravity, '#ef4444', 0.5);
+    this.drawVectorArrow(x, y, 0, -gravity, this.palette.red, 0.5, 'g');
   }
 
   /**
@@ -272,54 +341,58 @@ export class CanvasRenderer {
   drawUserPredictionPath(path) {
     if (path.length < 2) return;
 
-    this.ctx.save();
-    this.ctx.strokeStyle = '#a855f7'; // Púrpura neón
-    this.ctx.lineWidth = 2.5;
-    this.ctx.setLineDash([6, 6]);
-    this.ctx.shadowBlur = 10;
-    this.ctx.shadowColor = '#a855f7';
+    const { ctx, palette } = this;
+    ctx.save();
+    ctx.strokeStyle = palette.ochre;
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([2, 6]);
+    ctx.lineCap = 'round';
 
-    this.ctx.beginPath();
-    this.ctx.moveTo(path[0].x, path[0].y);
+    ctx.beginPath();
+    ctx.moveTo(path[0].x, path[0].y);
 
     for (let i = 1; i < path.length; i++) {
-      this.ctx.lineTo(path[i].x, path[i].y);
+      ctx.lineTo(path[i].x, path[i].y);
     }
 
-    this.ctx.stroke();
-    this.ctx.restore();
+    ctx.stroke();
+    ctx.restore();
   }
 
   /**
-   * Dibuja una bandera de meta estilizada en la posición donde el alumno predijo el impacto.
+   * Dibuja una banderola en la posición donde el alumno predijo el impacto.
    * @param {number} predictedRange Alcance predicho por el alumno en metros
    */
   drawPredictionFlag(predictedRange) {
     if (predictedRange === null || predictedRange === undefined || predictedRange <= 0) return;
 
+    const { ctx, palette } = this;
     const pos = this.worldToCanvas(predictedRange, 0);
 
-    this.ctx.save();
-    this.ctx.strokeStyle = '#f59e0b'; // Amarillo ambar
-    this.ctx.fillStyle = '#f59e0b';
-    this.ctx.shadowBlur = 12;
-    this.ctx.shadowColor = '#f59e0b';
+    ctx.save();
+    ctx.strokeStyle = palette.ochre;
+    ctx.fillStyle = palette.ochre;
 
-    // Asta de la bandera
-    this.ctx.lineWidth = 2.5;
-    this.ctx.beginPath();
-    this.ctx.moveTo(pos.x, pos.y);
-    this.ctx.lineTo(pos.x, pos.y - 25);
-    this.ctx.stroke();
+    // Asta
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+    ctx.lineTo(pos.x, pos.y - 28);
+    ctx.stroke();
 
     // Banderín
-    this.ctx.beginPath();
-    this.ctx.moveTo(pos.x, pos.y - 25);
-    this.ctx.lineTo(pos.x + 15, pos.y - 18);
-    this.ctx.lineTo(pos.x, pos.y - 12);
-    this.ctx.closePath();
-    this.ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y - 28);
+    ctx.lineTo(pos.x + 16, pos.y - 21);
+    ctx.lineTo(pos.x, pos.y - 14);
+    ctx.closePath();
+    ctx.fill();
 
-    this.ctx.restore();
+    // Rótulo
+    ctx.font = '500 11px "IBM Plex Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${predictedRange} m`, pos.x, pos.y - 34);
+
+    ctx.restore();
   }
 }

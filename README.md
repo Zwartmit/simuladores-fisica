@@ -68,7 +68,9 @@ Abre `progress/` en tu editor mientras Gemini trabaja: cada informe aparece en c
 │   ├── gravitacion.html / guide_gravitacion.html
 │   └── oscilaciones.html / guide_oscilaciones.html
 ├── css/
-│   └── style.css           # Estilos e interfaz de usuario premium (HSL, Responsive), compartido
+│   ├── tokens.css          # Tokens de diseño "Cuaderno de laboratorio" (color, tipografía, forma)
+│   ├── style.css           # Interfaz de los simuladores (escenario + hoja de Pólya), responsive
+│   └── index.css           # Portada: índice editorial y método de Pólya
 ├── js/
 │   └── <simulador>/        # Una carpeta por feature (cinematica, newton, energia, rotacion, gravitacion, oscilaciones)
 │       ├── main.js             # Controlador, eventos y bucle requestAnimationFrame
