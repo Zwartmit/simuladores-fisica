@@ -112,5 +112,22 @@ export function runRotacionTests() {
     throw err;
   }
 
+  // PRUEBA 7: Cuerpos muy ligeros con fricción alta (caso permitido por los sliders) no divergen a NaN
+  try {
+    const B = PhysicsEngineRotacion.BODIES;
+    for (const [m, r, tau, b, body] of [[0.5, 0.1, 10, 5, B.DISK], [0.5, 0.1, 10, 5, B.ROD], [0.5, 0.1, 50, 5, B.RING]]) {
+      const engine = new PhysicsEngineRotacion();
+      engine.setParameters(m, r, tau, b, body);
+      run(engine, 3);
+      assert.ok(Number.isFinite(engine.omega), `${body}: ω = ${engine.omega}`);
+      assert.ok(relErr(engine.omega, engine.getTheoreticalOmega(engine.t)) < 1e-3,
+        `${body}: ω = ${engine.omega} vs ${engine.getTheoreticalOmega(engine.t)}`);
+    }
+    console.log("  ✅ Prueba 7: Fricción alta con inercia pequeña es estable (sub-pasos).");
+  } catch (err) {
+    console.error("  ❌ Prueba 7 fallida:", err.message);
+    throw err;
+  }
+
   console.log("🎉 Todas las pruebas de dinámica rotacional han pasado exitosamente!");
 }

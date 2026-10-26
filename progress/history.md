@@ -131,3 +131,11 @@
 
 **Pendiente:** verificación visual automatizada (capturas de regresión) si algún día se añade un navegador sin interfaz al proyecto; hoy es manual (`docs/verification.md`, Niveles 2 y 3).
 
+## Sesión: 2026-10-26 — Re-auditoría de física y estado de la UI
+
+* **Contraste independiente de los 6 motores** (barridos aleatorios y de esquina de los sliders, 176 combinaciones): Cinemática vs integración numérica fina (error < 6e-5); Newton a = g(sen θ − μk cos θ) exacta y frontera tan θ = μs correcta; Energía conserva K+U+Q con deriva < 1.5e-3 % y su período tiende al lineal 2π/√(g·A·k²) al reducir la amplitud (0.23 % a 0.008 m); Gravitación T, a y E correctos con dt de 0.01 y 0.05; Oscilaciones T vs AGM y T_d < 0.01 %.
+* **Fallo real encontrado y corregido en Rotación:** con masa 0.5 kg, radio 0.1 m y fricción 5 (permitido por los sliders) el RK4 explícito divergía a NaN (λ·dt = b/I·dt ≈ 66 ≫ 2.8). Ahora `update()` subdivide el paso para mantener λ·h ≤ 0.5 (`_rk4Step`). Prueba 7 nueva en `tests/rotacion.test.js`.
+* UI: portada y guías sin desbordamiento horizontal a 375 px.
+
+**Pendiente (mejoras, no errores):** pestañas de fase accesibles por teclado (hoy son `<div>` con clic); Newton muestra v = 0 al llegar al final de la rampa (pierde la velocidad de llegada); en Newton fase 2 los vectores de hipótesis se recortan en el borde derecho cuando el bloque está arriba.
+

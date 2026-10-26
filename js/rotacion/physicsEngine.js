@@ -122,22 +122,13 @@ export class PhysicsEngineRotacion {
     dt = Math.min(0.033, Math.max(0, parseFloat(dt) || 0));
     if (dt === 0) return;
 
-    // RK4 sobre [theta, omega]
-    const k1_theta = this.omega;
-    const k1_omega = this._alpha_fn(this.omega);
-
-    const k2_theta = this.omega + 0.5 * dt * k1_omega;
-    const k2_omega = this._alpha_fn(this.omega + 0.5 * dt * k1_omega);
-
-    const k3_theta = this.omega + 0.5 * dt * k2_omega;
-    const k3_omega = this._alpha_fn(this.omega + 0.5 * dt * k2_omega);
-
-    const k4_theta = this.omega + dt * k3_omega;
-    const k4_omega = this._alpha_fn(this.omega + dt * k3_omega);
-
-    this.theta += (dt / 6) * (k1_theta + 2 * k2_theta + 2 * k3_theta + k4_theta);
-    this.omega += (dt / 6) * (k1_omega + 2 * k2_omega + 2 * k3_omega + k4_omega);
-    this.t += dt;
+    // Con fricción viscosa la ecuación ω' = (τ − b·ω)/I tiene rigidez λ = b/I. Con masas y radios
+    // pequeños (I ≈ 0.002 kg·m²) y b alto, λ·dt supera 60 y el RK4 explícito diverge a NaN (RK4
+    // exige λ·h ≲ 2.8). Se subdivide el paso para mantener λ·h ≤ 0.5.
+    const stiffness = this.friction / this.I;
+    const steps = Math.min(5000, Math.max(1, Math.ceil((dt * stiffness) / 0.5)));
+    const h = dt / steps;
+    for (let i = 0; i < steps; i++) this._rk4Step(h);
 
     // Calcular alpha instantánea para telemetría
     this.alpha = this._alpha_fn(this.omega);
@@ -147,6 +138,25 @@ export class PhysicsEngineRotacion {
     if (!last || this.t - last.t >= 0.033) {
       this.history.push(this._snapshot());
     }
+  }
+
+  /** Un paso RK4 de duración h sobre [theta, omega]. */
+  _rk4Step(h) {
+    const k1_theta = this.omega;
+    const k1_omega = this._alpha_fn(this.omega);
+
+    const k2_theta = this.omega + 0.5 * h * k1_omega;
+    const k2_omega = this._alpha_fn(this.omega + 0.5 * h * k1_omega);
+
+    const k3_theta = this.omega + 0.5 * h * k2_omega;
+    const k3_omega = this._alpha_fn(this.omega + 0.5 * h * k2_omega);
+
+    const k4_theta = this.omega + h * k3_omega;
+    const k4_omega = this._alpha_fn(this.omega + h * k3_omega);
+
+    this.theta += (h / 6) * (k1_theta + 2 * k2_theta + 2 * k3_theta + k4_theta);
+    this.omega += (h / 6) * (k1_omega + 2 * k2_omega + 2 * k3_omega + k4_omega);
+    this.t += h;
   }
 
   /** Retorna un snapshot del estado actual. */
