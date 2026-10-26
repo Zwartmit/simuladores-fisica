@@ -6,6 +6,7 @@
 
 import { PhysicsEngine } from './physicsEngine.js';
 import { CanvasRenderer } from './canvasRenderer.js';
+import { initPhaseTabs } from '../shared/phaseTabs.js';
 
 // Instanciar motores principales
 const engine = new PhysicsEngine();
@@ -204,12 +205,11 @@ function switchPhase(phaseNum) {
   const tabId = `tab-phase${phaseNum}`;
   const containerId = `phase${phaseNum}-container`;
 
-  stepTabs.forEach(tab => {
-    tab.classList.remove('active');
-    if (tab.id === tabId) {
-      tab.classList.add('active');
-      tab.classList.add('completed');
-    }
+  // Activa = fase actual; completada = fases anteriores (se puede volver a ellas, no saltar hacia adelante).
+  // Antes la pestaña 1 nunca se marcaba como completada y no se podía volver a ella.
+  stepTabs.forEach((tab, i) => {
+    tab.classList.toggle('active', tab.id === tabId);
+    tab.classList.toggle('completed', i + 1 < phaseNum);
   });
 
   phaseContainers.forEach(container => {
@@ -248,12 +248,14 @@ function switchPhase(phaseNum) {
  * Configura las pestañas de Polya para retroceder a fases ya completadas.
  */
 function setupTabs() {
-  stepTabs.forEach((tab, index) => {
-    tab.addEventListener('click', () => {
-      if (tab.classList.contains('completed')) {
-        switchPhase(index + 1);
-      }
-    });
+  initPhaseTabs({
+    tabs: stepTabs,
+    panels: phaseContainers,
+    // Al volver a una fase anterior se detiene la animación en curso (igual que los botones «Regresar»)
+    goTo: (phase) => {
+      if (isPlaying) pauseSimulation();
+      switchPhase(phase);
+    },
   });
 }
 

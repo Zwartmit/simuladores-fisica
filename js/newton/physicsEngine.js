@@ -16,6 +16,8 @@ export class PhysicsEngineNewton {
     this.t = 0;            // Tiempo transcurrido
     this.distance = 0;     // Distancia recorrida rampa abajo (m)
     this.velocity = 0;     // Velocidad lineal rampa abajo (m/s)
+    this.arrivalVelocity = 0; // Velocidad con la que llega al final de la rampa (m/s); 0 hasta que llega
+    this.arrivalTime = 0;     // Instante exacto de llegada al final de la rampa (s); 0 hasta que llega
     this.acceleration = 0; // Aceleración lineal (m/s^2)
 
     // Variables de control de simulación
@@ -93,6 +95,8 @@ export class PhysicsEngineNewton {
     this.t = 0;
     this.distance = 0;
     this.velocity = 0;
+    this.arrivalVelocity = 0;
+    this.arrivalTime = 0;
     this.isAtBottom = false;
   }
 
@@ -115,6 +119,12 @@ export class PhysicsEngineNewton {
 
     // Detener al bloque si llega al final de la rampa
     if (this.distance >= this.maxRampLength) {
+      // Llegada exacta (no al final del paso, que se pasa de largo): d = ½·a·t² → t = √(2L/a),
+      // v = a·t = √(2·a·L). El bloque se detiene al topar con el suelo, pero se conserva la
+      // velocidad de llegada para mostrarla.
+      this.arrivalTime = Math.sqrt((2 * this.maxRampLength) / this.acceleration);
+      this.arrivalVelocity = this.acceleration * this.arrivalTime;
+      this.t = this.arrivalTime;
       this.distance = this.maxRampLength;
       this.velocity = 0;
       this.isAtBottom = true;

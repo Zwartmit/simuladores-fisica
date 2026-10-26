@@ -6,6 +6,7 @@
 
 import { PhysicsEngineRotacion } from './physicsEngine.js';
 import { CanvasRendererRotacion } from './canvasRenderer.js';
+import { initPhaseTabs } from '../shared/phaseTabs.js';
 
 // ─── Instancias globales ─────────────────────────────────────────────────────
 const engine = new PhysicsEngineRotacion();
@@ -320,6 +321,17 @@ window.addEventListener('resize', () => {
 // ─── Init ────────────────────────────────────────────────────────────────────
 applyParameters();
 showPhase(1);
+
+// Pestañas de fase accesibles (clic, teclado y lectores de pantalla); solo se vuelve a fases ya alcanzadas
+initPhaseTabs({
+  tabs: dom.tabs,
+  panels: dom.phases,
+  goTo: (phase) => {
+    cancelAnimationFrame(animFrameId);
+    engine.isRunning = false;
+    showPhase(phase);
+  },
+});
 
 // Estado expuesto para pruebas y auditoría en el navegador (ver docs/conventions.md)
 window.currentSimulation = {

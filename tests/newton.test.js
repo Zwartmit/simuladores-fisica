@@ -139,5 +139,32 @@ export function runNewtonTests() {
     throw err;
   }
 
+  // PRUEBA 6: Velocidad y tiempo de llegada exactos (independientes del tamaño del paso)
+  try {
+    engine.setParameters(5, 30, 0.5, 0.35, 9.81);
+    const a = 9.81 * (Math.sin(Math.PI / 6) - 0.35 * Math.cos(Math.PI / 6));
+    const L = engine.maxRampLength;
+
+    for (const dt of [0.1, 0.017]) {
+      engine.reset();
+      assert.strictEqual(engine.arrivalVelocity, 0);
+      let guard = 0;
+      while (!engine.isAtBottom && guard++ < 10000) engine.update(dt);
+
+      assert.strictEqual(engine.isAtBottom, true);
+      assert.ok(Math.abs(engine.arrivalTime - Math.sqrt(2 * L / a)) < 1e-9, `t_llegada (dt=${dt})`);
+      assert.ok(Math.abs(engine.arrivalVelocity - Math.sqrt(2 * a * L)) < 1e-9, `v_llegada (dt=${dt})`);
+      assert.ok(Math.abs(engine.t - engine.arrivalTime) < 1e-9, 'El reloj debe marcar el instante exacto de llegada');
+      assert.strictEqual(engine.velocity, 0, 'El bloque se detiene al llegar');
+    }
+
+    engine.reset();
+    assert.strictEqual(engine.arrivalVelocity, 0, 'reset() borra la velocidad de llegada');
+    console.log("  ✅ Prueba 6: Velocidad y tiempo de llegada exactos.");
+  } catch (err) {
+    console.error("  ❌ Prueba 6 fallida:", err.message);
+    throw err;
+  }
+
   console.log("🎉 Todas las pruebas de plano inclinado y fuerzas han pasado exitosamente!");
 }

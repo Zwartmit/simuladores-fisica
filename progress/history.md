@@ -137,5 +137,13 @@
 * **Fallo real encontrado y corregido en Rotación:** con masa 0.5 kg, radio 0.1 m y fricción 5 (permitido por los sliders) el RK4 explícito divergía a NaN (λ·dt = b/I·dt ≈ 66 ≫ 2.8). Ahora `update()` subdivide el paso para mantener λ·h ≤ 0.5 (`_rk4Step`). Prueba 7 nueva en `tests/rotacion.test.js`.
 * UI: portada y guías sin desbordamiento horizontal a 375 px.
 
-**Pendiente (mejoras, no errores):** pestañas de fase accesibles por teclado (hoy son `<div>` con clic); Newton muestra v = 0 al llegar al final de la rampa (pierde la velocidad de llegada); en Newton fase 2 los vectores de hipótesis se recortan en el borde derecho cuando el bloque está arriba.
+### Mejoras menores (misma sesión)
+
+* **Pestañas de fase accesibles** (`js/shared/phaseTabs.js`): patrón WAI-ARIA tabs con activación manual (roles `tablist`/`tab`/`tabpanel`, `aria-selected`, `aria-disabled`, cursor móvil de tabulación, ← → Inicio Fin para mover el foco, Enter/Espacio para activar). Solo se vuelve a fases ya alcanzadas. Los 6 simuladores lo usan; las pestañas ahora funcionan también en Energía, Rotación, Gravitación y Oscilaciones (antes solo respondían al clic en Cinemática y Newton). Al volver atrás con una pestaña se detiene la animación en curso. Corregido de paso un fallo previo de Cinemática y Newton: la pestaña 1 nunca se marcaba como completada y no se podía volver a ella.
+* **Newton, velocidad de llegada:** el motor guarda `arrivalTime = √(2L/a)` y `arrivalVelocity = √(2aL)` exactos (antes la velocidad pasaba a 0 y el reloj se pasaba del instante real); nueva lectura «Velocidad (v)» en la tira de datos, que al final muestra «8.79 m/s (llegada)». Guía y 4 capturas de Newton rehechas.
+* **Newton, fase 2:** los vectores de hipótesis acotan su longitud para que la punta y el rótulo queden dentro del lienzo, incluso con 200 N y el bloque en lo alto de la rampa.
+* Pruebas: Newton 6 (llegada exacta), UI 8 (uso de pestañas) y 9 (comportamiento ARIA/teclado con un DOM simulado). Suite: 47 pruebas en verde.
+* Aviso: el puerto 8080 pasó a ser ocupado por otra aplicación ajena; el servidor de este proyecto se levantó en el 8123 (`npm run dev -- --port=8123`).
+
+**Pendiente:** verificación visual automatizada (hoy manual).
 

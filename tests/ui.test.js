@@ -10,6 +10,7 @@ import { readFileSync, existsSync, readdirSync } from 'fs';
 import { resolve, dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import assert from 'assert';
+import { initPhaseTabs } from '../js/shared/phaseTabs.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SIMULATORS = ['cinematica', 'newton', 'energia', 'rotacion', 'gravitacion', 'oscilaciones'];
@@ -57,6 +58,70 @@ function checkCommon(relPath, html) {
   assert.ok(ogUrl && ogUrl.startsWith('https://'), `${where}: og:url debe ser absoluta`);
   const expectedTail = relPath === 'index.html' ? '/' : `/${relPath}`;
   assert.ok(ogUrl.endsWith(expectedTail), `${where}: og:url ("${ogUrl}") debe terminar en "${expectedTail}"`);
+}
+
+
+/** Elemento mínimo con la parte de la API del DOM que usa phaseTabs.js (sin dependencias). */
+function fakeElement(id) {
+  const attrs = {};
+  const listeners = {};
+  const classes = new Set();
+  return {
+    id, attrs, tabIndex: -1, parentElement: null, focused: false,
+    classList: { contains: (c) => classes.has(c), add: (c) => classes.add(c), remove: (c) => classes.delete(c) },
+    setAttribute(name, value) { attrs[name] = String(value); },
+    addEventListener(type, fn) { (listeners[type] ||= []).push(fn); },
+    focus() { this.focused = true; },
+    fire(type, event = {}) { (listeners[type] || []).forEach(fn => fn({ preventDefault() {}, ...event })); },
+  };
+}
+
+function checkPhaseTabsBehavior() {
+  globalThis.MutationObserver = class { observe() {} };
+  const list = fakeElement('lista');
+  const tabs = [1, 2, 3, 4].map(n => Object.assign(fakeElement(`tab-phase${n}`), { parentElement: list }));
+  const panels = [1, 2, 3, 4].map(n => fakeElement(`phase${n}-container`));
+  const visited = [];
+  const { sync } = initPhaseTabs({ tabs, panels, goTo: (phase) => visited.push(phase) });
+
+  // Roles y relaciones ARIA
+  assert.strictEqual(list.attrs.role, 'tablist');
+  tabs.forEach((tab, i) => {
+    assert.strictEqual(tab.attrs.role, 'tab');
+    assert.strictEqual(tab.attrs['aria-controls'], panels[i].id);
+    assert.strictEqual(panels[i].attrs.role, 'tabpanel');
+    assert.strictEqual(panels[i].attrs['aria-labelledby'], tab.id);
+  });
+
+  // Estado: el jugador está en la fase 3 (1 y 2 completadas, 3 activa, 4 futura)
+  tabs[0].classList.add('completed');
+  tabs[1].classList.add('completed');
+  tabs[2].classList.add('active');
+  sync();
+  assert.deepStrictEqual(tabs.map(t => t.attrs['aria-selected']), ['false', 'false', 'true', 'false']);
+  assert.deepStrictEqual(tabs.map(t => t.attrs['aria-disabled']), ['false', 'false', 'false', 'true']);
+  assert.deepStrictEqual(tabs.map(t => t.tabIndex), [-1, -1, 0, -1], 'Solo la pestaña activa entra en el orden de tabulación');
+
+  // Clic: una fase futura no navega; una completada sí; la activa no hace nada
+  tabs[3].fire('click');
+  tabs[2].fire('click');
+  assert.deepStrictEqual(visited, []);
+  tabs[0].fire('click');
+  assert.deepStrictEqual(visited, [1]);
+
+  // Teclado: las flechas mueven el foco entre pestañas habilitadas sin salirse (no hay vuelta)
+  tabs[2].fire('keydown', { key: 'ArrowRight' });
+  assert.strictEqual(tabs[3].focused, false, 'No debe enfocar una fase futura');
+  tabs[2].fire('keydown', { key: 'ArrowLeft' });
+  assert.strictEqual(tabs[1].focused, true);
+  tabs[2].fire('keydown', { key: 'Home' });
+  assert.strictEqual(tabs[0].focused, true);
+
+  // Enter y Espacio activan; en la pestaña activa no hacen nada
+  tabs[1].fire('keydown', { key: 'Enter' });
+  tabs[0].fire('keydown', { key: ' ' });
+  tabs[2].fire('keydown', { key: 'Enter' });
+  assert.deepStrictEqual(visited, [1, 2, 1]);
 }
 
 export function runUiTests() {
@@ -183,6 +248,29 @@ export function runUiTests() {
     console.log("  ✅ Prueba 7: CSS responsive, accesible y sin restos del diseño anterior.");
   } catch (err) {
     console.error("  ❌ Prueba 7 fallida:", err.message);
+    throw err;
+  }
+
+  // PRUEBA 8: Todos los simuladores usan las pestañas accesibles y la lectura de velocidad de Newton existe
+  try {
+    for (const sim of SIMULATORS) {
+      const js = read(`js/${sim}/main.js`);
+      assert.ok(/from '\.\.\/shared\/phaseTabs\.js'/.test(js), `${sim}/main.js: no importa phaseTabs.js`);
+      assert.ok(/initPhaseTabs\(\{/.test(js), `${sim}/main.js: no llama a initPhaseTabs`);
+    }
+    assert.ok(attrValues(read('pages/newton.html'), 'id').includes('telemetry-v'), 'newton.html: falta la lectura de velocidad');
+    console.log("  ✅ Prueba 8: Los 6 simuladores usan las pestañas de fase accesibles.");
+  } catch (err) {
+    console.error("  ❌ Prueba 8 fallida:", err.message);
+    throw err;
+  }
+
+  // PRUEBA 9: Comportamiento de las pestañas (roles ARIA, teclado, fases futuras deshabilitadas)
+  try {
+    checkPhaseTabsBehavior();
+    console.log("  ✅ Prueba 9: Pestañas de fase — ARIA, teclado y fases futuras bloqueadas.");
+  } catch (err) {
+    console.error("  ❌ Prueba 9 fallida:", err.message);
     throw err;
   }
 

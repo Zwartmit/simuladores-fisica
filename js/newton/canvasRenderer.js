@@ -243,13 +243,24 @@ export class CanvasRendererNewton {
     if (magnitude <= 0.05) return;
 
     const { ctx } = this;
-    // Longitud visual acotada para que las flechas quepan en el lienzo
-    const pxLen = Math.min(100, Math.max(30, magnitude * 0.45));
-
     // Ángulo invertido verticalmente (en Canvas Y crece hacia abajo)
     const radians = -(angleDeg * Math.PI) / 180;
-    const toX = fromX + pxLen * Math.cos(radians);
-    const toY = fromY + pxLen * Math.sin(radians);
+    const dirX = Math.cos(radians);
+    const dirY = Math.sin(radians);
+
+    // Longitud visual acotada: proporcional a la magnitud, pero sin salirse del lienzo. Se deja
+    // un margen para que la punta y el rótulo (que va después de la punta) se vean enteros.
+    let pxLen = Math.min(100, Math.max(30, magnitude * 0.45));
+    const marginX = 30;
+    const marginY = 22;
+    const roomX = dirX > 0 ? (this.logicalWidth - marginX - fromX) / dirX
+      : dirX < 0 ? (fromX - marginX) / -dirX : Infinity;
+    const roomY = dirY > 0 ? (this.logicalHeight - marginY - fromY) / dirY
+      : dirY < 0 ? (fromY - marginY) / -dirY : Infinity;
+    pxLen = Math.max(14, Math.min(pxLen, roomX, roomY));
+
+    const toX = fromX + pxLen * dirX;
+    const toY = fromY + pxLen * dirY;
     const arrowAngle = Math.atan2(toY - fromY, toX - fromX);
 
     ctx.save();

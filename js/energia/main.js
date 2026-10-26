@@ -6,6 +6,7 @@
 
 import { PhysicsEngineEnergia } from './physicsEngine.js';
 import { CanvasRendererEnergia } from './canvasRenderer.js';
+import { initPhaseTabs } from '../shared/phaseTabs.js';
 
 // ─── Instancias globales ────────────────────────────────────────────────────
 const engine = new PhysicsEngineEnergia();
@@ -296,6 +297,17 @@ window.addEventListener('resize', () => {
 dom.valHeight.textContent = `${dom.inputHeight.value}% (${(dom.inputHeight.value / 100 * 2 * engine.rampAmplitude).toFixed(1)} m)`;
 applyParameters();
 showPhase(1);
+
+// Pestañas de fase accesibles (clic, teclado y lectores de pantalla); solo se vuelve a fases ya alcanzadas
+initPhaseTabs({
+  tabs: dom.tabs,
+  panels: dom.phases,
+  goTo: (phase) => {
+    cancelAnimationFrame(animFrameId);
+    engine.isRunning = false;
+    showPhase(phase);
+  },
+});
 
 // Estado expuesto para pruebas y auditoría en el navegador (ver docs/conventions.md)
 window.currentSimulation = {

@@ -92,6 +92,11 @@ export class Vector2D {
 }
 ```
 
+## Accesibilidad
+
+- Las pestañas de fase de Pólya se activan con `initPhaseTabs()` (`js/shared/phaseTabs.js`) en cada `main.js`: no se enlazan `click` a mano sobre `.step-tab`.
+- Todo slider lleva su `<label for>` (lo comprueba `tests/ui.test.js`), el foco visible usa `:focus-visible` definido en `tokens.css` y las animaciones respetan `prefers-reduced-motion`.
+
 ## Pruebas y Validación
 
 - **IDs Únicos:** Todo elemento interactivo (botones de control, sliders, inputs) debe tener un ID descriptivo único para permitir pruebas automatizadas fáciles en el navegador.

@@ -6,6 +6,7 @@
 
 import { PhysicsEngineNewton } from './physicsEngine.js';
 import { CanvasRendererNewton } from './canvasRenderer.js';
+import { initPhaseTabs } from '../shared/phaseTabs.js';
 
 // Instanciar motores principales
 const engine = new PhysicsEngineNewton();
@@ -30,6 +31,7 @@ const telemetryW = document.getElementById('telemetry-w');
 const telemetryN = document.getElementById('telemetry-n');
 const telemetryFf = document.getElementById('telemetry-ff');
 const telemetryA = document.getElementById('telemetry-a');
+const telemetryV = document.getElementById('telemetry-v');
 const telemetryStatus = document.getElementById('telemetry-status');
 
 // Sliders de Fase 1 (Plano Inclinado)
@@ -218,6 +220,10 @@ function updateTelemetryDisplay() {
   telemetryN.textContent = `${engine.N.toFixed(2)} N`;
   telemetryFf.textContent = `${engine.Ff_real.toFixed(2)} N`;
   telemetryA.textContent = `${engine.acceleration.toFixed(2)} m/s²`;
+  // Velocidad instantánea; al llegar al final se muestra la velocidad de llegada
+  telemetryV.textContent = engine.isAtBottom
+    ? `${engine.arrivalVelocity.toFixed(2)} m/s (llegada)`
+    : `${engine.velocity.toFixed(2)} m/s`;
 
   // El estado refleja la física del escenario, no solo si la simulación ya arrancó
   if (!engine.isMoving) {
@@ -247,12 +253,11 @@ function switchPhase(phaseNum) {
   const tabId = `tab-phase${phaseNum}`;
   const containerId = `phase${phaseNum}-container`;
 
-  stepTabs.forEach(tab => {
-    tab.classList.remove('active');
-    if (tab.id === tabId) {
-      tab.classList.add('active');
-      tab.classList.add('completed');
-    }
+  // Activa = fase actual; completada = fases anteriores (se puede volver a ellas, no saltar hacia adelante).
+  // Antes la pestaña 1 nunca se marcaba como completada y no se podía volver a ella.
+  stepTabs.forEach((tab, i) => {
+    tab.classList.toggle('active', tab.id === tabId);
+    tab.classList.toggle('completed', i + 1 < phaseNum);
   });
 
   phaseContainers.forEach(container => {
@@ -273,12 +278,14 @@ function switchPhase(phaseNum) {
 }
 
 function setupTabs() {
-  stepTabs.forEach((tab, index) => {
-    tab.addEventListener('click', () => {
-      if (tab.classList.contains('completed')) {
-        switchPhase(index + 1);
-      }
-    });
+  initPhaseTabs({
+    tabs: stepTabs,
+    panels: phaseContainers,
+    // Al volver a una fase anterior se detiene la animación en curso (igual que los botones «Regresar»)
+    goTo: (phase) => {
+      if (isPlaying) pauseSimulation();
+      switchPhase(phase);
+    },
   });
 }
 
