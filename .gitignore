@@ -9,3 +9,8 @@ dist/
 .DS_Store
 Thumbs.db
 
+
+# Skills de IA instaladas con `npx skills add` (herramientas locales, no parte del laboratorio)
+.agents/
+.claude/
+skills-lock.json
