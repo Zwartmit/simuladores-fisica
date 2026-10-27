@@ -301,6 +301,8 @@ export function runUiTests() {
     const coverCss = read('css/index.css');
     assert.ok(!/\.cover-front::before/.test(coverCss), 'index.css: la tapa no debe llevar marco decorativo');
     assert.ok(!/\.cover-open:focus-visible\s*\{[^}]*outline:\s*\d/.test(coverCss), 'index.css: el foco de la tapa no debe dibujar un marco');
+    const coverRules = [...coverCss.matchAll(/([^{}]*cover[^{}]*)\{([^}]*)\}/g)];
+    assert.ok(coverRules.every(([, , body]) => !/outline:\s*\d/.test(body)), 'index.css: ninguna regla de la tapa debe dibujar un recuadro de foco (usa subrayado)');
 
     // Motion vendido: archivo, licencia y uso desde book.js
     assert.ok(existsSync(join(ROOT, 'js/vendor/motion.min.js')), 'falta js/vendor/motion.min.js');

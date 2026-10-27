@@ -215,14 +215,16 @@ html:not(.js) .hinge,
   cursor: pointer;
 }
 
-/* Foco de teclado sin marco alrededor de la tapa: se subraya la invitación «Abrir el libro» */
+/* Foco de teclado sin ningún recuadro: la invitación «Abrir el libro» se subraya y se aclara */
 .cover-open:focus-visible {
   outline: none;
 }
 
 .cover-front:has(.cover-open:focus-visible) .cover-cta {
-  outline: 2px solid var(--foil);
-  outline-offset: 5px;
+  color: #f7f0dc;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.5em;
 }
 
 /* ───────────────────────── Páginas ───────────────────────── */
