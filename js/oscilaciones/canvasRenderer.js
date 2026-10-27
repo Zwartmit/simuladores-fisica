@@ -143,7 +143,7 @@ export class CanvasRendererOscilaciones {
       ctx.arc(this.pivotX, this.pivotY, arcR, Math.PI / 2, Math.PI / 2 - theta, theta > 0);
       ctx.stroke();
       ctx.fillStyle = palette.red;
-      ctx.font = `italic 600 16px ${FONTS.display}`;
+      ctx.font = `600 16px ${FONTS.display}`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText('θ', this.pivotX + Math.sin(theta / 2) * (arcR + 14), this.pivotY + Math.cos(theta / 2) * (arcR + 14));
@@ -258,7 +258,7 @@ export class CanvasRendererOscilaciones {
     drawArrowHead(ctx, x2, y2, angle, 10);
 
     if (label) {
-      ctx.font = `italic 600 17px ${FONTS.display}`;
+      ctx.font = `600 17px ${FONTS.display}`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(label, x2 + 14 * Math.cos(angle), y2 + 14 * Math.sin(angle));
@@ -368,7 +368,7 @@ export class CanvasRendererOscilaciones {
     ctx.restore();
 
     // Leyenda
-    ctx.font = `italic 600 13px ${FONTS.display}`;
+    ctx.font = `600 13px ${FONTS.display}`;
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'left';
     [['K', this.COLOR_KE], ['U', this.COLOR_PE]].forEach(([label, color], i) => {

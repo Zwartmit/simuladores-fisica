@@ -214,7 +214,7 @@ export class CanvasRendererGravitacion {
     ctx.stroke();
     drawArrowHead(ctx, ex, ey, angle, 10);
 
-    ctx.font = `italic 600 17px ${FONTS.display}`;
+    ctx.font = `600 17px ${FONTS.display}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(label, ex + 14 * Math.cos(angle), ey + 14 * Math.sin(angle));

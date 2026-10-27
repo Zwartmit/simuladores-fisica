@@ -244,7 +244,7 @@ export class CanvasRendererRotacion {
     ctx.stroke();
     drawArrowHead(ctx, ex, y, 0, 11);
 
-    ctx.font = `italic 600 17px ${FONTS.display}`;
+    ctx.font = `600 17px ${FONTS.display}`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.fillText(label, ex + 9, y);
@@ -325,7 +325,7 @@ export class CanvasRendererRotacion {
     ctx.restore();
 
     // Leyenda
-    ctx.font = `italic 600 13px ${FONTS.display}`;
+    ctx.font = `600 13px ${FONTS.display}`;
     ctx.textBaseline = 'middle';
     [[this.COLOR_OMEGA, '— ω'], [this.COLOR_ANGULAR_M, '- - L']].forEach(([color, label], i) => {
       ctx.fillStyle = color;

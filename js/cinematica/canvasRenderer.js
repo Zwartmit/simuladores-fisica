@@ -284,7 +284,7 @@ export class CanvasRenderer {
     ctx.fill();
 
     if (label) {
-      ctx.font = 'italic 600 17px "Fraunces", Georgia, serif';
+      ctx.font = '600 17px "Fraunces", Georgia, serif';
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
       ctx.fillText(label, end.x + 9 * Math.cos(angle) + 4, end.y + 9 * Math.sin(angle));

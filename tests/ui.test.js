@@ -309,5 +309,51 @@ export function runUiTests() {
     throw err;
   }
 
+  // PRUEBA 11: Fondo de física compartido, sin cuadrícula ni cursiva, e inmersión al entrar a un simulador
+  try {
+    // Sin cursiva en ningún CSS ni en los canvas (el énfasis va con color y peso)
+    const sources = ['css/tokens.css', 'css/style.css', 'css/index.css', 'css/guide.css',
+      ...SIMULATORS.map(sim => `js/${sim}/canvasRenderer.js`)];
+    for (const file of sources) {
+      assert.ok(!/italic/i.test(read(file).replace(/\/\*[\s\S]*?\*\//g, '')), `${file}: no debe usar cursiva`);
+    }
+    assert.ok(/em,\s*i,[\s\S]*?\{\s*font-style:\s*normal/.test(read('css/tokens.css')), 'tokens.css: falta el reinicio global de em/i');
+
+    // La cuadrícula del fondo ya no existe en la portada ni en las guías
+    for (const file of ['css/index.css', 'css/guide.css']) {
+      assert.ok(!/background-size:\s*24px 24px/.test(read(file)), `${file}: quedó la cuadrícula de fondo`);
+    }
+
+    // Las 13 páginas cargan el mismo fondo animado; los simuladores dejan ver el escenario
+    const pages = ['index.html', ...SIMULATORS.flatMap(sim => [`pages/${sim}.html`, `pages/guide_${sim}.html`])];
+    for (const page of pages) {
+      assert.ok(/js\/shared\/physicsBackdrop\.js"/.test(read(page)), `${page}: no carga physicsBackdrop.js`);
+    }
+    assert.ok(/#simulation-area\s*\{[^}]*background:\s*transparent/.test(read('css/style.css')),
+      'style.css: #simulation-area debe ser transparente para mostrar el fondo');
+
+    // El fondo usa la paleta de tinta, respeta el movimiento reducido y no captura el puntero
+    const backdrop = read('js/shared/physicsBackdrop.js');
+    assert.ok(!/#[0-9a-fA-F]{3,8}\b|hsla?\(|rgba?\(/.test(backdrop.replace(/\/\*[\s\S]*?\*\//g, '')), 'physicsBackdrop.js: colores fijos');
+    assert.ok(/prefers-reduced-motion/.test(backdrop) && /visibilitychange/.test(backdrop), 'physicsBackdrop.js: movimiento reducido o pausa en segundo plano');
+    assert.ok(/\.physics-backdrop\s*\{[^}]*pointer-events:\s*none/.test(read('css/tokens.css')), 'tokens.css: el fondo no debe capturar el puntero');
+
+    // Inmersión: la portada guarda el origen, los simuladores lo consumen antes del primer pintado
+    assert.ok(/sessionStorage\.setItem\('inmersion'/.test(read('js/home/book.js')), 'book.js: no guarda el punto de entrada');
+    for (const sim of SIMULATORS) {
+      assert.ok(/<script src="\.\.\/js\/shared\/arrival\.js"><\/script>/.test(read(`pages/${sim}.html`)), `${sim}.html: falta arrival.js en el <head>`);
+    }
+    assert.ok(/html\.immersing #app-layout/.test(read('css/style.css')) && /@keyframes immerse-in/.test(read('css/style.css')), 'style.css: falta la animación de inmersión');
+
+    // Imagen de la portada: existe y es ligera
+    const pizarra = join(ROOT, 'assets/pizarra.jpg');
+    assert.ok(existsSync(pizarra) && readFileSync(pizarra).length < 150 * 1024, 'assets/pizarra.jpg falta o pesa más de 150 KB');
+    assert.ok(/assets\/pizarra\.jpg/.test(read('css/index.css')), 'index.css no usa la pizarra');
+    console.log("  ✅ Prueba 11: Sin cursiva ni cuadrícula; fondo de física y animación de inmersión en las 13 páginas.");
+  } catch (err) {
+    console.error("  ❌ Prueba 11 fallida:", err.message);
+    throw err;
+  }
+
   console.log("🎉 Todas las pruebas estáticas de interfaz han pasado exitosamente!");
 }

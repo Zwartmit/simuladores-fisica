@@ -194,7 +194,7 @@ export class CanvasRendererEnergia {
     ctx.stroke();
     drawArrowHead(ctx, ex, ey, Math.atan2(ey - cy, ex - cx), 11);
 
-    ctx.font = `italic 600 17px ${FONTS.display}`;
+    ctx.font = `600 17px ${FONTS.display}`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.fillText('v', ex + 8, ey - 6);
@@ -272,7 +272,7 @@ export class CanvasRendererEnergia {
       const fraction = Math.max(0, Math.min(1, bar.value / E0));
 
       ctx.fillStyle = bar.color;
-      ctx.font = `italic 600 14px ${FONTS.display}`;
+      ctx.font = `600 14px ${FONTS.display}`;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
       ctx.fillText(bar.label, x, by + barH / 2);
@@ -336,7 +336,7 @@ export class CanvasRendererEnergia {
     ctx.restore();
 
     // Leyenda
-    ctx.font = `italic 600 13px ${FONTS.display}`;
+    ctx.font = `600 13px ${FONTS.display}`;
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'left';
     [['K', this.COLOR_KE], ['U', this.COLOR_PE], ['Q', this.COLOR_THERMAL]].forEach(([label, color], i) => {

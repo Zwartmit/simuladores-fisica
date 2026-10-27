@@ -77,9 +77,12 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 // ─── Animaciones ────────────────────────────────────────────────────────────
 
+// Sin rebote al volver a 0°: un rebote cruzaría la vertical y la tapa se metería detrás de la página
+// derecha, dejando ver un destello de papel blanco.
 const SPRING_HINGE = { type: 'spring', visualDuration: 1.15, bounce: 0.14 };
+const SPRING_HINGE_CLOSE = { type: 'spring', visualDuration: 1.0, bounce: 0 };
 const SPRING_BOOK = { type: 'spring', visualDuration: 1.05, bounce: 0.04 };
-const SPRING_LIFT = { type: 'spring', visualDuration: 0.35, bounce: 0.3 };
+const SPRING_LIFT = { type: 'spring', visualDuration: 0.35, bounce: 0 };
 const EASE_OUT = [0.2, 0.7, 0.2, 1];
 
 let isOpen = false;
@@ -96,7 +99,14 @@ const settle = () => Promise.race([
   new Promise((resolve) => setTimeout(resolve, 2600)),
 ]);
 
-const closedOffset = () => (narrow.matches ? 0 : -book.offsetWidth / 4);
+// Cerrado, solo se ve la mitad derecha del libro (la tapa), que sobresale 0.55em por la derecha
+// (--board): se compensa media tapa para que el conjunto quede centrado de verdad.
+const BOARD_EM = 0.55;
+const closedOffset = () => {
+  if (narrow.matches) return 0;
+  const em = parseFloat(getComputedStyle(book).fontSize);
+  return -book.offsetWidth / 4 - (BOARD_EM * em) / 2;
+};
 
 // ─── Estado visible (accesibilidad y textos) ────────────────────────────────
 
@@ -204,9 +214,15 @@ async function close({ focusCover = false } = {}) {
   track(animate(pageLeft, { opacity: 0 }, { duration: 0.2, delay: 0.1 }));
 
   if (stack) {
-    track(animate(hinge, { rotateY: 0, opacity: 1 }, { ...SPRING_HINGE, visualDuration: 0.8, delay: 0.15 }));
+    // Apilado: se sube hasta el libro, se quitan las páginas y solo entonces vuelve la tapa,
+    // para que nunca se vea sobre un libro «alto» (se estiraba y luego saltaba a su sitio)
+    window.scrollTo({ top: Math.max(0, book.getBoundingClientRect().top + window.scrollY - 16), behavior: 'smooth' });
+    await Promise.race([Promise.all(running), new Promise((resolve) => setTimeout(resolve, 450))]);
+    if (mine !== sequence) return;
+    book.dataset.state = 'closed';
+    track(animate(hinge, { rotateY: 0, opacity: 1 }, { ...SPRING_HINGE_CLOSE, visualDuration: 0.8 }));
   } else {
-    track(animate(hinge, { rotateY: 0 }, { ...SPRING_HINGE, delay: 0.12 }));
+    track(animate(hinge, { rotateY: 0 }, { ...SPRING_HINGE_CLOSE, delay: 0.12 }));
     track(animate(book, { x: closedOffset() }, { ...SPRING_BOOK, delay: 0.12 }));
     track(animate(shadeBack, { opacity: 0.55 }, { duration: 0.4, delay: 0.12 }));
     track(animate(shadeFront, { opacity: 0 }, { duration: 0.5, delay: 0.5, ease: 'easeOut' }));
@@ -225,10 +241,12 @@ function focusFirstEntry() {
 
 // ─── La tapa se levanta un poco al acercarse (invita a abrir) ──────────────
 
+let liftControls = null;
+
 function lift(angle) {
   if (isOpen || narrow.matches || reduceMotion.matches) return;
-  stopAll();
-  track(animate(hinge, { rotateY: angle }, SPRING_LIFT));
+  liftControls?.stop?.(); // solo la elevación anterior: no se corta la entrada del libro ni otras órdenes
+  liftControls = track(animate(hinge, { rotateY: angle }, SPRING_LIFT));
 }
 
 coverButton.addEventListener('pointerenter', () => lift(-9));
@@ -247,6 +265,50 @@ document.addEventListener('keydown', (event) => {
     event.preventDefault();
     close({ focusCover: true });
   }
+});
+
+// ─── Entrar a un experimento: la vista se acerca al libro y se «cae» dentro ─
+// La página de destino (css/style.css, «Inmersión») recoge el punto de partida y se abre desde ahí.
+
+const stage = document.getElementById('escritorio');
+let entering = false;
+
+async function enterExperiment(link) {
+  entering = true;
+  const rect = link.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  try {
+    sessionStorage.setItem('inmersion', JSON.stringify({
+      x: Math.round((cx / window.innerWidth) * 100),
+      y: Math.round((cy / window.innerHeight) * 100),
+      t: Date.now(),
+    }));
+  } catch (error) { /* sin almacenamiento: se entra sin animación de llegada */ }
+
+  window.dispatchEvent(new CustomEvent('fondo:impulso', { detail: { fuerza: 7 } }));
+  stage.style.transformOrigin = `${cx}px ${cy + window.scrollY}px`;
+  const zoom = animate(stage, { scale: 2.4, opacity: 0 }, { duration: 0.55, ease: [0.5, 0, 0.9, 0.4] });
+  await Promise.race([zoom, new Promise((resolve) => setTimeout(resolve, 900))]);
+  window.location.href = link.href;
+}
+
+pageRight.addEventListener('click', (event) => {
+  const link = event.target.closest('a.entry');
+  const plain = event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;
+  if (!link || !plain || entering || reduceMotion.matches) return;
+  event.preventDefault();
+  enterExperiment(link);
+});
+
+// Al volver con «atrás» el navegador puede restaurar la página tal como quedó al salir
+window.addEventListener('pageshow', (event) => {
+  if (!event.persisted) return;
+  entering = false;
+  stage.style.removeProperty('transform');
+  stage.style.removeProperty('opacity');
+  stage.style.removeProperty('scale');
+  stage.style.removeProperty('transform-origin');
 });
 
 // Al cambiar de tamaño o de disposición (apilada ↔ doble página) se recoloca todo sin animar

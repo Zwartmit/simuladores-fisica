@@ -7,13 +7,6 @@
 
 @import url('tokens.css');
 
-body {
-  background-image:
-    linear-gradient(var(--graph-minor) 1px, transparent 1px),
-    linear-gradient(90deg, var(--graph-minor) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
 .guide {
   position: relative;
   max-width: 62rem;
@@ -80,7 +73,7 @@ body {
   max-width: 40rem;
   margin: 28px 0 0;
   font-size: 1.25rem;
-  font-style: italic;
+  font-style: normal;
   color: var(--ink-soft);
 }
 
@@ -117,7 +110,7 @@ body {
 
 .guide h3 {
   margin: 30px 0 8px;
-  font: italic 600 1.3rem/1.2 var(--font-display);
+  font: 600 1.3rem/1.2 var(--font-display);
 }
 
 .guide p,
@@ -152,7 +145,7 @@ body {
 .phase-no {
   display: block;
   margin: 0 0 6px -3px;
-  font: italic 400 6.5rem/0.8 var(--font-display);
+  font: 400 6.5rem/0.8 var(--font-display);
   color: var(--red);
   font-variation-settings: 'opsz' 144;
 }
@@ -191,7 +184,7 @@ body {
 .eq .note {
   display: block;
   margin-top: 2px;
-  font: italic 400 0.9rem/1.4 var(--font-body);
+  font: 400 0.9rem/1.4 var(--font-body);
   color: var(--muted);
 }
 
@@ -201,7 +194,7 @@ body {
   margin: 22px 0;
   padding: 6px 0 6px 16px;
   border-left: 3px solid var(--red);
-  font-style: italic;
+  font-style: normal;
   color: var(--ink);
 }
 
@@ -236,7 +229,7 @@ figure img {
 figcaption {
   max-width: 44rem;
   margin-top: 12px;
-  font: italic 400 0.95rem/1.45 var(--font-body);
+  font: 400 0.95rem/1.45 var(--font-body);
   color: var(--muted);
 }
 

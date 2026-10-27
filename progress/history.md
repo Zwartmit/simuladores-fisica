@@ -155,3 +155,14 @@
 * **Pruebas:** UI 10 (portada, textos exactos, índice de 6 laboratorios, Motion vendido, accesibilidad). Verificado en navegador: apertura/cierre, interrupción a mitad, teclado, persistencia y móvil.
 * Docs: `docs/architecture.md` (excepción aceptada), `docs/conventions.md` (Portada-libro), `js/vendor/README.md` (cómo regenerar Motion).
 
+### Ajustes de la portada y fondo de física (misma sesión)
+
+* **Cierre en móvil/tablet:** la tapa ya no se ve estirada al cerrar; la bisagra tiene alto fijo (`--page-h`) y el cierre apilado sube hasta el libro, retira las páginas y solo entonces devuelve la tapa.
+* **Parpadeo blanco al pasar el ratón:** el resorte de elevación (`bounce: 0.3`) y el de cierre (`0.14`) rebasaban 0° y la tapa se metía detrás de la página derecha, dejando ver papel blanco. Ahora vuelven a 0° sin rebote (verificado muestreando el ángulo: nunca cruza la vertical); además la elevación ya no detiene la animación de entrada del libro.
+* **Centrado:** el libro cerrado se desplaza media tapa extra (`--board`), así el conjunto queda centrado (centro a 512.07 px en un viewport de 1024; antes 516).
+* **Sin cursiva** en CSS y canvas; Fraunces y Newsreader se cargan sin variantes cursivas.
+* **Pizarra en la portada:** `assets/pizarra.jpg` (imagen aportada, reducida a 560 px / 65 KB) con `mix-blend-mode: screen`, opacidad .26, desenfoque y máscara radial en la mitad inferior.
+* **Fondo animado de física** (`js/shared/physicsBackdrop.js`) en lugar de la cuadrícula, en portada, guías y simuladores (el escenario `#simulation-area` es ahora transparente).
+* **Inmersión al entrar a un simulador:** zoom hacia el libro desde el experimento pulsado, fondo acelerado y apertura circular de la página de destino (`js/shared/arrival.js` + `immerse-in`).
+* Pruebas: UI 11 (sin cursiva ni cuadrícula, fondo en las 13 páginas, inmersión, imagen ligera). Suite: 49 pruebas en verde.
+

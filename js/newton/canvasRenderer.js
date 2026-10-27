@@ -161,7 +161,7 @@ export class CanvasRendererNewton {
     ctx.stroke();
 
     ctx.fillStyle = palette.red;
-    ctx.font = `italic 600 16px ${FONTS.display}`;
+    ctx.font = `600 16px ${FONTS.display}`;
     ctx.textAlign = 'left';
     ctx.fillText(`θ = ${angleDeg}°`, ax + 42, ay - 8);
 
@@ -275,7 +275,7 @@ export class CanvasRendererNewton {
     drawArrowHead(ctx, toX, toY, arrowAngle, 11);
 
     // Rótulo desplazado para no solapar la punta
-    ctx.font = `italic 600 17px ${FONTS.display}`;
+    ctx.font = `600 17px ${FONTS.display}`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.fillText(label, toX + 10 * Math.cos(arrowAngle) + 3, toY + 10 * Math.sin(arrowAngle));

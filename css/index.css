@@ -14,10 +14,6 @@
 @import url('tokens.css');
 
 body {
-  background-image:
-    linear-gradient(var(--graph-minor) 1px, transparent 1px),
-    linear-gradient(90deg, var(--graph-minor) 1px, transparent 1px);
-  background-size: 24px 24px;
   overflow-x: hidden;
 }
 
@@ -164,6 +160,29 @@ html:not(.js) .hinge,
   pointer-events: none;
 }
 
+/* Pizarra de fórmulas: muy tenue y desenfocada, solo en la mitad baja (se desvanece hacia arriba y a los lados) */
+.cover-front::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('../assets/pizarra.jpg') 62% 100% / 118% auto no-repeat;
+  mix-blend-mode: screen;
+  opacity: 0.26;
+  filter: blur(1.6px);
+  -webkit-mask-image: radial-gradient(ellipse 85% 62% at 66% 92%, #000 8%, transparent 72%);
+  mask-image: radial-gradient(ellipse 85% 62% at 66% 92%, #000 8%, transparent 72%);
+  pointer-events: none;
+}
+
+/* Los textos van por encima de la pizarra */
+.cover-label,
+.cover-title,
+.cover-sub,
+.cover-cta {
+  position: relative;
+  z-index: 1;
+}
+
 .cover-label {
   font: 500 0.72em/1.4 var(--font-mono);
   letter-spacing: 0.16em;
@@ -186,7 +205,7 @@ html:not(.js) .hinge,
 
 .cover-sub {
   max-width: 19em;
-  font: italic 400 1.12em/1.4 var(--font-body);
+  font: 400 1.12em/1.4 var(--font-body);
   color: rgba(247, 240, 220, 0.88);
 }
 
@@ -331,7 +350,7 @@ html:not(.js) .hinge,
 
 .steps .num {
   grid-row: span 2;
-  font: italic 400 2.5em/0.85 var(--font-display);
+  font: 400 2.5em/0.85 var(--font-display);
   color: var(--red);
   font-variation-settings: 'opsz' 144;
 }
@@ -383,7 +402,7 @@ html:not(.js) .hinge,
 
 .entry .n {
   grid-row: 1 / span 3;
-  font: italic 400 1.9em/1 var(--font-display);
+  font: 400 1.9em/1 var(--font-display);
   color: var(--red);
   font-variation-settings: 'opsz' 144;
 }
@@ -511,10 +530,12 @@ html:not(.js) .close-book { display: none; }
   .board-back,
   .ribbon { display: none; }
 
-  /* Tapa: ocupa el libro entero y se aparta al abrir */
+  /* Tapa: tiene siempre la altura de una página (no la del libro con las páginas apiladas),
+     así no se estira al abrir ni al cerrar; se aparta o vuelve sobre la parte superior */
   .hinge {
     left: 0;
     width: 100%;
+    height: var(--page-h);
     z-index: 2;
   }
 

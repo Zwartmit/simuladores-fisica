@@ -99,6 +99,13 @@ export class Vector2D {
 - Todo se dimensiona en `em` desde `--page-h`; por debajo de 900 px las páginas se apilan y la tapa se aparta en vez de girar sobre el lomo.
 - Accesible: la tapa es un `<button>` con `aria-expanded`, las páginas son `inert` mientras está cerrado, Esc lo cierra y `prefers-reduced-motion` desactiva las animaciones.
 
+## Fondo de física e inmersión
+
+- **Sin cursiva** en todo el sitio (CSS y canvas): `tokens.css` reinicia `em`, `i`, `cite`, `dfn` y `address` a `font-style: normal`; el énfasis va con peso o color. Las tipografías se cargan sin variantes cursivas.
+- **Fondo animado de física** (`js/shared/physicsBackdrop.js`, auto-inicializable): un `<canvas class="physics-backdrop">` fijo y detrás de todo (`z-index: -1`, sin puntero) con órbitas de Kepler, un péndulo, un tiro parabólico y una onda, muy tenues y a 30 fps. Sustituye al papel cuadriculado. Se carga con `<script type="module">` en las 13 páginas; usa `readInkPalette()` (sin colores fijos), se pausa con la pestaña oculta y con `prefers-reduced-motion` dibuja un solo fotograma. En los simuladores ocupa solo `#simulation-area`, que por eso no lleva fondo propio.
+- **Inmersión al entrar a un simulador:** `book.js` guarda en `sessionStorage['inmersion']` el punto pulsado, acerca la vista al libro y acelera un instante el fondo (evento `fondo:impulso`); `js/shared/arrival.js` (script clásico en el `<head>` de cada simulador) lo consume una sola vez y marca `html.immersing`, y `css/style.css` abre la página como un círculo desde ese punto (`@keyframes immerse-in`). Sin la marca (enlace directo, recarga, «atrás») solo se ve la entrada escalonada habitual.
+- Portada: la tapa lleva `assets/pizarra.jpg` (pizarra de fórmulas, 560 px, < 150 KB) como capa tenue, desenfocada y enmascarada hacia la mitad inferior.
+
 ## Accesibilidad
 
 - Las pestañas de fase de Pólya se activan con `initPhaseTabs()` (`js/shared/phaseTabs.js`) en cada `main.js`: no se enlazan `click` a mano sobre `.step-tab`.
