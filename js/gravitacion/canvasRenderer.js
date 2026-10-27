@@ -230,7 +230,7 @@ export class CanvasRendererGravitacion {
     const panelW = Math.min(200, W * 0.46);
     const panelH = 70 + rows.length * 18;
     const x = W - panelW - 16;
-    const y = 16;
+    const y = 40; // por debajo del rótulo de estado del visor (js/shared/instrument.js)
 
     ctx.fillStyle = palette.paper;
     ctx.fillRect(x, y, panelW, panelH);

@@ -51,7 +51,7 @@ export class CanvasRendererOscilaciones {
     this.stageH = this.graphY - 14;
 
     this.pivotX = this.W * 0.5;
-    this.pivotY = 36;
+    this.pivotY = 52; // el techo queda por debajo del rótulo de estado del visor
   }
 
   draw(state, engine) {

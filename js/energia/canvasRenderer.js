@@ -321,13 +321,17 @@ export class CanvasRendererEnergia {
     });
     ctx.restore();
 
-    // Leyenda
+    // Leyenda: junto al título; si el recuadro es estrecho y chocaría con él, dentro del trazado
+    const legendX = innerX + innerW - 118;
+    ctx.font = `500 12px ${FONTS.mono}`;
+    const titleEnd = x + ctx.measureText('ENERGÍA vs TIEMPO').width + 12;
+    const legendY = legendX < titleEnd ? innerY + 10 : y + 14;
     ctx.font = `600 14px ${FONTS.display}`;
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'left';
     [['K', this.COLOR_KE], ['U', this.COLOR_PE], ['Q', this.COLOR_THERMAL]].forEach(([label, color], i) => {
       ctx.fillStyle = color;
-      ctx.fillText(`— ${label}`, innerX + innerW - 118 + i * 40, y + 14);
+      ctx.fillText(`— ${label}`, legendX + i * 40, legendY);
     });
   }
 }

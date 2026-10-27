@@ -172,5 +172,5 @@
 * **Textos poco visibles:** el botón deshabilitado «Lanzamiento completo» salía gris sobre azul (la variante `.success` ganaba a `:disabled`); corregido. Auditoría de contraste de todos los textos del DOM (WCAG AA) sin más fallos, y tamaños mínimos subidos a 12 px en CSS y canvas.
 * **Portada:** quitado el marco dorado (borde decorativo + anillo de foco). Corregido un error mío: al poner la pizarra, los textos de la tapa quedaron por encima del botón y pulsar el título o el subtítulo no abría el libro (sin cursor de mano).
 * Se detectó un error de sintaxis tras editar un renderizador que dejaba el lienzo en blanco sin que fallara ninguna prueba: la prueba UI 11 ahora comprueba con `node --check` que todos los módulos propios compilan.
-* **Pendiente:** las 24 capturas de `assets/guides/` muestran el lienzo claro anterior; hay que rehacerlas con la pantalla oscura.
+* **Capturas de las guías rehechas** (19 en `assets/guides/`, 800 × 600) con la pantalla oscura, tomadas del simulador real en el estado que describe cada pie de figura. Al hacerlas se vieron dos choques con el visor, corregidos: el panel Kepler III de Gravitación pisaba el rótulo de estado (ahora baja a y = 40), el techo del péndulo lo tocaba (pivote a y = 52) y la leyenda K/U/Q de Energía chocaba con el título de su recuadro estrecho (pasa dentro del trazado cuando no cabe).
 
