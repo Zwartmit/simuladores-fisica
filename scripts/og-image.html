@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><title>Imagen para compartir (1200x630)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap">
+<link rel="stylesheet" href="../css/tokens.css">
+<style>
+html,body{margin:0;width:1200px;height:630px;overflow:hidden}
+body{position:relative;background:var(--paper)}
+svg.orb{position:absolute;left:-160px;bottom:-380px;width:760px;height:760px}
+.left{position:absolute;left:72px;top:64px;width:640px}
+.label{font:500 20px/1 var(--font-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--red)}
+h1{margin:26px 0 0;font:700 92px/0.98 var(--font-display);letter-spacing:-.03em;font-variation-settings:'opsz' 144;color:var(--ink)}
+h1 em{font-weight:600;font-variation-settings:'opsz' 48;color:var(--red)}
+p.sub{margin:26px 0 0;font:400 30px/1.35 var(--font-body);color:var(--ink-soft);max-width:600px}
+.chips{position:absolute;left:72px;bottom:52px;font:500 19px/1 var(--font-mono);letter-spacing:.06em;color:var(--muted)}
+.cover{position:absolute;right:92px;top:58px;width:372px;height:500px;transform:rotate(3deg);background:linear-gradient(135deg,#213c70,#14274f);box-shadow:0 30px 50px -16px rgba(20,39,79,.55),inset 14px 0 14px -10px rgba(0,0,0,.5);border-radius:2px 14px 14px 2px;overflow:hidden;color:#f3ecd9}
+.cover::after{content:'';position:absolute;inset:0;background:url('../assets/pizarra.jpg') 60% 100%/125% auto no-repeat;mix-blend-mode:screen;opacity:.28;filter:blur(1.4px);-webkit-mask-image:radial-gradient(ellipse 90% 60% at 66% 92%,#000 8%,transparent 72%);mask-image:radial-gradient(ellipse 90% 60% at 66% 92%,#000 8%,transparent 72%)}
+.cover .in{position:relative;z-index:1;padding:46px 36px 0 52px}
+.cover .l{font:500 14px/1.4 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:#e3c57b}
+.cover .t{margin-top:64px;font:700 58px/.97 var(--font-display);letter-spacing:-.03em;font-variation-settings:'opsz' 144;color:#f7f0dc}
+.cover .t em{display:block;font-weight:400;font-style:normal;color:#e3c57b}
+.cover .s{position:absolute;left:52px;right:34px;bottom:40px;z-index:1;font:400 19px/1.35 var(--font-body);color:rgba(247,240,220,.88)}
+.ribbon{position:absolute;right:300px;top:536px;width:18px;height:70px;background:#b83a26;transform:rotate(3deg)}
+</style></head><body>
+<svg class="orb" viewBox="0 0 760 760" fill="none" stroke="#2B4C8C" stroke-width="1.4" opacity=".22">
+<ellipse cx="380" cy="380" rx="300" ry="190" transform="rotate(-28 380 380)"/>
+<ellipse cx="380" cy="380" rx="230" ry="150" transform="rotate(-28 380 380)"/>
+<ellipse cx="380" cy="380" rx="150" ry="104" transform="rotate(-28 380 380)"/>
+<circle cx="500" cy="236" r="9" fill="#B83A26" stroke="none" opacity="2"/>
+<circle cx="380" cy="380" r="13" fill="#8A5E0E" stroke="none" opacity="2"/>
+</svg>
+<div class="left"><div class="label">Laboratorio de física · UNIR</div>
+<h1>Laboratorios virtuales de <em>física</em></h1>
+<p class="sub">Seis experimentos, un método: simulaciones y guías para razonar la física antes de calcularla.</p></div>
+<div class="chips">CINEMÁTICA · NEWTON · ENERGÍA · ROTACIÓN · GRAVITACIÓN · OSCILACIONES</div>
+<div class="cover"><div class="in"><div class="l">Laboratorio de física · UNIR</div><div class="t">Seis<em>experimentos,</em>un método.</div></div>
+<div class="s">Secuencias didácticas e interactivas guiadas por el método heurístico de George Pólya.</div></div>
+</body></html>

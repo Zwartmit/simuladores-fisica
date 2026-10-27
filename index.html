@@ -4,35 +4,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description"
-    content="Laboratorio virtual de física. Simuladores interactivos con metodología de Polya: cinemática, fuerzas, conservación de la energía, rotación, gravitación y oscilaciones.">
+  <meta name="description" content="Seis laboratorios virtuales de física con el método de Pólya: cinemática, Newton, energía, rotación, gravitación y oscilaciones. Simulaciones y guías.">
+  <link rel="canonical" href="https://steam-unir.netlify.app/">
   <title>Laboratorios virtuales de física</title>
-
-  <meta name="keywords"
-    content="física, simulador, virtual, polya, cinemática, dinámica, energía, gravitación, péndulo, masa-resorte, educación, UNIR">
   <meta name="author" content="Zwartmit">
 
   <!-- Open Graph / Social Media -->
+  <meta property="og:site_name" content="Laboratorios virtuales de física">
+  <meta property="og:locale" content="es_LA">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Laboratorio virtual de física">
+  <meta property="og:title" content="Laboratorios virtuales de física">
   <meta property="og:description"
-    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+    content="Seis laboratorios virtuales de física con el método de Pólya: cinemática, Newton, energía, rotación, gravitación y oscilaciones. Simulaciones y guías.">
   <meta property="og:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Portada del libro «Seis experimentos, un método» sobre papel crema: laboratorios virtuales de física">
   <meta property="og:url" content="https://steam-unir.netlify.app/">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Laboratorio virtual de física">
+  <meta name="twitter:title" content="Laboratorios virtuales de física">
   <meta name="twitter:description"
-    content="Simuladores interactivos de física con metodología de Polya. Aprende haciendo.">
+    content="Seis laboratorios virtuales de física con el método de Pólya: cinemática, Newton, energía, rotación, gravitación y oscilaciones. Simulaciones y guías.">
   <meta name="twitter:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+  <meta name="twitter:image:alt" content="Portada del libro «Seis experimentos, un método» sobre papel crema: laboratorios virtuales de física">
 
   <!-- Favicons -->
-  <link rel="icon" href="assets/favicon.png" type="image/png">
-  <link rel="apple-touch-icon" href="assets/favicon.png">
+  <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="assets/favicon.png" sizes="192x192" type="image/png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#F2ECDF">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap">
   <link rel="stylesheet" href="css/index.css">
 
   <!-- Sin JavaScript el libro se muestra abierto; con JavaScript empieza cerrado (o abierto si ya se abrió
@@ -40,6 +46,67 @@
   <script>
     document.documentElement.classList.add('js');
     try { if (sessionStorage.getItem('libro-abierto') === '1') document.documentElement.classList.add('start-open'); } catch (e) { /* sin almacenamiento */ }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://steam-unir.netlify.app/#sitio",
+        "name": "Laboratorios virtuales de física",
+        "url": "https://steam-unir.netlify.app/",
+        "inLanguage": "es",
+        "author": {
+          "@type": "Person",
+          "name": "Zwartmit"
+        },
+        "description": "Seis laboratorios virtuales de física con el método de Pólya: cinemática, Newton, energía, rotación, gravitación y oscilaciones. Simulaciones y guías."
+      },
+      {
+        "@type": "ItemList",
+        "name": "Los seis experimentos",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "url": "https://steam-unir.netlify.app/pages/cinematica.html",
+            "name": "Laboratorio virtual de física — Cinemática y Trayectorias"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "url": "https://steam-unir.netlify.app/pages/newton.html",
+            "name": "Laboratorio virtual de física — Leyes de Newton"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "url": "https://steam-unir.netlify.app/pages/energia.html",
+            "name": "Laboratorio virtual de física — Conservación de la Energía"
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "url": "https://steam-unir.netlify.app/pages/rotacion.html",
+            "name": "Laboratorio virtual de física — Dinámica rotacional"
+          },
+          {
+            "@type": "ListItem",
+            "position": 5,
+            "url": "https://steam-unir.netlify.app/pages/gravitacion.html",
+            "name": "Laboratorio virtual de física — Gravitación universal"
+          },
+          {
+            "@type": "ListItem",
+            "position": 6,
+            "url": "https://steam-unir.netlify.app/pages/oscilaciones.html",
+            "name": "Laboratorio virtual de física — Oscilaciones mecánicas"
+          }
+        ]
+      }
+    ]
+  }
   </script>
 </head>
 

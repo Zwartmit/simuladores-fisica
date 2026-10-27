@@ -114,6 +114,16 @@ export class Vector2D {
 - Texto en lienzo y CSS: mínimo 12 px y contraste AA. Un estado deshabilitado debe ganar a las variantes de color (`.btn-action.success:disabled`).
 - **Portada:** sin marco dorado (ni borde decorativo ni anillo de foco hacia dentro; el foco de teclado subraya «Abrir el libro»), y `.cover-open` va por encima de los textos de la tapa para que cualquier clic abra el libro.
 
+## SEO y datos para compartir
+
+- Cada página (13) tiene: `<title>` de ≤ 60 caracteres, **una sola** `meta description` única de 100–160 caracteres, `canonical` igual a `og:url`, `og:title`/`og:description` iguales al título y la descripción de la página, `og:image` de 1200 × 630 con `alt` y medidas, `lang="es"`, un único `<h1>` y datos estructurados JSON-LD (`LearningResource` + `WebSite` + `BreadcrumbList`; la portada lleva `WebSite` + `ItemList` de los seis laboratorios). Lo vigila la prueba UI 12.
+- `sitemap.xml` y `robots.txt` están en la raíz; el sitemap lista exactamente las URL canonical. `robots.txt` no bloquea CSS, JS ni imágenes y deja fuera el material interno (`docs/`, `progress/`, `tests/`, `scripts/`).
+- **Dominio:** las URL absolutas usan un único dominio. Para cambiarlo en todos los archivos: `node scripts/set-site-url.mjs https://mi-dominio.com`.
+- **Imagen para compartir** (`assets/og-image.png`): se genera desde `scripts/og-image.html` con Chrome sin interfaz:
+  `chrome --headless=new --window-size=1200,630 --force-device-scale-factor=1 --virtual-time-budget=8000 --screenshot=og.png http://127.0.0.1:8123/scripts/og-image.html`.
+- Las tipografías se cargan con un `<link>` en el `<head>` (no con `@import` dentro del CSS, que añade una petición encadenada). Los iconos son `favicon-32.png`, `favicon.png` (192 px) y `apple-touch-icon.png` (180 px).
+- Las imágenes de las guías llevan `width`/`height` y `alt`.
+
 ## Accesibilidad
 
 - Las pestañas de fase de Pólya se activan con `initPhaseTabs()` (`js/shared/phaseTabs.js`) en cada `main.js`: no se enlazan `click` a mano sobre `.step-tab`.

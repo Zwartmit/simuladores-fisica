@@ -5,17 +5,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Guía didáctica de gravitación universal y las leyes de Kepler con el simulador orbital, siguiendo las fases de Pólya.">
+  <link rel="canonical" href="https://steam-unir.netlify.app/pages/guide_gravitacion.html">
   <title>Guía didáctica — Kepler y gravitación</title>
-
-  <meta name="keywords"
-    content="física, simulador, virtual, polya, gravitación, Kepler, órbitas, excentricidad, educación, UNIR">
   <meta name="author" content="Zwartmit">
 
   <!-- Open Graph / Social Media -->
+  <meta property="og:site_name" content="Laboratorios virtuales de física">
+  <meta property="og:locale" content="es_LA">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Guía didáctica — Kepler y gravitación">
   <meta property="og:description" content="Guía didáctica de gravitación universal y las leyes de Kepler con el simulador orbital, siguiendo las fases de Pólya.">
   <meta property="og:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Portada del libro «Seis experimentos, un método» sobre papel crema: laboratorios virtuales de física">
   <meta property="og:url" content="https://steam-unir.netlify.app/pages/guide_gravitacion.html">
 
   <!-- Twitter -->
@@ -23,14 +26,77 @@
   <meta name="twitter:title" content="Guía didáctica — Kepler y gravitación">
   <meta name="twitter:description" content="Guía didáctica de gravitación universal y las leyes de Kepler con el simulador orbital, siguiendo las fases de Pólya.">
   <meta name="twitter:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+  <meta name="twitter:image:alt" content="Portada del libro «Seis experimentos, un método» sobre papel crema: laboratorios virtuales de física">
 
   <!-- Favicons -->
-  <link rel="icon" href="../assets/favicon.png" type="image/png">
-  <link rel="apple-touch-icon" href="../assets/favicon.png">
+  <link rel="icon" href="../assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="../assets/favicon.png" sizes="192x192" type="image/png">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#F2ECDF">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap">
   <link rel="stylesheet" href="../css/guide.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "LearningResource",
+        "name": "Guía didáctica — Kepler y gravitación",
+        "description": "Guía didáctica de gravitación universal y las leyes de Kepler con el simulador orbital, siguiendo las fases de Pólya.",
+        "url": "https://steam-unir.netlify.app/pages/guide_gravitacion.html",
+        "inLanguage": "es",
+        "learningResourceType": "Guía didáctica",
+        "teaches": "Gravitación universal y leyes de Kepler",
+        "educationalLevel": "Educación superior",
+        "isAccessibleForFree": true,
+        "author": {
+          "@type": "Person",
+          "name": "Zwartmit"
+        },
+        "isPartOf": {
+          "@id": "https://steam-unir.netlify.app/#sitio"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://steam-unir.netlify.app/#sitio",
+        "name": "Laboratorios virtuales de física",
+        "url": "https://steam-unir.netlify.app/",
+        "inLanguage": "es",
+        "author": {
+          "@type": "Person",
+          "name": "Zwartmit"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Inicio",
+            "item": "https://steam-unir.netlify.app/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Gravitación universal",
+            "item": "https://steam-unir.netlify.app/pages/gravitacion.html"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Guía didáctica",
+            "item": "https://steam-unir.netlify.app/pages/guide_gravitacion.html"
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 
 <body>
@@ -77,7 +143,7 @@
       <h2>Comprender el problema</h2>
       <p>Identifica las variables del sistema antes de simular: la constante G y la masa M de la estrella fijan cuánta atracción hay.</p>
     <figure>
-      <img src="../assets/guides/gravitacion_fase1.jpg" alt="Fase 1 del simulador de gravitación: estrella y planeta" loading="lazy">
+      <img src="../assets/guides/gravitacion_fase1.jpg" alt="Fase 1 del simulador de gravitación: estrella y planeta" width="800" height="600" loading="lazy">
       <figcaption><b>Figura 1</b> · Fase 1. El planeta en el periapsis, con su velocidad v (azul) y la fuerza gravitatoria F (roja); a la derecha, los sliders de G y de la masa de la estrella.</figcaption>
     </figure>
     <div class="worksheet">
@@ -118,7 +184,7 @@
       <h2>Ejecutar el plan</h2>
       <p>Inicia la simulación y registra la telemetría en distintos puntos para verificar la segunda ley: el planeta va más rápido en el periapsis y más lento en el apoapsis.</p>
     <figure>
-      <img src="../assets/guides/gravitacion_fase3.jpg" alt="Fase 3 del simulador de gravitación: órbita elíptica en curso" loading="lazy">
+      <img src="../assets/guides/gravitacion_fase3.jpg" alt="Fase 3 del simulador de gravitación: órbita elíptica en curso" width="800" height="600" loading="lazy">
       <figcaption><b>Figura 2</b> · Fase 3. La estrella (ocre) en el foco, la elipse teórica punteada, la trayectoria recorrida a lápiz y el planeta con sus vectores. Arriba a la derecha aparece la tabla de Kepler III al completar órbitas.</figcaption>
     </figure>
     <div class="worksheet">
@@ -140,7 +206,7 @@
       <h2>Examinar la solución</h2>
       <p>La Fase 4 se desbloquea al completar una órbita. El simulador mide el semieje mayor y el período de cada vuelta y los compara con la constante teórica G·M/4π².</p>
     <figure>
-      <img src="../assets/guides/gravitacion_fase4.jpg" alt="Fase 4 del simulador de gravitación: verificación de Kepler III" loading="lazy">
+      <img src="../assets/guides/gravitacion_fase4.jpg" alt="Fase 4 del simulador de gravitación: verificación de Kepler III" width="800" height="600" loading="lazy">
       <figcaption><b>Figura 3</b> · Fase 4. Tu predicción del período frente al medido, la constante a³/T² de la simulación junto a la teórica G·M/4π² y el veredicto de la verificación.</figcaption>
     </figure>
     <div class="worksheet">

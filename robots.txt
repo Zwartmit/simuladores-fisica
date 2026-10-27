@@ -1,0 +1,12 @@
+# Laboratorios virtuales de física
+User-agent: *
+Allow: /
+
+# Material interno del repositorio: no es contenido para el buscador
+Disallow: /docs/
+Disallow: /progress/
+Disallow: /tests/
+Disallow: /scripts/
+Disallow: /.gemini/
+
+Sitemap: https://steam-unir.netlify.app/sitemap.xml

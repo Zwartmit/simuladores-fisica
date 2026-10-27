@@ -5,17 +5,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Guía didáctica de dinámica en un plano inclinado con rozamiento y diagrama de cuerpo libre, siguiendo las fases de Pólya.">
+  <link rel="canonical" href="https://steam-unir.netlify.app/pages/guide_newton.html">
   <title>Guía didáctica — Leyes de Newton y fuerzas</title>
-
-  <meta name="keywords"
-    content="física, simulador, virtual, polya, dinámica, leyes de Newton, plano inclinado, rozamiento, educación, UNIR">
   <meta name="author" content="Zwartmit">
 
   <!-- Open Graph / Social Media -->
+  <meta property="og:site_name" content="Laboratorios virtuales de física">
+  <meta property="og:locale" content="es_LA">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Guía didáctica — Leyes de Newton y fuerzas">
   <meta property="og:description" content="Guía didáctica de dinámica en un plano inclinado con rozamiento y diagrama de cuerpo libre, siguiendo las fases de Pólya.">
   <meta property="og:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Portada del libro «Seis experimentos, un método» sobre papel crema: laboratorios virtuales de física">
   <meta property="og:url" content="https://steam-unir.netlify.app/pages/guide_newton.html">
 
   <!-- Twitter -->
@@ -23,14 +26,77 @@
   <meta name="twitter:title" content="Guía didáctica — Leyes de Newton y fuerzas">
   <meta name="twitter:description" content="Guía didáctica de dinámica en un plano inclinado con rozamiento y diagrama de cuerpo libre, siguiendo las fases de Pólya.">
   <meta name="twitter:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+  <meta name="twitter:image:alt" content="Portada del libro «Seis experimentos, un método» sobre papel crema: laboratorios virtuales de física">
 
   <!-- Favicons -->
-  <link rel="icon" href="../assets/favicon.png" type="image/png">
-  <link rel="apple-touch-icon" href="../assets/favicon.png">
+  <link rel="icon" href="../assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="../assets/favicon.png" sizes="192x192" type="image/png">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#F2ECDF">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap">
   <link rel="stylesheet" href="../css/guide.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "LearningResource",
+        "name": "Guía didáctica — Leyes de Newton y fuerzas",
+        "description": "Guía didáctica de dinámica en un plano inclinado con rozamiento y diagrama de cuerpo libre, siguiendo las fases de Pólya.",
+        "url": "https://steam-unir.netlify.app/pages/guide_newton.html",
+        "inLanguage": "es",
+        "learningResourceType": "Guía didáctica",
+        "teaches": "Leyes de Newton: plano inclinado y fricción",
+        "educationalLevel": "Educación superior",
+        "isAccessibleForFree": true,
+        "author": {
+          "@type": "Person",
+          "name": "Zwartmit"
+        },
+        "isPartOf": {
+          "@id": "https://steam-unir.netlify.app/#sitio"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://steam-unir.netlify.app/#sitio",
+        "name": "Laboratorios virtuales de física",
+        "url": "https://steam-unir.netlify.app/",
+        "inLanguage": "es",
+        "author": {
+          "@type": "Person",
+          "name": "Zwartmit"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Inicio",
+            "item": "https://steam-unir.netlify.app/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Leyes de Newton",
+            "item": "https://steam-unir.netlify.app/pages/newton.html"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Guía didáctica",
+            "item": "https://steam-unir.netlify.app/pages/guide_newton.html"
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 
 <body>
@@ -82,7 +148,7 @@
       <h2>Comprender el problema</h2>
       <p>Familiarízate con las variables de la rampa antes de dibujar nada: el ángulo θ, la masa m, los coeficientes de rozamiento μ<sub>s</sub> y μ<sub>k</sub> y la gravedad g.</p>
     <figure>
-      <img src="../assets/guides/newton_fase1.jpg" alt="Fase 1 del simulador de Newton: rampa y parámetros" loading="lazy">
+      <img src="../assets/guides/newton_fase1.jpg" alt="Fase 1 del simulador de Newton: rampa y parámetros" width="800" height="600" loading="lazy">
       <figcaption><b>Figura 1</b> · Fase 1. La rampa a un ángulo variable con el bloque en reposo, el ángulo marcado en rojo y, a la derecha, los sliders de inclinación, masa, fricciones y gravedad.</figcaption>
     </figure>
     <div class="worksheet">
@@ -105,7 +171,7 @@
       <h2>Concebir un plan</h2>
       <p>Formula tu hipótesis de fuerzas: diseña el <strong>diagrama de cuerpo libre</strong> (DCL) regulando, para cada fuerza, su dirección polar y su magnitud en newtons.</p>
     <figure>
-      <img src="../assets/guides/newton_fase2.jpg" alt="Fase 2 del simulador de Newton: diagrama de cuerpo libre" loading="lazy">
+      <img src="../assets/guides/newton_fase2.jpg" alt="Fase 2 del simulador de Newton: diagrama de cuerpo libre" width="800" height="600" loading="lazy">
       <figcaption><b>Figura 2</b> · Fase 2. Tus vectores de hipótesis (W?, N? y Ff?, en ocre) dibujados sobre el centro de masa del bloque a medida que mueves los sliders de cada fuerza.</figcaption>
     </figure>
     <div class="worksheet">
@@ -126,7 +192,7 @@
       <h2>Ejecutar el plan</h2>
       <p>Inicia el experimento y observa si las fuerzas producen movimiento o equilibrio. La tira de datos cambia de «Se deslizará» a «Deslizando» o «Equilibrio estático» según la física.</p>
     <figure>
-      <img src="../assets/guides/newton_fase3.jpg" alt="Fase 3 del simulador de Newton: bloque deslizando con sus fuerzas" loading="lazy">
+      <img src="../assets/guides/newton_fase3.jpg" alt="Fase 3 del simulador de Newton: bloque deslizando con sus fuerzas" width="800" height="600" loading="lazy">
       <figcaption><b>Figura 3</b> · Fase 3. El bloque deslizando rampa abajo con las fuerzas teóricas: peso (rojo), normal (azul) y fricción cinética (ocre). La tira de datos indica «Deslizando», la aceleración calculada y la velocidad instantánea.</figcaption>
     </figure>
     <ul>
@@ -153,7 +219,7 @@
       <h2>Examinar la solución</h2>
       <p>Comprueba la exactitud de tu DCL frente a la física del plano calculada analíticamente.</p>
     <figure>
-      <img src="../assets/guides/newton_fase4.jpg" alt="Fase 4 del simulador de Newton: calificación del DCL" loading="lazy">
+      <img src="../assets/guides/newton_fase4.jpg" alt="Fase 4 del simulador de Newton: calificación del DCL" width="800" height="600" loading="lazy">
       <figcaption><b>Figura 4</b> · Fase 4. La rampa con los vectores teóricos (peso en rojo, normal en azul, fricción en ocre), la tabla de errores de ángulo y magnitud de cada fuerza y tu puntuación sobre 100.</figcaption>
     </figure><p>Cada fuerza se califica por separado: <strong>correcta</strong>, <strong>con advertencia</strong> (más de 5° o un 10 % de error) o <strong>incorrecta</strong> (más de 10° o un 20 %). Si te equivocas —por ejemplo, apuntando el peso en la dirección de la rampa—, el Tutor Pólya te ayuda a identificar el error de modelación vectorial.</p>
     </section>

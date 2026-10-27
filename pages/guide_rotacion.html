@@ -5,17 +5,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Guía didáctica de dinámica rotacional: torque, momento de inercia y momento angular, siguiendo las fases de Pólya.">
+  <link rel="canonical" href="https://steam-unir.netlify.app/pages/guide_rotacion.html">
   <title>Guía didáctica — Dinámica rotacional</title>
-
-  <meta name="keywords"
-    content="física, simulador, virtual, polya, rotación, torque, momento de inercia, momento angular, educación, UNIR">
   <meta name="author" content="Zwartmit">
 
   <!-- Open Graph / Social Media -->
+  <meta property="og:site_name" content="Laboratorios virtuales de física">
+  <meta property="og:locale" content="es_LA">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Guía didáctica — Dinámica rotacional">
   <meta property="og:description" content="Guía didáctica de dinámica rotacional: torque, momento de inercia y momento angular, siguiendo las fases de Pólya.">
   <meta property="og:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Portada del libro «Seis experimentos, un método» sobre papel crema: laboratorios virtuales de física">
   <meta property="og:url" content="https://steam-unir.netlify.app/pages/guide_rotacion.html">
 
   <!-- Twitter -->
@@ -23,14 +26,77 @@
   <meta name="twitter:title" content="Guía didáctica — Dinámica rotacional">
   <meta name="twitter:description" content="Guía didáctica de dinámica rotacional: torque, momento de inercia y momento angular, siguiendo las fases de Pólya.">
   <meta name="twitter:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+  <meta name="twitter:image:alt" content="Portada del libro «Seis experimentos, un método» sobre papel crema: laboratorios virtuales de física">
 
   <!-- Favicons -->
-  <link rel="icon" href="../assets/favicon.png" type="image/png">
-  <link rel="apple-touch-icon" href="../assets/favicon.png">
+  <link rel="icon" href="../assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="../assets/favicon.png" sizes="192x192" type="image/png">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#F2ECDF">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap">
   <link rel="stylesheet" href="../css/guide.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "LearningResource",
+        "name": "Guía didáctica — Dinámica rotacional",
+        "description": "Guía didáctica de dinámica rotacional: torque, momento de inercia y momento angular, siguiendo las fases de Pólya.",
+        "url": "https://steam-unir.netlify.app/pages/guide_rotacion.html",
+        "inLanguage": "es",
+        "learningResourceType": "Guía didáctica",
+        "teaches": "Dinámica rotacional: torque e inercia",
+        "educationalLevel": "Educación superior",
+        "isAccessibleForFree": true,
+        "author": {
+          "@type": "Person",
+          "name": "Zwartmit"
+        },
+        "isPartOf": {
+          "@id": "https://steam-unir.netlify.app/#sitio"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://steam-unir.netlify.app/#sitio",
+        "name": "Laboratorios virtuales de física",
+        "url": "https://steam-unir.netlify.app/",
+        "inLanguage": "es",
+        "author": {
+          "@type": "Person",
+          "name": "Zwartmit"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Inicio",
+            "item": "https://steam-unir.netlify.app/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Dinámica rotacional",
+            "item": "https://steam-unir.netlify.app/pages/rotacion.html"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Guía didáctica",
+            "item": "https://steam-unir.netlify.app/pages/guide_rotacion.html"
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 
 <body>
@@ -83,7 +149,7 @@
       <h2>Comprender el problema</h2>
       <p>Antes de simular, elige el cuerpo rígido y anota sus características.</p>
     <figure>
-      <img src="../assets/guides/rotacion_fase1.jpg" alt="Fase 1 del simulador de rotación: disco en reposo" loading="lazy">
+      <img src="../assets/guides/rotacion_fase1.jpg" alt="Fase 1 del simulador de rotación: disco en reposo" width="800" height="600" loading="lazy">
       <figcaption><b>Figura 1</b> · Fase 1. El cuerpo en reposo con su radio rojo de referencia; a la derecha, el selector de cuerpo (disco, aro, barra), los sliders de masa y radio y la pregunta de comprensión.</figcaption>
     </figure>
     <div class="worksheet">
@@ -126,7 +192,7 @@
       <h2>Ejecutar el plan</h2>
       <p>Inicia la simulación. Pausa en distintos instantes y anota la telemetría para verificar tu hipótesis. La barra de progreso indica el tiempo simulado.</p>
     <figure>
-      <img src="../assets/guides/rotacion_fase3.jpg" alt="Fase 3 del simulador de rotación: cuerpo girando con vectores" loading="lazy">
+      <img src="../assets/guides/rotacion_fase3.jpg" alt="Fase 3 del simulador de rotación: cuerpo girando con vectores" width="800" height="600" loading="lazy">
       <figcaption><b>Figura 2</b> · Fase 3. El cuerpo girando bajo el torque (arco ocre), con la velocidad angular ω (azul) y la aceleración angular α (rojo) como flechas, el momento angular L en verde y la gráfica de ω(t) y L(t) debajo.</figcaption>
     </figure>
     <div class="worksheet">
@@ -149,7 +215,7 @@
       <h2>Examinar la solución</h2>
       <p>El simulador compara tu predicción con la simulación y con el valor teórico, y verifica la segunda ley con el torque neto: τ<sub>neto</sub> = I·α, y el impulso angular acumulado ∫τ<sub>neto</sub>·dt igual al cambio de momento angular ΔL.</p>
     <figure>
-      <img src="../assets/guides/rotacion_fase4.jpg" alt="Fase 4 del simulador de rotación: comparación de ω y verificación de τ = Iα" loading="lazy">
+      <img src="../assets/guides/rotacion_fase4.jpg" alt="Fase 4 del simulador de rotación: comparación de ω y verificación de τ = Iα" width="800" height="600" loading="lazy">
       <figcaption><b>Figura 3</b> · Fase 4. La tabla con tu predicción de ω, el valor simulado y el teórico, el momento de inercia, el momento angular y la verificación de la segunda ley.</figcaption>
     </figure>
     <div class="worksheet">

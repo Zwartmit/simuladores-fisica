@@ -5,17 +5,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Guía didáctica del tiro parabólico y la caída libre con el simulador de cinemática, siguiendo las cuatro fases de Pólya.">
+  <link rel="canonical" href="https://steam-unir.netlify.app/pages/guide_cinematica.html">
   <title>Guía didáctica — Cinemática y trayectorias</title>
-
-  <meta name="keywords"
-    content="física, simulador, virtual, polya, cinemática, tiro parabólico, caída libre, educación, UNIR">
   <meta name="author" content="Zwartmit">
 
   <!-- Open Graph / Social Media -->
+  <meta property="og:site_name" content="Laboratorios virtuales de física">
+  <meta property="og:locale" content="es_LA">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Guía didáctica — Cinemática y trayectorias">
   <meta property="og:description" content="Guía didáctica del tiro parabólico y la caída libre con el simulador de cinemática, siguiendo las cuatro fases de Pólya.">
   <meta property="og:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Portada del libro «Seis experimentos, un método» sobre papel crema: laboratorios virtuales de física">
   <meta property="og:url" content="https://steam-unir.netlify.app/pages/guide_cinematica.html">
 
   <!-- Twitter -->
@@ -23,14 +26,77 @@
   <meta name="twitter:title" content="Guía didáctica — Cinemática y trayectorias">
   <meta name="twitter:description" content="Guía didáctica del tiro parabólico y la caída libre con el simulador de cinemática, siguiendo las cuatro fases de Pólya.">
   <meta name="twitter:image" content="https://steam-unir.netlify.app/assets/og-image.png">
+  <meta name="twitter:image:alt" content="Portada del libro «Seis experimentos, un método» sobre papel crema: laboratorios virtuales de física">
 
   <!-- Favicons -->
-  <link rel="icon" href="../assets/favicon.png" type="image/png">
-  <link rel="apple-touch-icon" href="../assets/favicon.png">
+  <link rel="icon" href="../assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="../assets/favicon.png" sizes="192x192" type="image/png">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#F2ECDF">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap">
   <link rel="stylesheet" href="../css/guide.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "LearningResource",
+        "name": "Guía didáctica — Cinemática y trayectorias",
+        "description": "Guía didáctica del tiro parabólico y la caída libre con el simulador de cinemática, siguiendo las cuatro fases de Pólya.",
+        "url": "https://steam-unir.netlify.app/pages/guide_cinematica.html",
+        "inLanguage": "es",
+        "learningResourceType": "Guía didáctica",
+        "teaches": "Cinemática: tiro parabólico y caída libre",
+        "educationalLevel": "Educación superior",
+        "isAccessibleForFree": true,
+        "author": {
+          "@type": "Person",
+          "name": "Zwartmit"
+        },
+        "isPartOf": {
+          "@id": "https://steam-unir.netlify.app/#sitio"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://steam-unir.netlify.app/#sitio",
+        "name": "Laboratorios virtuales de física",
+        "url": "https://steam-unir.netlify.app/",
+        "inLanguage": "es",
+        "author": {
+          "@type": "Person",
+          "name": "Zwartmit"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Inicio",
+            "item": "https://steam-unir.netlify.app/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Cinemática y Trayectorias",
+            "item": "https://steam-unir.netlify.app/pages/cinematica.html"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Guía didáctica",
+            "item": "https://steam-unir.netlify.app/pages/guide_cinematica.html"
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 
 <body>
@@ -80,7 +146,7 @@
       <h2>Comprender el problema</h2>
       <p>Antes de lanzar, identifica los parámetros de entrada y repasa qué magnitudes vectoriales cambian y cuáles no durante el vuelo.</p>
     <figure>
-      <img src="../assets/guides/cinematica_fase1.jpg" alt="Fase 1 del simulador de cinemática: sliders y cuestionario" loading="lazy">
+      <img src="../assets/guides/cinematica_fase1.jpg" alt="Fase 1 del simulador de cinemática: sliders y cuestionario" width="800" height="600" loading="lazy">
       <figcaption><b>Figura 1</b> · Fase 1. A la izquierda, el proyectil en su punto de partida sobre la pantalla de instrumento; a la derecha, los sliders de altura, velocidad, ángulo y gravedad y la pregunta de comprensión.</figcaption>
     </figure>
     <div class="worksheet">
@@ -126,7 +192,7 @@
       <h2>Ejecutar el plan</h2>
       <p>Ahora ejecutas el plan: pulsa <strong>Iniciar lanzamiento</strong> y observa las magnitudes físicas en tiempo real.</p>
     <figure>
-      <img src="../assets/guides/cinematica_fase3.jpg" alt="Fase 3 del simulador de cinemática: proyectil en vuelo con vectores" loading="lazy">
+      <img src="../assets/guides/cinematica_fase3.jpg" alt="Fase 3 del simulador de cinemática: proyectil en vuelo con vectores" width="800" height="600" loading="lazy">
       <figcaption><b>Figura 2</b> · Fase 3. El proyectil en pleno vuelo: el vector de velocidad <i>v</i> (azul) es tangente a la trayectoria y cambia a cada instante; el de gravedad <i>g</i> (rojo) apunta siempre hacia abajo. Bajo el lienzo, la tira de datos muestra x, y, v y t.</figcaption>
     </figure>
     <ul>
@@ -151,7 +217,7 @@
       <h2>Examinar la solución</h2>
       <p>Es la etapa de autoevaluación: contrasta tu hipótesis con la física calculada y entiende de dónde vienen las desviaciones.</p>
     <figure>
-      <img src="../assets/guides/cinematica_fase4.jpg" alt="Fase 4 del simulador de cinemática: contraste de resultados" loading="lazy">
+      <img src="../assets/guides/cinematica_fase4.jpg" alt="Fase 4 del simulador de cinemática: contraste de resultados" width="800" height="600" loading="lazy">
       <figcaption><b>Figura 3</b> · Fase 4. Tu trazo (ocre, punteado) sobre la trayectoria real (azul discontinua), la banderola de tu alcance predicho y, a la derecha, la tabla que compara predicción y física con su error.</figcaption>
     </figure>
     <div class="eq">Error relativo (%) = | R<sub>real</sub> − R<sub>predicho</sub> | / R<sub>real</sub> · 100</div><p>El Tutor Pólya valora tu error: hasta un 5 % es muy bueno y por encima del 15 % te invita a repasar las ecuaciones de x(t) e y(t). Una desviación grande suele venir de imaginar la trayectoria como una recta en lugar de una parábola.</p>

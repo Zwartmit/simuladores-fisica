@@ -386,5 +386,72 @@ export function runUiTests() {
     throw err;
   }
 
+  // PRUEBA 12: SEO — metadatos únicos y coherentes, datos estructurados, sitemap y robots
+  try {
+    const pages = ['index.html', ...SIMULATORS.flatMap(sim => [`pages/${sim}.html`, `pages/guide_${sim}.html`])];
+    const meta = (html, re) => html.match(re)?.[1];
+    const canonicals = [];
+    const descriptions = new Map();
+
+    for (const page of pages) {
+      const html = read(page);
+      assert.ok(/<html lang="es">/.test(html), `${page}: falta lang="es"`);
+      assert.strictEqual((html.match(/<h1[\s>]/g) ?? []).length, 1, `${page}: debe tener un único h1`);
+      assert.strictEqual((html.match(/<meta name="description"/g) ?? []).length, 1, `${page}: debe tener una sola meta description`);
+
+      const title = meta(html, /<title>(.*?)<\/title>/s)?.trim();
+      assert.ok(title && title.length <= 60, `${page}: título ausente o de más de 60 caracteres`);
+      const description = meta(html, /<meta name="description"\s+content="(.*?)"/s);
+      assert.ok(description && description.length >= 100 && description.length <= 160, `${page}: la descripción debe medir 100–160 caracteres (mide ${description?.length})`);
+      assert.ok(!descriptions.has(description), `${page}: descripción repetida con ${descriptions.get(description)}`);
+      descriptions.set(description, page);
+
+      const canonical = meta(html, /<link rel="canonical" href="(.*?)">/);
+      assert.ok(canonical, `${page}: falta canonical`);
+      assert.strictEqual(canonical, meta(html, /<meta property="og:url" content="(.*?)">/), `${page}: canonical y og:url deben coincidir`);
+      canonicals.push(canonical);
+      assert.strictEqual(meta(html, /<meta property="og:title"\s+content="(.*?)"/s), title, `${page}: og:title debe ser el título de la página`);
+      assert.strictEqual(meta(html, /<meta property="og:description"\s+content="(.*?)"/s), description, `${page}: og:description debe ser la descripción de la página`);
+      assert.ok(/<meta property="og:image:alt"/.test(html) && /<meta name="twitter:image:alt"/.test(html), `${page}: falta el texto alternativo de la imagen social`);
+      assert.ok(/<meta property="og:image:width" content="1200">/.test(html) && /<meta property="og:image:height" content="630">/.test(html), `${page}: faltan las medidas de og:image`);
+      assert.ok(/fonts\.googleapis\.com\/css2/.test(html), `${page}: debe cargar las tipografías con <link>`);
+
+      // Datos estructurados: JSON válido con @context y @graph
+      const ld = meta(html, /<script type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/);
+      assert.ok(ld, `${page}: faltan los datos estructurados`);
+      const data = JSON.parse(ld);
+      assert.strictEqual(data['@context'], 'https://schema.org', `${page}: JSON-LD sin @context`);
+      assert.ok(Array.isArray(data['@graph']) && data['@graph'].length >= 2, `${page}: JSON-LD sin @graph`);
+
+      // Imágenes de las guías con tamaño explícito (evita saltos de maquetación)
+      for (const img of html.match(/<img [^>]*>/g) ?? []) {
+        assert.ok(/ width="\d+"/.test(img) && / height="\d+"/.test(img) && / alt="[^"]+"/.test(img), `${page}: imagen sin alt, width o height: ${img}`);
+      }
+    }
+
+    // Sitemap y robots
+    const sitemap = read('sitemap.xml');
+    const listed = [...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(m => m[1]);
+    assert.deepStrictEqual([...listed].sort(), [...canonicals].sort(), 'sitemap.xml debe listar exactamente las URL canonical de las 13 páginas');
+    const robots = read('robots.txt');
+    const base = canonicals[0].replace(/\/$/, '');
+    assert.ok(robots.includes(`Sitemap: ${base}/sitemap.xml`), 'robots.txt debe apuntar al sitemap');
+    assert.ok(!/Disallow:\s*\/(js|css|assets)\//.test(robots), 'robots.txt no debe bloquear CSS, JS ni imágenes');
+
+    // Imagen para compartir: 1200 × 630 y ligera; iconos con su tamaño
+    const png = readFileSync(join(ROOT, 'assets/og-image.png'));
+    assert.deepStrictEqual([png.readUInt32BE(16), png.readUInt32BE(20)], [1200, 630], 'assets/og-image.png debe medir 1200 × 630');
+    assert.ok(png.length < 300 * 1024, 'assets/og-image.png pesa más de 300 KB');
+    for (const icon of ['favicon.png', 'favicon-32.png', 'apple-touch-icon.png']) {
+      assert.ok(existsSync(join(ROOT, `assets/${icon}`)), `falta assets/${icon}`);
+    }
+    assert.ok(readFileSync(join(ROOT, 'assets/favicon.png')).length < 100 * 1024, 'assets/favicon.png pesa más de 100 KB');
+    assert.ok(!/@import url\('https:\/\/fonts/.test(read('css/tokens.css')), 'tokens.css no debe importar las tipografías (se cargan con <link>)');
+    console.log("  ✅ Prueba 12: SEO — metadatos únicos, JSON-LD, sitemap, robots y imagen social de 1200×630.");
+  } catch (err) {
+    console.error("  ❌ Prueba 12 fallida:", err.message);
+    throw err;
+  }
+
   console.log("🎉 Todas las pruebas estáticas de interfaz han pasado exitosamente!");
 }

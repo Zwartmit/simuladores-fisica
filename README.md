@@ -49,6 +49,8 @@ Abre `progress/` en tu editor mientras Gemini trabaja: cada informe aparece en c
 ├── GEMINI.md               # Instrucciones globales e inicialización para agentes
 ├── feature_list.json       # Alcance: una feature a la vez
 ├── package.json            # Configuración de NPM y script de servidor (live-server)
+├── robots.txt, sitemap.xml # SEO: rastreo y mapa del sitio (ver docs/conventions.md)
+├── scripts/                # set-site-url.mjs (cambia el dominio) y og-image.html (imagen para compartir)
 ├── progress/
 │   ├── current.md          # Sesión activa (estado vivo)
 │   └── history.md          # Bitácora append-only
@@ -81,7 +83,8 @@ Abre `progress/` en tu editor mientras Gemini trabaja: cada informe aparece en c
 │       ├── physicsEngine.js    # Motor de simulación física desacoplado del DOM
 │       └── canvasRenderer.js   # Lógica de dibujo/pintado sobre lienzo Canvas
 ├── assets/
-│   ├── favicon.png, og-image.png, pizarra.jpg (capa de la portada)
+│   ├── favicon*.png, apple-touch-icon.png, og-image.png (1200×630), pizarra.jpg (capa de la portada)
+│   ├── portafolio/          # Capturas 1440×900 de la portada y los simuladores para el portafolio
 │   └── guides/              # Capturas del simulador (<simulador>_fase<n>.jpg) usadas por las guías
 └── tests/
     ├── run-all.js          # Ejecutor de pruebas automatizadas locales
