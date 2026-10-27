@@ -309,7 +309,8 @@ html:not(.js) .hinge,
 }
 
 .page-title em {
-  font-weight: 400;
+  font-weight: 600;
+  font-variation-settings: 'opsz' 48; /* menos contraste: los trazos finos de opsz 144 se pierden en rojo */
   color: var(--red);
 }
 
@@ -350,9 +351,9 @@ html:not(.js) .hinge,
 
 .steps .num {
   grid-row: span 2;
-  font: 400 2.5em/0.85 var(--font-display);
+  font: 600 2.5em/0.85 var(--font-display);
   color: var(--red);
-  font-variation-settings: 'opsz' 144;
+  font-variation-settings: 'opsz' 48;
 }
 
 .steps h3 {
@@ -402,9 +403,9 @@ html:not(.js) .hinge,
 
 .entry .n {
   grid-row: 1 / span 3;
-  font: 400 1.9em/1 var(--font-display);
+  font: 600 1.9em/1 var(--font-display);
   color: var(--red);
-  font-variation-settings: 'opsz' 144;
+  font-variation-settings: 'opsz' 48;
 }
 
 .entry .kind {

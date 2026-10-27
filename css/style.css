@@ -136,7 +136,8 @@ a.tutor-badge:hover {
 
 .stage-title em {
   font-style: normal;
-  font-weight: 400;
+  font-weight: 600;
+  font-variation-settings: 'opsz' 48; /* menos contraste: los trazos finos de opsz 144 se pierden en rojo */
   color: var(--red);
 }
 
@@ -330,9 +331,9 @@ h2 {
 .phase-number {
   display: block;
   margin: 18px 0 8px -3px;
-  font: 400 5.5rem/0.85 var(--font-display);
+  font: 600 5.5rem/0.85 var(--font-display);
   color: var(--red);
-  font-variation-settings: 'opsz' 144;
+  font-variation-settings: 'opsz' 48;
 }
 
 .phase-intro {
@@ -868,9 +869,9 @@ input[type='range']:disabled {
 }
 
 #val-dcl-score {
-  font: 400 3rem/1 var(--font-display);
+  font: 600 3rem/1 var(--font-display);
   color: var(--red);
-  font-variation-settings: 'opsz' 144;
+  font-variation-settings: 'opsz' 48;
 }
 
 #btn-restart-lab {
