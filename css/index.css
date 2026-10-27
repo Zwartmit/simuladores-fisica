@@ -1,216 +1,544 @@
 /*
  * css/index.css
- * Portada: índice editorial de los seis laboratorios + explicación del método de Pólya.
- * Comparte tokens con los simuladores (tokens.css).
+ * Portada del sitio: un libro de verdad. Cerrado, muestra la tapa («Seis experimentos, un método»);
+ * al abrirlo, la tapa gira sobre el lomo y quedan dos páginas: a la izquierda el método de Pólya
+ * y a la derecha el índice con los seis laboratorios.
+ *
+ * Los estados abierto/cerrado y las animaciones los controla js/home/book.js (con Motion). Este CSS
+ * define el aspecto y el estado inicial:
+ *   - sin JavaScript: el libro se muestra abierto y usable;
+ *   - con JavaScript (html.js): cerrado, salvo que ya se abriera en esta sesión (html.start-open).
+ * Todo se dimensiona en em a partir de la altura de página (--page-h), así que el libro escala entero.
  */
 
 @import url('tokens.css');
 
-/* Papel milimetrado de fondo (solo en la portada) */
 body {
   background-image:
     linear-gradient(var(--graph-minor) 1px, transparent 1px),
     linear-gradient(90deg, var(--graph-minor) 1px, transparent 1px);
   background-size: 24px 24px;
+  overflow-x: hidden;
 }
 
-.wrap {
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 0 6vw;
-}
+/* ───────────────────────── Escritorio ───────────────────────── */
 
-/* ───────────────────────── Portada ───────────────────────── */
-
-.top {
+.stage {
+  min-height: 100vh;
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 24px;
-  padding-top: 28px;
-  font: 500 0.75rem/1 var(--font-mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-  gap: 6vw;
-  align-items: end;
-  padding: 72px 0 56px;
-}
-
-.hero h1 {
-  font: 700 clamp(3rem, 8.4vw, 8rem)/0.9 var(--font-display);
-  letter-spacing: -0.035em;
-  font-variation-settings: 'opsz' 144;
-}
-
-.hero h1 em {
-  font-weight: 400;
-  color: var(--red);
-}
-
-.hero p {
-  max-width: 36ch;
-  font-size: 1.2rem;
-  font-style: italic;
-  color: var(--ink-soft);
-  padding-bottom: 8px;
-}
-
-/* ───────────────────────── Índice de laboratorios ───────────────────────── */
-
-.index {
-  list-style: none;
-  border-bottom: 1px solid var(--ink);
-}
-
-.row {
-  display: grid;
-  grid-template-columns: 96px minmax(0, 1.2fr) minmax(0, 1.6fr) 170px;
+  flex-direction: column;
   align-items: center;
-  gap: 24px;
-  padding: 24px 0;
-  border-top: 1px solid var(--ink);
-  color: inherit;
-  text-decoration: none;
-  transition: padding 0.25s var(--ease-out), background 0.25s;
+  justify-content: center;
+  padding: 2.5vh 1rem 1.5rem;
+  perspective: 2800px;
+  perspective-origin: 50% 30%;
 }
 
-.row:hover,
-.row:focus-visible {
-  padding-left: 14px;
-  background: rgba(184, 58, 38, 0.07);
-  outline-offset: -2px;
+/* ───────────────────────── Libro ───────────────────────── */
+
+.book {
+  /* Altura de página: cabe en pantalla alta y ancha (dos páginas = 1.48 × la altura) */
+  --page-h: min(80vh, 760px, calc((100vw - 2.5rem) / 1.52));
+  --page-w: calc(var(--page-h) * 0.74);
+  --pad: 2.7em;
+  --board: 0.55em; /* cuánto asoman las tapas por encima de las páginas */
+
+  --cover: #213c70;
+  --cover-deep: #14274f;
+  --foil: #e3c57b;
+
+  font-size: calc(var(--page-h) / 41);
+  position: relative;
+  width: calc(var(--page-w) * 2);
+  height: var(--page-h);
+  transform-style: preserve-3d;
 }
 
-.row .n {
-  font: italic 400 3.4rem/1 var(--font-display);
-  color: var(--red);
-  font-variation-settings: 'opsz' 144;
+/* Estado inicial de la posición: cerrado = solo se ve la mitad derecha, centrada en pantalla */
+.js:not(.start-open) .book {
+  transform: translateX(-25%);
 }
 
-.row .kind {
-  display: block;
-  margin-bottom: 4px;
-  font: 500 0.7rem/1 var(--font-mono);
-  letter-spacing: 0.1em;
+/* ───────────────────────── Tapas, lomo y marcapáginas ───────────────────────── */
+
+.board-back {
+  position: absolute;
+  left: 50%;
+  right: calc(var(--board) * -1);
+  top: calc(var(--board) * -1);
+  bottom: calc(var(--board) * -1);
+  border-radius: 0 0.5em 0.5em 0;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.06) 0 1px, transparent 1px 3px),
+    linear-gradient(135deg, var(--cover), var(--cover-deep));
+  box-shadow: 0 1.2em 2.4em -0.6em rgba(27, 26, 23, 0.55), 0 0.3em 0.6em rgba(27, 26, 23, 0.35);
+  transform: translateZ(-2px);
+}
+
+.ribbon {
+  position: absolute;
+  left: calc(50% + 0.45em);
+  top: 0;
+  width: 0.62em;
+  height: calc(var(--page-h) + 1.9em);
+  background: linear-gradient(90deg, #8f2a1b, var(--red) 45%, #a53420);
+  box-shadow: 1px 0 2px rgba(27, 26, 23, 0.35);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 94%, 0 100%);
+  transform: translateZ(1px);
+}
+
+.hinge {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  transform-origin: 0 50%;
+  transform-style: preserve-3d;
+}
+
+/* Sin JavaScript (o ya abierto): la tapa descansa a la izquierda, con su dorso hacia arriba */
+html:not(.js) .hinge,
+.js.start-open .hinge {
+  transform: rotateY(-180deg);
+}
+
+.cover-board {
+  position: absolute;
+  left: 0;
+  right: calc(var(--board) * -1);
+  top: calc(var(--board) * -1);
+  bottom: calc(var(--board) * -1);
+  transform: translateZ(2px); /* al girar 180° este desplazamiento pasa a ser −2px: la tapa queda debajo */
+  transform-style: preserve-3d;
+}
+
+.cover-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 0 0.5em 0.5em 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.06) 0 1px, transparent 1px 3px),
+    linear-gradient(135deg, var(--cover), var(--cover-deep));
+}
+
+.cover-back {
+  transform: rotateY(180deg);
+  border-radius: 0.5em 0 0 0.5em;
+}
+
+/* Sombra que se mueve con el giro (la anima book.js) */
+.shade {
+  position: absolute;
+  inset: 0;
+  background: #0b1530;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Portada */
+.cover-front {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 3.2em 2.6em 2.6em 3.6em;
+  color: #f3ecd9;
+  box-shadow:
+    inset 0.9em 0 0.9em -0.5em rgba(0, 0, 0, 0.5),   /* ranura del lomo */
+    inset -0.1em 0 0.2em rgba(255, 255, 255, 0.12);
+}
+
+/* Marco en relieve (hierro dorado) */
+.cover-front::before {
+  content: '';
+  position: absolute;
+  inset: 1.5em 1.5em 1.5em 2.6em;
+  border: 1px solid rgba(227, 197, 123, 0.55);
+  outline: 1px solid rgba(227, 197, 123, 0.3);
+  outline-offset: 0.35em;
+  pointer-events: none;
+}
+
+.cover-label {
+  font: 500 0.72em/1.4 var(--font-mono);
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--foil);
 }
 
-.row .t {
-  font: 600 1.75rem/1.1 var(--font-display);
-  letter-spacing: -0.01em;
-}
-
-.row .d {
-  color: var(--ink-soft);
-  font-size: 1rem;
-}
-
-.row .eq {
-  text-align: right;
-  font: 500 0.9rem/1.3 var(--font-mono);
-  color: var(--blue);
-}
-
-/* ───────────────────────── Método de Pólya ───────────────────────── */
-
-.method {
-  margin-top: 120px;
-  padding-bottom: 120px;
-}
-
-.method h2 {
-  max-width: 14ch;
-  font: 700 clamp(2.4rem, 5vw, 4.4rem)/0.95 var(--font-display);
+.cover-title {
+  font: 700 3.7em/0.96 var(--font-display);
   letter-spacing: -0.03em;
   font-variation-settings: 'opsz' 144;
+  color: #f7f0dc;
 }
 
-.method h2 em {
+.cover-title em {
+  display: block;
+  font-weight: 400;
+  color: var(--foil);
+}
+
+.cover-sub {
+  max-width: 19em;
+  font: italic 400 1.12em/1.4 var(--font-body);
+  color: rgba(247, 240, 220, 0.88);
+}
+
+.cover-cta {
+  font: 500 0.78em/1 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--foil);
+}
+
+.cover-open {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.cover-open:focus-visible {
+  outline: 3px solid var(--foil);
+  outline-offset: -0.9em;
+}
+
+/* ───────────────────────── Páginas ───────────────────────── */
+
+.page {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  padding: var(--pad) calc(var(--pad) * 0.9) var(--pad);
+  background-color: var(--paper-2);
+  /* grano de papel */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.07 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
+  color: var(--ink);
+  overflow: hidden;
+}
+
+/* Curvatura hacia el lomo */
+.page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 14%;
+  pointer-events: none;
+}
+
+.page-left {
+  left: 0;
+  padding-left: calc(var(--pad) * 0.9);
+  padding-right: var(--pad);
+  /* grosor del taco de páginas (izquierda y abajo) */
+  box-shadow: -1px 1px 0 #eee7d6, -2px 2px 0 #e4dcc7, -3px 3px 0 #d9cfb7;
+  transform: translateZ(0.5px);
+}
+
+.page-left::before {
+  right: 0;
+  background: linear-gradient(to left, rgba(27, 26, 23, 0.2), rgba(27, 26, 23, 0.06) 40%, transparent);
+}
+
+.page-right {
+  left: 50%;
+  box-shadow: 1px 1px 0 #eee7d6, 2px 2px 0 #e4dcc7, 3px 3px 0 #d9cfb7;
+  transform: translateZ(0.5px);
+}
+
+.page-right::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(27, 26, 23, 0.2), rgba(27, 26, 23, 0.06) 40%, transparent);
+}
+
+/* Estado inicial del contenido: oculto mientras el libro está cerrado */
+.js .page-left,
+.js [data-reveal] {
+  opacity: 0;
+}
+
+.js.start-open .page-left,
+.js.start-open [data-reveal] {
+  opacity: 1;
+}
+
+.running {
+  padding-bottom: 0.7em;
+  margin-bottom: 1.05em;
+  border-bottom: 1px solid var(--rule);
+  font: 500 0.66em/1 var(--font-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.page-title {
+  margin: 0 0 0.5em;
+  font: 700 2.15em/1.02 var(--font-display);
+  letter-spacing: -0.025em;
+  font-variation-settings: 'opsz' 144;
+}
+
+.page-title em {
   font-weight: 400;
   color: var(--red);
 }
 
-.method-intro {
-  max-width: 62ch;
-  margin: 24px 0 64px;
+.lede {
+  margin-bottom: 1.3em;
+  font-size: 1em;
+  line-height: 1.45;
   color: var(--ink-soft);
 }
 
-/* Cuatro pasos escalonados en diagonal (sin rejilla uniforme) */
+.lede strong { color: var(--ink); }
+
+.folio {
+  position: absolute;
+  bottom: 1.5em;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font: 400 0.7em var(--font-mono);
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
+/* Pasos del método */
 .steps {
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0 3vw;
-  align-items: start;
+  gap: 1em;
 }
 
 .steps li {
-  padding-top: 18px;
-  border-top: 3px solid var(--ink);
+  display: grid;
+  grid-template-columns: 2.5em 1fr;
+  column-gap: 0.6em;
+  padding-top: 0.65em;
+  border-top: 1px solid var(--ink);
 }
 
-.steps li:nth-child(2) { margin-top: 40px; }
-.steps li:nth-child(3) { margin-top: 80px; }
-.steps li:nth-child(4) { margin-top: 120px; }
-
 .steps .num {
-  display: block;
-  font: italic 400 4.6rem/0.9 var(--font-display);
+  grid-row: span 2;
+  font: italic 400 2.5em/0.85 var(--font-display);
   color: var(--red);
   font-variation-settings: 'opsz' 144;
 }
 
 .steps h3 {
-  margin: 10px 0 8px;
-  font: 600 1.5rem/1.1 var(--font-display);
+  font: 600 1.18em/1.1 var(--font-display);
 }
 
 .steps p {
+  font-size: 0.9em;
+  line-height: 1.35;
   color: var(--ink-soft);
-  font-size: 1rem;
 }
 
-.colophon {
-  padding: 28px 0 40px;
-  border-top: 1px solid var(--rule);
-  font: 400 0.75rem/1.6 var(--font-mono);
+/* Índice de experimentos */
+.index {
+  list-style: none;
+}
+
+.index li {
+  border-bottom: 1px dotted rgba(27, 26, 23, 0.35);
+}
+
+.index li:first-child {
+  border-top: 1px solid var(--ink);
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: 2.6em 1fr auto;
+  column-gap: 0.4em;
+  padding: 0.7em 0.3em 0.7em 0;
+  color: inherit;
+  text-decoration: none;
+  transition: background 0.2s var(--ease-out), padding 0.25s var(--ease-out);
+}
+
+.entry:hover,
+.entry:focus-visible {
+  background: rgba(184, 58, 38, 0.07);
+  padding-left: 0.5em;
+}
+
+.entry:focus-visible {
+  outline-offset: -2px;
+}
+
+.entry .body { display: contents; }
+
+.entry .n {
+  grid-row: 1 / span 3;
+  font: italic 400 1.9em/1 var(--font-display);
+  color: var(--red);
+  font-variation-settings: 'opsz' 144;
+}
+
+.entry .kind {
+  grid-column: 2;
+  font: 500 0.6em/1.6 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.entry .eq {
+  grid-column: 3;
+  grid-row: 1;
+  align-self: center;
+  font: 500 0.7em/1.4 var(--font-mono);
+  color: var(--blue);
+  white-space: nowrap;
+}
+
+.entry .t {
+  grid-column: 2 / 4;
+  font: 600 1.28em/1.1 var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+.entry .d {
+  grid-column: 2 / 4;
+  margin-top: 0.2em;
+  font-size: 0.82em;
+  line-height: 1.3;
+  color: var(--ink-soft);
+}
+
+/* ───────────────────────── Sombra y controles ───────────────────────── */
+
+.shadow {
+  width: calc(var(--page-h, 640px) * 1.48);
+  max-width: 96vw;
+  height: 2.4rem;
+  margin-top: -1.4rem;
+  background: radial-gradient(ellipse at center, rgba(27, 26, 23, 0.32), transparent 66%);
+  pointer-events: none;
+}
+
+/* El valor de --page-h vive en .book; se replica para la sombra */
+.stage { --page-h: min(80vh, 760px, calc((100vw - 2.5rem) / 1.52)); }
+
+.js:not(.start-open) .shadow {
+  transform: scaleX(0.52);
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 0.4rem;
+  min-height: 3.6rem;
+  text-align: center;
+}
+
+.hint {
+  font: 400 0.78rem/1.4 var(--font-mono);
   letter-spacing: 0.04em;
   color: var(--muted);
 }
 
-/* ───────────────────────── Adaptación a pantallas pequeñas ───────────────────────── */
+html:not(.js) .hint { display: none; }
 
-@media (max-width: 960px) {
-  .hero {
-    grid-template-columns: 1fr;
-    gap: 24px;
-    padding: 48px 0 40px;
+.close-book {
+  padding: 0.7rem 1.3rem;
+  background: none;
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  font: 500 0.75rem/1 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.close-book:hover {
+  background: var(--ink);
+  color: var(--paper-2);
+}
+
+html:not(.js) .close-book { display: none; }
+
+/* ───────────────────────── Pantallas estrechas: páginas apiladas ───────────────────────── */
+
+@media (max-width: 900px) {
+  .book {
+    --page-w: min(92vw, 440px);
+    --page-h: calc(var(--page-w) * 1.4);
+    width: var(--page-w);
+    font-size: calc(var(--page-w) / 28);
+    height: auto;
+    min-height: var(--page-h);
+    transform: none !important;
   }
 
-  .row {
-    grid-template-columns: 64px minmax(0, 1fr);
-    gap: 6px 16px;
-    padding: 20px 0;
+  .stage { --page-h: 600px; }
+  .shadow { width: min(92vw, 440px); transform: none !important; }
+
+  .page {
+    position: relative;
+    left: auto;
+    width: 100%;
+    min-height: var(--page-h);
+    margin-bottom: 1.2em;
+    transform: none;
+    padding: 2.4em 2em 3em;
   }
 
-  .row .n { font-size: 2.6rem; grid-row: span 3; }
-  .row .d,
-  .row .eq { grid-column: 2; text-align: left; }
-
-  .steps {
-    grid-template-columns: 1fr;
-    gap: 36px;
+  .page-left,
+  .page-right {
+    box-shadow: 0 0.3em 0.8em rgba(27, 26, 23, 0.2), 0 0 0 1px var(--rule);
   }
 
-  .steps li:nth-child(n) { margin-top: 0; }
+  .page::before { display: none; }
 
-  .method { margin-top: 80px; padding-bottom: 80px; }
+  .board-back,
+  .ribbon { display: none; }
+
+  /* Tapa: ocupa el libro entero y se aparta al abrir */
+  .hinge {
+    left: 0;
+    width: 100%;
+    z-index: 2;
+  }
+
+  .cover-board { left: 0; right: 0; top: 0; bottom: 0; transform: none; }
+  .cover-face { border-radius: 0.5em; }
+
+  /* Sin JavaScript, o ya abierto: sin tapa y con las páginas a la vista */
+  html:not(.js) .hinge,
+  .js.start-open .hinge,
+  .book[data-cover='gone'] .hinge {
+    transform: none;
+    display: none;
+  }
+
+  /* Cerrado: solo se ve la tapa */
+  .book[data-state='closed'] .page { display: none; }
+  .book[data-state='closed'] { height: var(--page-h); }
+
+  html:not(.js) .book .page,
+  .js.start-open .book .page { display: block; }
+
+  .cover-title { font-size: 3.2em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entry { transition: none; }
 }

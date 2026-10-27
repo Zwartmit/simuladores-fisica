@@ -147,3 +147,11 @@
 
 **Pendiente:** verificación visual automatizada (hoy manual).
 
+## Sesión: 2026-10-27 — Portada convertida en libro
+
+* **Concepto:** la portada es literalmente un libro. Cerrado: tapa de tela azul con «Seis experimentos, un método.» y debajo «Secuencias didácticas e interactivas guiadas por el método heurístico de George Pólya, para razonar la física antes de calcularla.». Al abrirlo (clic, Enter o Espacio) la tapa gira sobre el lomo en 3D, el libro se centra y aparecen dos páginas: a la izquierda el método de Pólya y a la derecha el índice con los 6 simuladores (enlaces normales). Detalles: grano de papel, curvatura hacia el lomo, grosor del taco de páginas, marcapáginas rojo que asoma incluso con el libro cerrado, iluminación que cambia durante el giro.
+* **Librería:** Motion 14.7.1 (MIT), solo `animate` y `stagger` (≈ 25 KB con gzip), incluida en `js/vendor/` (sin bundler ni CDN). Motivo: resortes interrumpibles (cerrar mientras se abre sin saltos) y escalonados. Se descartaron `react-flip-toolkit` (requiere React; el proyecto es vanilla), `flip-toolkit` (resuelve *layout*, que aquí no cambia) y `page-flip` (pasa muchas páginas con su propio contenedor; aquí hay una tapa y un par de páginas). Motion mini (8 KB) se descartó por no tener `stagger`.
+* **Robustez:** sin JavaScript el libro se ve abierto; si Motion no carga, funciona sin animaciones; `prefers-reduced-motion` cambia de estado al instante; el estado «abierto» se recuerda en la sesión para volver desde un simulador sin repetir la animación; Esc cierra, el foco pasa al primer experimento al abrir con teclado y las páginas son `inert` cerradas. En móvil (< 900 px) la tapa se aparta y las páginas se apilan.
+* **Pruebas:** UI 10 (portada, textos exactos, índice de 6 laboratorios, Motion vendido, accesibilidad). Verificado en navegador: apertura/cierre, interrupción a mitad, teclado, persistencia y móvil.
+* Docs: `docs/architecture.md` (excepción aceptada), `docs/conventions.md` (Portada-libro), `js/vendor/README.md` (cómo regenerar Motion).
+

@@ -92,6 +92,13 @@ export class Vector2D {
 }
 ```
 
+## Portada-libro
+
+- `index.html` es un libro: cerrado muestra la tapa («Seis experimentos, un método»); abierto, a la izquierda el método de Pólya y a la derecha el índice de los 6 laboratorios. Los simuladores se abren como páginas normales.
+- Sin JavaScript el libro se muestra **abierto** y usable (`html:not(.js)`); con JavaScript empieza cerrado, salvo que ya se abriera en la sesión (`sessionStorage['libro-abierto']`, clase `start-open`). El estado lo gobierna `js/home/book.js`: no se animan `transform` ni `opacity` desde CSS.
+- Todo se dimensiona en `em` desde `--page-h`; por debajo de 900 px las páginas se apilan y la tapa se aparta en vez de girar sobre el lomo.
+- Accesible: la tapa es un `<button>` con `aria-expanded`, las páginas son `inert` mientras está cerrado, Esc lo cierra y `prefers-reduced-motion` desactiva las animaciones.
+
 ## Accesibilidad
 
 - Las pestañas de fase de Pólya se activan con `initPhaseTabs()` (`js/shared/phaseTabs.js`) en cada `main.js`: no se enlazan `click` a mano sobre `.step-tab`.

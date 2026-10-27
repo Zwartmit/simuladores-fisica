@@ -274,5 +274,40 @@ export function runUiTests() {
     throw err;
   }
 
+  // PRUEBA 10: Portada-libro — portada, método, índice de los 6 laboratorios y Motion incluido en el repositorio
+  try {
+    const html = read('index.html');
+    assert.ok(/<h1 class="cover-title">\s*Seis <em>experimentos,<\/em> un método\.\s*<\/h1>/.test(html), 'index.html: falta el título de la portada');
+    assert.ok(/Secuencias didácticas e interactivas guiadas por el método heurístico de George\s+Pólya, para razonar la física antes de calcularla\./.test(html),
+      'index.html: falta el subtítulo de la portada');
+
+    // Página izquierda: las cuatro fases; página derecha: los seis experimentos enlazados
+    const left = html.match(/<article class="page page-left"[\s\S]*?<\/article>/)?.[0] ?? '';
+    for (const fase of ['Comprender', 'Planear', 'Ejecutar', 'Revisar']) {
+      assert.ok(left.includes(`<h3>${fase}</h3>`), `página izquierda: falta la fase ${fase}`);
+    }
+    const right = html.match(/<section class="page page-right"[\s\S]*?<\/section>/)?.[0] ?? '';
+    const links = [...right.matchAll(/<a class="entry" href="([^"]+)"/g)].map(m => m[1]);
+    assert.deepStrictEqual(links, SIMULATORS.map(sim => `pages/${sim}.html`), 'el índice debe enlazar los 6 simuladores en orden');
+
+    // Funciona sin JavaScript (se muestra abierto) y con accesibilidad básica
+    assert.ok(/classList\.add\('js'\)/.test(html), 'index.html: falta la marca html.js');
+    assert.ok(/id="cover-open"[^>]*aria-expanded="false"/.test(html), 'la tapa debe ser un botón con aria-expanded');
+    assert.ok(/id="close-book"[^>]*hidden/.test(html), 'el botón de cerrar debe empezar oculto');
+
+    // Motion vendido: archivo, licencia y uso desde book.js
+    assert.ok(existsSync(join(ROOT, 'js/vendor/motion.min.js')), 'falta js/vendor/motion.min.js');
+    assert.ok(existsSync(join(ROOT, 'js/vendor/motion.LICENSE.md')), 'falta la licencia de Motion');
+    assert.ok(/^\/\*! motion \d+\.\d+\.\d+/.test(read('js/vendor/motion.min.js')), 'motion.min.js sin banner de versión');
+    const book = read('js/home/book.js');
+    assert.ok(/import\('\.\.\/vendor\/motion\.min\.js'\)/.test(book), 'book.js no importa Motion desde js/vendor');
+    assert.ok(/prefers-reduced-motion/.test(book), 'book.js debe respetar prefers-reduced-motion');
+    assert.ok(/Escape/.test(book) && /aria-expanded/.test(book), 'book.js: falta cerrar con Esc o aria-expanded');
+    console.log("  ✅ Prueba 10: Portada-libro — textos, índice de 6 laboratorios, accesibilidad y Motion vendido.");
+  } catch (err) {
+    console.error("  ❌ Prueba 10 fallida:", err.message);
+    throw err;
+  }
+
   console.log("🎉 Todas las pruebas estáticas de interfaz han pasado exitosamente!");
 }

@@ -9,7 +9,8 @@
    - **Renderizador (Vista):** Dibuja los objetos físicos en un lienzo `<canvas>`. Recibe los datos procesados por el motor y los dibuja en pantalla.
    - **Controlador e Interfaz (UI/Bucle):** Gestiona el bucle de animación (`requestAnimationFrame`), recibe las entradas del usuario (sliders de parámetros, botones) y coordina la actualización del motor y el redibujado de la vista en cada cuadro.
 
-2. **Sin dependencias externas.** Solo HTML5, CSS y JavaScript vainilla nativo del navegador. Esto garantiza compatibilidad, rendimiento y tiempos de carga instantáneos. Cualquier librería externa debe discutirse previamente.
+2. **Sin dependencias externas en la lógica.** Solo HTML5, CSS y JavaScript vainilla nativo del navegador. Esto garantiza compatibilidad, rendimiento y tiempos de carga instantáneos. Los motores físicos, renderizadores y controladores de los simuladores no usan librerías. Cualquier librería externa debe discutirse previamente y, si se acepta, se **incluye en el repositorio** (`js/vendor/`, con su licencia y cómo regenerarla) para no depender de bundlers, de `node_modules` ni de un CDN.
+   - Excepción aceptada: **Motion** 14.7.1 (MIT, solo `animate` y `stagger`, ≈ 25 KB con gzip), usada únicamente por la portada-libro (`js/home/book.js`) para animaciones de resorte interrumpibles. Si no carga, el libro sigue funcionando sin animaciones. Descartadas: `react-flip-toolkit` (exige React), `flip-toolkit` (resuelve transiciones de *layout* que no existen aquí) y `page-flip` (impone su propio contenedor para pasar muchas páginas).
 
 3. **Ciclo de simulación óptimo y no bloqueante (High Performance).**
    - Las actualizaciones físicas y el renderizado se sincronizan a través de `requestAnimationFrame()`.

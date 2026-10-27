@@ -59,7 +59,7 @@ Abre `progress/` en tu editor mientras Gemini trabaja: cada informe aparece en c
 ├── .gemini/
 │   ├── agents/             # Definiciones de líder, implementador, revisor
 │   └── settings.json       # Hooks que automatizan la verificación
-├── index.html              # Portada y navegación a los 6 laboratorios
+├── index.html              # Portada: un libro que se abre (tapa, método de Pólya e índice de los 6 laboratorios)
 ├── pages/                  # Un HTML de simulador + un HTML de guía por feature
 │   ├── cinematica.html / guide_cinematica.html
 │   ├── newton.html / guide_newton.html
@@ -70,9 +70,12 @@ Abre `progress/` en tu editor mientras Gemini trabaja: cada informe aparece en c
 ├── css/
 │   ├── tokens.css          # Tokens de diseño "Cuaderno de laboratorio" (color, tipografía, forma)
 │   ├── style.css           # Interfaz de los simuladores (escenario + hoja de Pólya), responsive
-│   ├── index.css           # Portada: índice editorial y método de Pólya
+│   ├── index.css           # Portada-libro: tapa, páginas, marcapáginas
 │   └── guide.css           # Guías didácticas: hoja de cuaderno, figuras y hojas de trabajo
 ├── js/
+│   ├── home/book.js         # Portada-libro: abrir/cerrar con Motion, teclado, memoria de sesión
+│   ├── shared/              # inkPalette.js (colores de los canvas) y phaseTabs.js (pestañas accesibles)
+│   ├── vendor/              # Código de terceros incluido tal cual (Motion; ver su README)
 │   └── <simulador>/        # Una carpeta por feature (cinematica, newton, energia, rotacion, gravitacion, oscilaciones)
 │       ├── main.js             # Controlador, eventos y bucle requestAnimationFrame
 │       ├── physicsEngine.js    # Motor de simulación física desacoplado del DOM
