@@ -315,6 +315,38 @@ figcaption b {
 
 .guide-foot a { color: var(--ink); }
 
+.to-top {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 30;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 11px 16px;
+  font: 500 0.78rem/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--paper-2);
+  background: var(--ink);
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity 0.25s var(--ease-out), transform 0.25s var(--ease-out), visibility 0s 0.25s, background 0.2s;
+}
+
+.to-top.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity 0.25s var(--ease-out), transform 0.25s var(--ease-out), visibility 0s, background 0.2s;
+}
+
+.to-top:hover { background: var(--red); }
+
 @media (max-width: 720px) {
   .guide { padding-left: 2.2rem; }
   .guide::before { left: 1rem; }
@@ -328,4 +360,5 @@ figcaption b {
   .guide { border: 0; max-width: none; }
   .guide::before { display: none; }
   figure { break-inside: avoid; }
+  .to-top { display: none; }
 }

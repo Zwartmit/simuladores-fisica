@@ -74,7 +74,7 @@ Abre `progress/` en tu editor mientras Gemini trabaja: cada informe aparece en c
 │   └── guide.css           # Guías didácticas: hoja de cuaderno, figuras y hojas de trabajo
 ├── js/
 │   ├── home/book.js         # Portada-libro: abrir/cerrar con Motion, teclado, memoria de sesión
-│   ├── shared/              # inkPalette.js (colores de los canvas), phaseTabs.js (pestañas accesibles), physicsBackdrop.js (fondo animado), instrument.js (visor de la pantalla de los simuladores) y arrival.js (inmersión)
+│   ├── shared/              # inkPalette.js (colores de los canvas), phaseTabs.js (pestañas accesibles), physicsBackdrop.js (fondo animado), instrument.js (visor de la pantalla de los simuladores), scrollTop.js (botón «Arriba» de las guías) y arrival.js (inmersión)
 │   ├── vendor/              # Código de terceros incluido tal cual (Motion; ver su README)
 │   └── <simulador>/        # Una carpeta por feature (cinematica, newton, energia, rotacion, gravitacion, oscilaciones)
 │       ├── main.js             # Controlador, eventos y bucle requestAnimationFrame

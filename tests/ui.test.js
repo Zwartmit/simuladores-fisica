@@ -362,6 +362,13 @@ export function runUiTests() {
     assert.ok(/prefers-reduced-motion/.test(backdrop) && /visibilitychange/.test(backdrop), 'physicsBackdrop.js: movimiento reducido o pausa en segundo plano');
     assert.ok(/\.physics-backdrop\s*\{[^}]*pointer-events:\s*none/.test(read('css/tokens.css')), 'tokens.css: el fondo no debe capturar el puntero');
 
+    // Las 6 guías incluyen el botón «Arriba» (se crea por JS) y su estilo respeta imprimir
+    for (const sim of SIMULATORS) {
+      assert.ok(/js\/shared\/scrollTop\.js"/.test(read(`pages/guide_${sim}.html`)), `guide_${sim}.html: no carga scrollTop.js`);
+    }
+    assert.ok(/\.to-top\.is-visible/.test(read('css/guide.css')) && /@media print[\s\S]*\.to-top\s*\{\s*display:\s*none/.test(read('css/guide.css')),
+      'guide.css: falta el estilo del botón Arriba (visible/impresión)');
+
     // Inmersión: la portada guarda el origen, los simuladores lo consumen antes del primer pintado
     assert.ok(/sessionStorage\.setItem\('inmersion'/.test(read('js/home/book.js')), 'book.js: no guarda el punto de entrada');
     for (const sim of SIMULATORS) {
