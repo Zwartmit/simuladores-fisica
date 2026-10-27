@@ -1,11 +1,11 @@
 /**
  * @fileoverview Renderizador dedicado para Canvas de HTML5 (estilo "cuaderno de laboratorio").
- * Traduce coordenadas físicas a coordenadas de píxeles y dibuja sobre papel milimetrado:
+ * Traduce coordenadas físicas a coordenadas de píxeles y dibuja sobre una pantalla de instrumento:
  * ejes con marcas, trayectoria a lápiz, vectores en tinta y la hipótesis del estudiante.
  * Los colores se leen de los tokens CSS (css/tokens.css) mediante js/shared/inkPalette.js.
  */
 
-import { readInkPalette } from '../shared/inkPalette.js';
+import { readScreenPalette, drawCrossMarks } from '../shared/inkPalette.js';
 
 export class CanvasRenderer {
   /**
@@ -22,7 +22,7 @@ export class CanvasRenderer {
     this.paddingTop = 24;
     this.paddingRight = 28;
 
-    this.palette = readInkPalette();
+    this.palette = readScreenPalette();
     this.resize();
   }
 
@@ -85,7 +85,7 @@ export class CanvasRenderer {
   }
 
   /**
-   * Limpia el lienzo con el color del papel.
+   * Limpia el lienzo con el color de la pantalla.
    */
   clear() {
     this.ctx.fillStyle = this.palette.paper;
@@ -100,8 +100,19 @@ export class CanvasRenderer {
     return steps.find(s => s * this.scale >= 12) ?? 50;
   }
 
+  /** Área con escala (px): de ella depende la cruz del visor (js/shared/instrument.js). */
+  getPlotRect() {
+    return {
+      left: this.paddingLeft,
+      top: this.paddingTop,
+      right: this.logicalWidth - this.paddingRight / 2,
+      bottom: this.logicalHeight - this.paddingBottom,
+    };
+  }
+
   /**
-   * Dibuja el papel milimetrado alineado con los metros, con ejes graduados.
+   * Dibuja los ejes graduados: marcas sobre el suelo y el eje vertical, con su numeración, y cruces
+   * «+» en los cruces mayores (en lugar de una cuadrícula).
    */
   drawGrid() {
     const { ctx, palette } = this;
@@ -111,42 +122,37 @@ export class CanvasRenderer {
     const minor = this._gridStep();
     const major = minor * 5;
 
+    drawCrossMarks(ctx, palette, this.paddingLeft, this.paddingTop, this.logicalWidth, groundY,
+      this.paddingLeft + major * this.scale, groundY - major * this.scale, major * this.scale, major * this.scale);
+
     ctx.save();
     ctx.lineWidth = 1;
-    ctx.font = '11px "IBM Plex Mono", monospace';
+    ctx.font = '12px "IBM Plex Mono", monospace';
     ctx.fillStyle = palette.muted;
+    ctx.strokeStyle = palette.muted;
 
-    // Líneas verticales (distancia)
+    ctx.beginPath();
     for (let x = 0; x <= metersWidth; x += minor) {
       const px = this.worldToCanvas(x, 0).x;
       const isMajor = x % major === 0;
-      ctx.strokeStyle = isMajor ? palette.graphMajor : palette.graphMinor;
-      ctx.beginPath();
-      ctx.moveTo(px, this.paddingTop);
-      ctx.lineTo(px, groundY);
-      ctx.stroke();
-
+      ctx.moveTo(px, groundY);
+      ctx.lineTo(px, groundY - (isMajor ? 9 : 4));
       if (isMajor && x > 0) {
         ctx.textAlign = 'center';
         ctx.fillText(`${x} m`, px, groundY + 36);
       }
     }
-
-    // Líneas horizontales (altura)
     for (let y = 0; y <= metersHeight; y += minor) {
       const py = this.worldToCanvas(0, y).y;
       const isMajor = y % major === 0;
-      ctx.strokeStyle = isMajor ? palette.graphMajor : palette.graphMinor;
-      ctx.beginPath();
       ctx.moveTo(this.paddingLeft, py);
-      ctx.lineTo(this.logicalWidth - this.paddingRight / 2, py);
-      ctx.stroke();
-
+      ctx.lineTo(this.paddingLeft + (isMajor ? 9 : 4), py);
       if (isMajor && y > 0) {
         ctx.textAlign = 'right';
-        ctx.fillText(`${y} m`, this.paddingLeft - 10, py + 4);
+        ctx.fillText(`${y} m`, this.paddingLeft - 12, py + 4);
       }
     }
+    ctx.stroke();
 
     // Eje vertical en tinta
     ctx.strokeStyle = palette.ink;
@@ -364,7 +370,7 @@ export class CanvasRenderer {
     ctx.fill();
 
     // Rótulo
-    ctx.font = '500 11px "IBM Plex Mono", monospace';
+    ctx.font = '500 12px "IBM Plex Mono", monospace';
     ctx.textAlign = 'center';
     ctx.fillText(`${predictedRange} m`, pos.x, pos.y - 34);
 

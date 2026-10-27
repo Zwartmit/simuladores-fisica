@@ -6,12 +6,14 @@
 
 import { PhysicsEngineRotacion } from './physicsEngine.js';
 import { CanvasRendererRotacion } from './canvasRenderer.js';
+import { attachInstrument } from '../shared/instrument.js';
 import { initPhaseTabs } from '../shared/phaseTabs.js';
 
 // ─── Instancias globales ─────────────────────────────────────────────────────
 const engine = new PhysicsEngineRotacion();
 const canvas = document.getElementById('physics-canvas');
 const renderer = new CanvasRendererRotacion(canvas);
+attachInstrument(canvas, 'ROTACIÓN');
 
 let animFrameId = null;
 let lastTimestamp = null;

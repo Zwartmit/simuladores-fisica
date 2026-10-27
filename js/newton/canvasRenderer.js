@@ -1,16 +1,16 @@
 /**
  * @fileoverview Renderizador Canvas del laboratorio de Leyes de Newton (estilo "cuaderno").
- * Dibuja sobre papel milimetrado el plano inclinado, el bloque rotado sobre la pendiente
+ * Dibuja sobre una pantalla de instrumento el plano inclinado, el bloque rotado sobre la pendiente
  * y los vectores del DCL en tinta (peso en rojo, normal en azul, fricción en ocre).
  */
 
-import { readInkPalette, FONTS, drawArrowHead, drawHatchedGround } from '../shared/inkPalette.js';
+import { readScreenPalette, FONTS, drawArrowHead, drawHatchedGround, drawCrossMarks } from '../shared/inkPalette.js';
 
 export class CanvasRendererNewton {
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
-    this.palette = readInkPalette();
+    this.palette = readScreenPalette();
 
     // Escala (px por metro) y márgenes; la escala se recalcula con fitView()
     this.scale = 22;
@@ -56,55 +56,75 @@ export class CanvasRendererNewton {
   }
 
   /**
-   * Limpia el lienzo con el color del papel.
+   * Limpia el lienzo con el color de la pantalla.
    */
   clear() {
     this.ctx.fillStyle = this.palette.paper;
     this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
   }
 
+  /** Área con escala (px): de ella depende la cruz del visor (js/shared/instrument.js). */
+  getPlotRect() {
+    return { left: this.originX, top: 20, right: this.logicalWidth - 12, bottom: this.originY };
+  }
+
+  /** Convierte píxeles del lienzo a metros (origen en la esquina inferior izquierda de la rampa). */
+  canvasToWorld(pxX, pxY) {
+    return {
+      x: Math.max(0, (pxX - this.originX) / this.scale),
+      y: Math.max(0, (this.originY - pxY) / this.scale),
+    };
+  }
+
   /**
-   * Dibuja el papel milimetrado alineado con los metros.
+   * Dibuja los ejes graduados (marcas cada metro, números cada 5 m) y cruces «+» en los cruces
+   * mayores, en lugar de una cuadrícula.
    */
   drawGrid() {
     const { ctx, palette } = this;
-    ctx.save();
-    ctx.lineWidth = 1;
-    ctx.font = `11px ${FONTS.mono}`;
-    ctx.fillStyle = palette.muted;
-
     const metersWidth = (this.logicalWidth - this.originX) / this.scale;
     const metersHeight = this.originY / this.scale;
+    const stepPx = 5 * this.scale;
 
+    drawCrossMarks(ctx, palette, this.originX, 0, this.logicalWidth, this.originY,
+      this.originX + stepPx, this.originY - stepPx, stepPx, stepPx);
+
+    ctx.save();
+    ctx.lineWidth = 1;
+    ctx.font = `12px ${FONTS.mono}`;
+    ctx.fillStyle = palette.muted;
+    ctx.strokeStyle = palette.muted;
+
+    ctx.beginPath();
     for (let x = 0; x <= metersWidth; x += 1) {
       const pxX = this.originX + x * this.scale;
       const major = x % 5 === 0;
-      ctx.strokeStyle = major ? palette.graphMajor : palette.graphMinor;
-      ctx.beginPath();
-      ctx.moveTo(pxX, 0);
-      ctx.lineTo(pxX, this.originY);
-      ctx.stroke();
-
+      ctx.moveTo(pxX, this.originY);
+      ctx.lineTo(pxX, this.originY - (major ? 9 : 4));
       if (major && x > 0) {
         ctx.textAlign = 'center';
         ctx.fillText(`${x} m`, pxX, this.originY + 34);
       }
     }
-
     for (let y = 0; y <= metersHeight; y += 1) {
       const pxY = this.originY - y * this.scale;
       const major = y % 5 === 0;
-      ctx.strokeStyle = major ? palette.graphMajor : palette.graphMinor;
-      ctx.beginPath();
       ctx.moveTo(this.originX, pxY);
-      ctx.lineTo(this.logicalWidth, pxY);
-      ctx.stroke();
-
+      ctx.lineTo(this.originX + (major ? 9 : 4), pxY);
       if (major && y > 0) {
         ctx.textAlign = 'right';
-        ctx.fillText(`${y} m`, this.originX - 8, pxY + 4);
+        ctx.fillText(`${y} m`, this.originX - 12, pxY + 4);
       }
     }
+    ctx.stroke();
+
+    // Eje vertical en tinta
+    ctx.strokeStyle = palette.ink;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(this.originX, 0);
+    ctx.lineTo(this.originX, this.originY);
+    ctx.stroke();
 
     ctx.restore();
   }
@@ -129,7 +149,7 @@ export class CanvasRendererNewton {
     ctx.save();
 
     // Cuerpo del plano, relleno plano de sombreado a lápiz
-    ctx.fillStyle = 'rgba(27, 26, 23, 0.06)';
+    ctx.fillStyle = palette.shade;
     ctx.beginPath();
     ctx.moveTo(ax, ay);
     ctx.lineTo(bx, by);

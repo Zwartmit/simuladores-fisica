@@ -166,3 +166,11 @@
 * **Inmersión al entrar a un simulador:** zoom hacia el libro desde el experimento pulsado, fondo acelerado y apertura circular de la página de destino (`js/shared/arrival.js` + `immerse-in`).
 * Pruebas: UI 11 (sin cursiva ni cuadrícula, fondo en las 13 páginas, inmersión, imagen ligera). Suite: 49 pruebas en verde.
 
+### Pantalla de instrumento, contraste y portada (misma sesión)
+
+* **Lienzos como pantalla de instrumento** (opción A elegida tras previsualizar A y B sobre Cinemática): fondo oscuro, tintas claras (`readScreenPalette`), sin cuadrícula (marcas en los ejes y cruces «+»), y el visor `js/shared/instrument.js` en los 6 simuladores (esquinas, estado `EN CURSO/EN PAUSA`, barrido de arranque; cruz con coordenadas en Cinemática y Newton).
+* **Textos poco visibles:** el botón deshabilitado «Lanzamiento completo» salía gris sobre azul (la variante `.success` ganaba a `:disabled`); corregido. Auditoría de contraste de todos los textos del DOM (WCAG AA) sin más fallos, y tamaños mínimos subidos a 12 px en CSS y canvas.
+* **Portada:** quitado el marco dorado (borde decorativo + anillo de foco). Corregido un error mío: al poner la pizarra, los textos de la tapa quedaron por encima del botón y pulsar el título o el subtítulo no abría el libro (sin cursor de mano).
+* Se detectó un error de sintaxis tras editar un renderizador que dejaba el lienzo en blanco sin que fallara ninguna prueba: la prueba UI 11 ahora comprueba con `node --check` que todos los módulos propios compilan.
+* **Pendiente:** las 24 capturas de `assets/guides/` muestran el lienzo claro anterior; hay que rehacerlas con la pantalla oscura.
+

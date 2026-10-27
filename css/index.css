@@ -149,17 +149,6 @@ html:not(.js) .hinge,
     inset -0.1em 0 0.2em rgba(255, 255, 255, 0.12);
 }
 
-/* Marco en relieve (hierro dorado) */
-.cover-front::before {
-  content: '';
-  position: absolute;
-  inset: 1.5em 1.5em 1.5em 2.6em;
-  border: 1px solid rgba(227, 197, 123, 0.55);
-  outline: 1px solid rgba(227, 197, 123, 0.3);
-  outline-offset: 0.35em;
-  pointer-events: none;
-}
-
 /* Pizarra de fórmulas: muy tenue y desenfocada, solo en la mitad baja (se desvanece hacia arriba y a los lados) */
 .cover-front::after {
   content: '';
@@ -184,7 +173,7 @@ html:not(.js) .hinge,
 }
 
 .cover-label {
-  font: 500 0.72em/1.4 var(--font-mono);
+  font: 500 0.8em/1.4 var(--font-mono);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--foil);
@@ -210,7 +199,7 @@ html:not(.js) .hinge,
 }
 
 .cover-cta {
-  font: 500 0.78em/1 var(--font-mono);
+  font: 500 0.84em/1 var(--font-mono);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--foil);
@@ -219,15 +208,21 @@ html:not(.js) .hinge,
 .cover-open {
   position: absolute;
   inset: 0;
+  z-index: 2; /* por encima de los textos de la tapa: todo clic sobre la portada abre el libro */
   width: 100%;
   background: none;
   border: 0;
   cursor: pointer;
 }
 
+/* Foco de teclado sin marco alrededor de la tapa: se subraya la invitación «Abrir el libro» */
 .cover-open:focus-visible {
-  outline: 3px solid var(--foil);
-  outline-offset: -0.9em;
+  outline: none;
+}
+
+.cover-front:has(.cover-open:focus-visible) .cover-cta {
+  outline: 2px solid var(--foil);
+  outline-offset: 5px;
 }
 
 /* ───────────────────────── Páginas ───────────────────────── */
@@ -295,7 +290,7 @@ html:not(.js) .hinge,
   padding-bottom: 0.7em;
   margin-bottom: 1.05em;
   border-bottom: 1px solid var(--rule);
-  font: 500 0.66em/1 var(--font-mono);
+  font: 500 0.8em/1 var(--font-mono);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--muted);
@@ -329,7 +324,7 @@ html:not(.js) .hinge,
   left: 0;
   right: 0;
   text-align: center;
-  font: 400 0.7em var(--font-mono);
+  font: 400 0.84em var(--font-mono);
   letter-spacing: 0.1em;
   color: var(--muted);
 }
@@ -410,7 +405,7 @@ html:not(.js) .hinge,
 
 .entry .kind {
   grid-column: 2;
-  font: 500 0.6em/1.6 var(--font-mono);
+  font: 500 0.78em/1.6 var(--font-mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
@@ -420,7 +415,7 @@ html:not(.js) .hinge,
   grid-column: 3;
   grid-row: 1;
   align-self: center;
-  font: 500 0.7em/1.4 var(--font-mono);
+  font: 500 0.8em/1.4 var(--font-mono);
   color: var(--blue);
   white-space: nowrap;
 }

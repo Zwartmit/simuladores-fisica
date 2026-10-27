@@ -6,13 +6,13 @@
  */
 
 import { PhysicsEngineRotacion } from './physicsEngine.js';
-import { readInkPalette, FONTS, drawArrowHead } from '../shared/inkPalette.js';
+import { readScreenPalette, FONTS, drawArrowHead, drawCrossMarks } from '../shared/inkPalette.js';
 
 export class CanvasRendererRotacion {
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
-    this.palette = readInkPalette();
+    this.palette = readScreenPalette();
 
     // Tintas por magnitud
     this.COLOR_TORQUE = this.palette.ochre;
@@ -74,12 +74,9 @@ export class CanvasRendererRotacion {
     ctx.fillStyle = palette.paper;
     ctx.fillRect(0, 0, W, H);
 
-    // Papel milimetrado
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = palette.graphMinor;
-    const step = 24;
-    for (let x = 0; x < W; x += step) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, this.chartY - 8); ctx.stroke(); }
-    for (let y = 0; y < this.chartY - 8; y += step) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+    // Cruces «+» cada 72 px (en lugar de una cuadrícula)
+    const bottom = this.chartY - 8;
+    drawCrossMarks(ctx, palette, 0, 0, W, bottom, 36, bottom - 24, 72, 72);
   }
 
   // ─── Cuerpo rígido ──────────────────────────────────────────────────────────
@@ -111,7 +108,7 @@ export class CanvasRendererRotacion {
     const { ctx, cx, cy, R, palette } = this;
     ctx.beginPath();
     ctx.arc(cx, cy, R, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(27, 26, 23, 0.05)';
+    ctx.fillStyle = palette.shade;
     ctx.fill();
     ctx.strokeStyle = palette.ink;
     ctx.lineWidth = 2.5;
@@ -270,7 +267,7 @@ export class CanvasRendererRotacion {
     ctx.stroke();
 
     ctx.fillStyle = palette.muted;
-    ctx.font = `500 10px ${FONTS.mono}`;
+    ctx.font = `500 12px ${FONTS.mono}`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     ctx.fillText('ω(t) Y L(t), NORMALIZADAS', x, y + 8);
@@ -325,7 +322,7 @@ export class CanvasRendererRotacion {
     ctx.restore();
 
     // Leyenda
-    ctx.font = `600 13px ${FONTS.display}`;
+    ctx.font = `600 14px ${FONTS.display}`;
     ctx.textBaseline = 'middle';
     [[this.COLOR_OMEGA, '— ω'], [this.COLOR_ANGULAR_M, '- - L']].forEach(([color, label], i) => {
       ctx.fillStyle = color;

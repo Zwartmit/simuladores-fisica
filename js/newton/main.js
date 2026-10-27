@@ -6,6 +6,7 @@
 
 import { PhysicsEngineNewton } from './physicsEngine.js';
 import { CanvasRendererNewton } from './canvasRenderer.js';
+import { attachInstrument } from '../shared/instrument.js';
 import { initPhaseTabs } from '../shared/phaseTabs.js';
 
 // Instanciar motores principales
@@ -102,6 +103,7 @@ const phaseContainers = document.querySelectorAll('.polya-phase-container');
  */
 function init() {
   renderer = new CanvasRendererNewton(canvas);
+  attachInstrument(canvas, 'NEWTON');
 
   window.addEventListener('resize', () => {
     renderer.resize();

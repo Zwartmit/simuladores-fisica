@@ -5,12 +5,14 @@
 
 import { PhysicsEngineOscilaciones } from './physicsEngine.js';
 import { CanvasRendererOscilaciones } from './canvasRenderer.js';
+import { attachInstrument } from '../shared/instrument.js';
 import { initPhaseTabs } from '../shared/phaseTabs.js';
 
 // ─── Instancias globales ─────────────────────────────────────────────────────
 const engine = new PhysicsEngineOscilaciones();
 const canvas = document.getElementById('physics-canvas');
 const renderer = new CanvasRendererOscilaciones(canvas);
+attachInstrument(canvas, 'OSCILACIONES');
 
 let animFrameId = null;
 let lastTimestamp = null;

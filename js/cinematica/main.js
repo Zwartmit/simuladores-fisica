@@ -6,6 +6,7 @@
 
 import { PhysicsEngine } from './physicsEngine.js';
 import { CanvasRenderer } from './canvasRenderer.js';
+import { attachInstrument } from '../shared/instrument.js';
 import { initPhaseTabs } from '../shared/phaseTabs.js';
 
 // Instanciar motores principales
@@ -77,6 +78,7 @@ const phaseContainers = document.querySelectorAll('.polya-phase-container');
  */
 function init() {
   renderer = new CanvasRenderer(canvas);
+  attachInstrument(canvas, 'CINEMÁTICA');
   
   // Escuchar redimensionamientos de pantalla de forma responsiva
   window.addEventListener('resize', () => {

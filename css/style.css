@@ -48,7 +48,7 @@ body > header h1 span {
 /* !important: neutraliza los estilos en línea de las páginas aún no migradas */
 .tutor-badge {
   display: inline-block;
-  font: 500 0.72rem/1.2 var(--font-mono) !important;
+  font: 500 0.78rem/1.2 var(--font-mono) !important;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink) !important;
@@ -153,11 +153,33 @@ a.tutor-badge:hover {
   flex: 1;
   min-height: 0;
   margin: 18px 40px 20px 88px;
+  /* Pantalla de instrumento: el lienzo se dibuja con tinta clara sobre este fondo (readScreenPalette) */
+  background: var(--screen);
+  border: 1px solid var(--ink);
+  box-shadow: 0 0 0 4px var(--paper), 0 0 0 5px var(--rule);
 }
 
 .canvas-wrap > #physics-canvas {
   position: absolute;
   inset: 0;
+}
+
+/* Visor (js/shared/instrument.js): esquinas, rótulo de estado y cruz del puntero */
+.canvas-wrap > .hud {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Trama de pantalla, casi invisible */
+.canvas-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.022) 0 1px, transparent 1px 3px);
+  pointer-events: none;
 }
 
 /* ───────────────────────── Lectura de datos ───────────────────────── */
@@ -176,7 +198,7 @@ a.tutor-badge:hover {
 }
 
 .telemetry-title {
-  font: 500 0.7rem/1 var(--font-mono);
+  font: 500 0.78rem/1 var(--font-mono);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted);
@@ -235,8 +257,8 @@ a.tutor-badge:hover {
 }
 
 .readout dt {
-  font: 500 0.68rem/1.3 var(--font-mono);
-  letter-spacing: 0.08em;
+  font: 500 0.78rem/1.3 var(--font-mono);
+  letter-spacing: 0.02em;
   color: var(--muted);
 }
 
@@ -279,7 +301,7 @@ a.tutor-badge:hover {
 .step-tab {
   position: relative;
   padding-bottom: 8px;
-  font: 500 0.72rem/1.2 var(--font-mono);
+  font: 500 0.78rem/1.2 var(--font-mono);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
@@ -380,7 +402,7 @@ h2 {
 
 label {
   display: block;
-  font: 500 0.72rem/1.4 var(--font-mono);
+  font: 500 0.78rem/1.4 var(--font-mono);
   letter-spacing: 0.06em;
   color: var(--ink);
   margin-bottom: 4px;
@@ -553,6 +575,13 @@ input[type='range']:disabled {
   background: var(--ochre);
 }
 
+/* Deshabilitado gana a la variante de color: si no, queda texto gris sobre fondo azul/ocre */
+.btn-action.success:disabled,
+.btn-action.warning:disabled {
+  background: none;
+  color: var(--muted);
+}
+
 .btn-action.success:hover:not(:disabled),
 .btn-action.warning:hover:not(:disabled) {
   background: var(--ink);
@@ -605,7 +634,7 @@ input[type='range']:disabled {
 .contrast-table th {
   padding: 8px 8px 8px 0;
   text-align: left;
-  font: 500 0.68rem/1.2 var(--font-mono);
+  font: 500 0.78rem/1.2 var(--font-mono);
   letter-spacing: 0.08em;
   color: var(--muted);
   border-bottom: 2px solid var(--ink);
@@ -780,7 +809,7 @@ input[type='range']:disabled {
 .body-btn small {
   display: block;
   margin-top: 2px;
-  font: 400 0.7rem var(--font-mono);
+  font: 400 0.78rem var(--font-mono);
   letter-spacing: 0;
   text-transform: none;
   color: var(--muted);
@@ -833,7 +862,7 @@ input[type='range']:disabled {
   padding: 6px 0;
   border-top: 1px solid var(--ink);
   border-bottom: 1px solid var(--rule);
-  font: 500 0.72rem/1.2 var(--font-mono);
+  font: 500 0.78rem/1.2 var(--font-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }

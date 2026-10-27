@@ -5,13 +5,13 @@
  * la fuerza gravitatoria en rojo. Arriba a la derecha, la tabla de verificación de Kepler III.
  */
 
-import { readInkPalette, FONTS, drawArrowHead } from '../shared/inkPalette.js';
+import { readScreenPalette, FONTS, drawArrowHead } from '../shared/inkPalette.js';
 
 export class CanvasRendererGravitacion {
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
-    this.palette = readInkPalette();
+    this.palette = readScreenPalette();
 
     // Tintas
     this.COLOR_STAR = this.palette.ochre;
@@ -242,7 +242,7 @@ export class CanvasRendererGravitacion {
     ctx.stroke();
 
     ctx.fillStyle = palette.muted;
-    ctx.font = `500 10px ${FONTS.mono}`;
+    ctx.font = `500 12px ${FONTS.mono}`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     ctx.fillText('KEPLER III', x, y + 8);
@@ -258,7 +258,7 @@ export class CanvasRendererGravitacion {
     rows.forEach((entry, i) => {
       const ry = y + 46 + i * 18;
       ctx.fillStyle = palette.ink;
-      ctx.font = `400 11px ${FONTS.mono}`;
+      ctx.font = `400 12px ${FONTS.mono}`;
       ctx.fillText(`#${entry.orbit}`, x, ry);
       ctx.fillText(entry.T.toFixed(1), x + 56, ry);
       ctx.fillStyle = this.COLOR_KEPLER;
@@ -266,7 +266,7 @@ export class CanvasRendererGravitacion {
     });
 
     ctx.fillStyle = palette.muted;
-    ctx.font = `400 10px ${FONTS.mono}`;
+    ctx.font = `400 12px ${FONTS.mono}`;
     ctx.fillText(`GM/4π² = ${engine.getTheoreticalKeplerConstant().toFixed(0)}`, x, y + 48 + rows.length * 18);
   }
 }

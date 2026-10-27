@@ -10,6 +10,7 @@ import { readFileSync, existsSync, readdirSync } from 'fs';
 import { resolve, dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import assert from 'assert';
+import { execFileSync } from 'child_process';
 import { initPhaseTabs } from '../js/shared/phaseTabs.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -294,6 +295,12 @@ export function runUiTests() {
     assert.ok(/classList\.add\('js'\)/.test(html), 'index.html: falta la marca html.js');
     assert.ok(/id="cover-open"[^>]*aria-expanded="false"/.test(html), 'la tapa debe ser un botón con aria-expanded');
     assert.ok(/id="close-book"[^>]*hidden/.test(html), 'el botón de cerrar debe empezar oculto');
+    // El botón invisible de la tapa debe quedar por encima de los textos (si no, pulsar el título no abre el libro)
+    assert.ok(/\.cover-open\s*\{[^}]*z-index:\s*[2-9]/.test(read('css/index.css')), 'index.css: .cover-open debe tener z-index por encima de los textos de la tapa');
+    // Sin marco dorado en la tapa: ni borde decorativo ni anillo de foco dibujado hacia dentro
+    const coverCss = read('css/index.css');
+    assert.ok(!/\.cover-front::before/.test(coverCss), 'index.css: la tapa no debe llevar marco decorativo');
+    assert.ok(!/\.cover-open:focus-visible\s*\{[^}]*outline:\s*\d/.test(coverCss), 'index.css: el foco de la tapa no debe dibujar un marco');
 
     // Motion vendido: archivo, licencia y uso desde book.js
     assert.ok(existsSync(join(ROOT, 'js/vendor/motion.min.js')), 'falta js/vendor/motion.min.js');
@@ -311,6 +318,21 @@ export function runUiTests() {
 
   // PRUEBA 11: Fondo de física compartido, sin cuadrícula ni cursiva, e inmersión al entrar a un simulador
   try {
+    // Todos los módulos propios compilan (un paréntesis suelto en un renderizador deja el lienzo en blanco
+    // y las pruebas de física no lo ven)
+    const sourceFiles = [
+      ...readdirSync(join(ROOT, 'js/shared')).map(f => `js/shared/${f}`),
+      'js/home/book.js',
+      ...SIMULATORS.flatMap(sim => readdirSync(join(ROOT, `js/${sim}`)).map(f => `js/${sim}/${f}`)),
+    ].filter(f => f.endsWith('.js'));
+    for (const file of sourceFiles) {
+      try {
+        execFileSync(process.execPath, ['--check', join(ROOT, file)], { stdio: 'pipe' });
+      } catch (err) {
+        assert.fail(`${file}: error de sintaxis ${String(err.stderr ?? '').split(String.fromCharCode(10)).slice(0, 4).join(' | ')}`);
+      }
+    }
+
     // Sin cursiva en ningún CSS ni en los canvas (el énfasis va con color y peso)
     const sources = ['css/tokens.css', 'css/style.css', 'css/index.css', 'css/guide.css',
       ...SIMULATORS.map(sim => `js/${sim}/canvasRenderer.js`)];

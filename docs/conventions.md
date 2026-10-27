@@ -106,6 +106,14 @@ export class Vector2D {
 - **Inmersión al entrar a un simulador:** `book.js` guarda en `sessionStorage['inmersion']` el punto pulsado, acerca la vista al libro y acelera un instante el fondo (evento `fondo:impulso`); `js/shared/arrival.js` (script clásico en el `<head>` de cada simulador) lo consume una sola vez y marca `html.immersing`, y `css/style.css` abre la página como un círculo desde ese punto (`@keyframes immerse-in`). Sin la marca (enlace directo, recarga, «atrás») solo se ve la entrada escalonada habitual.
 - Portada: la tapa lleva `assets/pizarra.jpg` (pizarra de fórmulas, 560 px, < 150 KB) como capa tenue, desenfocada y enmascarada hacia la mitad inferior.
 
+## Pantalla de instrumento (lienzos de los simuladores)
+
+- El lienzo es una **pantalla oscura** sobre la hoja de papel: `.canvas-wrap` usa `--screen` y los renderizadores leen `readScreenPalette()` (tintas claras `--screen-*` en `tokens.css`), no `readInkPalette()` (esa es para el papel y el fondo de física). Los rellenos de sombreado usan `palette.shade`, nunca un `rgba(...)` fijo.
+- **Sin cuadrícula**: ejes con marcas y cruces «+» (`drawCrossMarks()` en `inkPalette.js`). Cinemática y Newton llevan escala en metros (`drawGrid()` propio); Gravitación conserva sus anillos polares.
+- **Visor** (`js/shared/instrument.js`, `attachInstrument(canvas, 'TÍTULO')` en cada `main.js`): capa `<canvas class="hud">` con esquinas, rótulo `SIM · … t = … s · EN CURSO/EN PAUSA`, barrido de arranque y, si el renderizador ofrece `getPlotRect()` y `canvasToWorld()` (Cinemática y Newton), una cruz con las coordenadas del puntero en metros. Lee `window.currentSimulation`.
+- Texto en lienzo y CSS: mínimo 12 px y contraste AA. Un estado deshabilitado debe ganar a las variantes de color (`.btn-action.success:disabled`).
+- **Portada:** sin marco dorado (ni borde decorativo ni anillo de foco hacia dentro; el foco de teclado subraya «Abrir el libro»), y `.cover-open` va por encima de los textos de la tapa para que cualquier clic abra el libro.
+
 ## Accesibilidad
 
 - Las pestañas de fase de Pólya se activan con `initPhaseTabs()` (`js/shared/phaseTabs.js`) en cada `main.js`: no se enlazan `click` a mano sobre `.step-tab`.

@@ -5,13 +5,13 @@
  * Cinética en verde, potencial en azul, térmica en rojo y total en tinta negra.
  */
 
-import { readInkPalette, FONTS, drawArrowHead, drawHatchedGround } from '../shared/inkPalette.js';
+import { readScreenPalette, FONTS, drawArrowHead, drawHatchedGround, drawCrossMarks } from '../shared/inkPalette.js';
 
 export class CanvasRendererEnergia {
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
-    this.palette = readInkPalette();
+    this.palette = readScreenPalette();
 
     // Colores de energía (tintas)
     this.COLOR_KE = this.palette.green;
@@ -95,23 +95,9 @@ export class CanvasRendererEnergia {
     ctx.fillStyle = palette.paper;
     ctx.fillRect(0, 0, W, H);
 
-    // Papel milimetrado alineado con los metros, solo sobre la zona de la pista
-    ctx.lineWidth = 1;
-    const step = this.scale;
-    for (let x = this.originX % step, i = 0; x < W; x += step, i++) {
-      ctx.strokeStyle = palette.graphMinor;
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, this.groundY);
-      ctx.stroke();
-    }
-    for (let y = this.originY; y > 0; y -= step) {
-      ctx.strokeStyle = palette.graphMinor;
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(W, y);
-      ctx.stroke();
-    }
+    // Cruces «+» cada 5 m sobre la zona de la pista (en lugar de una cuadrícula)
+    const step = this.scale * 5;
+    drawCrossMarks(ctx, palette, 0, 0, W, this.groundY, this.originX % step, this.originY, step, step);
   }
 
   _drawRamp(engine) {
@@ -133,7 +119,7 @@ export class CanvasRendererEnergia {
     ctx.lineTo(leftX, this.groundY + 8);
     ctx.closePath();
 
-    ctx.fillStyle = 'rgba(27, 26, 23, 0.06)';
+    ctx.fillStyle = palette.shade;
     ctx.fill();
 
     // Superficie en tinta (solo la curva)
@@ -166,7 +152,7 @@ export class CanvasRendererEnergia {
 
     // Velocidad dentro del bloque
     ctx.fillStyle = palette.ink;
-    ctx.font = `500 10px ${FONTS.mono}`;
+    ctx.font = `500 12px ${FONTS.mono}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(state.v.toFixed(1), cx, cy);
@@ -215,7 +201,7 @@ export class CanvasRendererEnergia {
     ctx.setLineDash([]);
 
     ctx.fillStyle = palette.muted;
-    ctx.font = `11px ${FONTS.mono}`;
+    ctx.font = `12px ${FONTS.mono}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
     ctx.fillText(`h = ${state.h.toFixed(2)} m`, cx, cy - 16);
@@ -240,7 +226,7 @@ export class CanvasRendererEnergia {
     ctx.stroke();
 
     ctx.fillStyle = palette.muted;
-    ctx.font = `500 10px ${FONTS.mono}`;
+    ctx.font = `500 12px ${FONTS.mono}`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     ctx.fillText(title, x, y + 8);
@@ -285,7 +271,7 @@ export class CanvasRendererEnergia {
       ctx.fillRect(trackX + 1, by + 1, Math.max(0, fraction * trackW - 1), barH - 1);
 
       ctx.fillStyle = bar.color;
-      ctx.font = `500 11px ${FONTS.mono}`;
+      ctx.font = `500 12px ${FONTS.mono}`;
       ctx.textAlign = 'right';
       ctx.fillText(`${bar.value.toFixed(1)} J`, x + w, by + barH / 2);
     });
@@ -336,7 +322,7 @@ export class CanvasRendererEnergia {
     ctx.restore();
 
     // Leyenda
-    ctx.font = `600 13px ${FONTS.display}`;
+    ctx.font = `600 14px ${FONTS.display}`;
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'left';
     [['K', this.COLOR_KE], ['U', this.COLOR_PE], ['Q', this.COLOR_THERMAL]].forEach(([label, color], i) => {

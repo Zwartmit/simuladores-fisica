@@ -5,13 +5,13 @@
  */
 
 import { PhysicsEngineOscilaciones } from './physicsEngine.js';
-import { readInkPalette, FONTS, drawArrowHead, drawHatchedGround } from '../shared/inkPalette.js';
+import { readScreenPalette, FONTS, drawArrowHead, drawCrossMarks, drawHatchedGround } from '../shared/inkPalette.js';
 
 export class CanvasRendererOscilaciones {
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
-    this.palette = readInkPalette();
+    this.palette = readScreenPalette();
 
     // Escala visual (px por metro); se recalcula en cada frame según el sistema
     this.pixelsPerMeter = 100;
@@ -74,12 +74,9 @@ export class CanvasRendererOscilaciones {
     ctx.fillStyle = palette.paper;
     ctx.fillRect(0, 0, W, H);
 
-    // Papel milimetrado sobre la zona del esquema
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = palette.graphMinor;
-    const step = 24;
-    for (let x = 0; x < W; x += step) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, this.stageH); ctx.stroke(); }
-    for (let y = 0; y < this.stageH; y += step) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+    // Cruces «+» cada 72 px (en lugar de una cuadrícula)
+    const bottom = this.stageH;
+    drawCrossMarks(ctx, palette, 0, 0, W, bottom, 36, bottom - 24, 72, 72);
   }
 
   // ─── Péndulo ────────────────────────────────────────────────────────────────
@@ -224,7 +221,7 @@ export class CanvasRendererOscilaciones {
     ctx.stroke();
     ctx.setLineDash([]);
     ctx.fillStyle = palette.muted;
-    ctx.font = `11px ${FONTS.mono}`;
+    ctx.font = `12px ${FONTS.mono}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
     ctx.fillText('x = 0', originX, originY + 66);
@@ -279,7 +276,7 @@ export class CanvasRendererOscilaciones {
     ctx.lineTo(x + w, y);
     ctx.stroke();
     ctx.fillStyle = palette.muted;
-    ctx.font = `500 10px ${FONTS.mono}`;
+    ctx.font = `500 12px ${FONTS.mono}`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     ctx.fillText(title, x, y + 8);
@@ -368,7 +365,7 @@ export class CanvasRendererOscilaciones {
     ctx.restore();
 
     // Leyenda
-    ctx.font = `600 13px ${FONTS.display}`;
+    ctx.font = `600 14px ${FONTS.display}`;
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'left';
     [['K', this.COLOR_KE], ['U', this.COLOR_PE]].forEach(([label, color], i) => {

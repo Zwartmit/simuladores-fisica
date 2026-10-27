@@ -15,6 +15,7 @@
   --ink-soft: #4A463E;
   --muted: #6B6455;
   --rule: rgba(27, 26, 23, 0.16);
+  --ink-shade: rgba(27, 26, 23, 0.06); /* relleno de sombreado a lápiz */
   --graph-minor: rgba(43, 76, 140, 0.08);
   --graph-major: rgba(43, 76, 140, 0.20);
 
@@ -23,6 +24,20 @@
   --red: #B83A26;    /* corrector: gravedad, fuerzas, errores */
   --ochre: #8A5E0E;  /* predicción del estudiante, rozamiento, torque */
   --green: #2F6B4F;  /* tinta verde: energía cinética, momento angular, Kepler */
+
+  /* Pantalla de instrumento (lienzos de los simuladores): tinta clara sobre fondo oscuro */
+  --screen: #14171C;
+  --screen-ink: #E9E3D3;
+  --screen-ink-soft: #C9C3B3;
+  --screen-muted: #9A9BA0;
+  --screen-rule: rgba(233, 227, 211, 0.2);
+  --screen-grid-minor: rgba(233, 227, 211, 0.07);
+  --screen-grid-major: rgba(233, 227, 211, 0.2);
+  --screen-shade: rgba(233, 227, 211, 0.07);
+  --screen-blue: #86A8EA;
+  --screen-red: #F27D66;
+  --screen-ochre: #E6B350;
+  --screen-green: #72C59E;
 
   /* Alias semánticos que usan los controladores JS */
   --speed-color: var(--blue);

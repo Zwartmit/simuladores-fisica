@@ -5,12 +5,14 @@
 
 import { PhysicsEngineGravitacion } from './physicsEngine.js';
 import { CanvasRendererGravitacion } from './canvasRenderer.js';
+import { attachInstrument } from '../shared/instrument.js';
 import { initPhaseTabs } from '../shared/phaseTabs.js';
 
 // ─── Instancias globales ─────────────────────────────────────────────────────
 const engine = new PhysicsEngineGravitacion();
 const canvas = document.getElementById('physics-canvas');
 const renderer = new CanvasRendererGravitacion(canvas);
+attachInstrument(canvas, 'GRAVITACIÓN');
 
 let animFrameId = null;
 let lastTimestamp = null;

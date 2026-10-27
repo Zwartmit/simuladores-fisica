@@ -6,12 +6,14 @@
 
 import { PhysicsEngineEnergia } from './physicsEngine.js';
 import { CanvasRendererEnergia } from './canvasRenderer.js';
+import { attachInstrument } from '../shared/instrument.js';
 import { initPhaseTabs } from '../shared/phaseTabs.js';
 
 // ─── Instancias globales ────────────────────────────────────────────────────
 const engine = new PhysicsEngineEnergia();
 const canvas = document.getElementById('physics-canvas');
 const renderer = new CanvasRendererEnergia(canvas);
+attachInstrument(canvas, 'ENERGÍA');
 
 let animFrameId = null;
 let lastTimestamp = null;
