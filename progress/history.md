@@ -182,3 +182,11 @@
 * **Capturas de portafolio** en `assets/portafolio/` (1440 × 900): portada cerrada, libro abierto, Cinemática y Energía en ejecución.
 * Al hacerlas se vio que el folio «3» de la página del índice pisaba la última fila a 1440 × 900 (las fuentes subidas a 12 px la alargaron): menos relleno en cada fila y folio más abajo.
 * **Pendiente (decisión del autor):** `https://steam-unir.netlify.app` responde «Site not found» (404 de Netlify): el sitio **no está publicado en esa dirección**. Hasta publicarlo, todas las URL absolutas, el sitemap y el enlace del portafolio apuntan a una página inexistente. Al conocer el dominio real: `node scripts/set-site-url.mjs <dominio>`.
+
+### Ajustes tras la auditoría (misma sesión)
+
+* **Dominio definitivo:** `https://simuladoresfisicaunir.netlify.app` (aplicado con `scripts/set-site-url.mjs`: canonical, Open Graph, JSON-LD, sitemap y robots). Sustituye al dominio provisional, que no existía.
+* **Invitación en el índice:** bajo «Seis experimentos», la línea «Elige cualquiera y entra: se abre con un clic ↓» (la flecha se mueve suavemente; quieta con movimiento reducido). Para que quepa se ajustó el relleno de las filas (verificado a 1440×900 y 1024×768).
+* **Nueva identidad visual de iconos:** `assets/favicon.svg` (tapa azul con órbita dorada y planeta rojo) y sus PNG (32, 192 y 180 px) sustituyen al logo antiguo.
+* **Imagen para compartir:** misma tipografía que los títulos del libro (peso 600 y contraste óptico bajo en la palabra de énfasis, también en la tapa de la imagen y en la tapa real), y el libro más arriba.
+* Capturas de portafolio de la portada y el libro abierto rehechas con la invitación.

@@ -9,4 +9,4 @@ Disallow: /tests/
 Disallow: /scripts/
 Disallow: /.gemini/
 
-Sitemap: https://steam-unir.netlify.app/sitemap.xml
+Sitemap: https://simuladoresfisicaunir.netlify.app/sitemap.xml
